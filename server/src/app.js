@@ -5,6 +5,7 @@ import morgan from 'morgan'
 import compression from 'compression'
 import rateLimit from 'express-rate-limit'
 import { config } from './config/env.js'
+import authRoutes from './routes/authRoutes.js'
 
 const app = express()
 
@@ -35,16 +36,8 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', env: config.env, timestamp: new Date().toISOString() })
 })
 
-// ── Routes (we'll wire these up as we build each feature) ──
-// app.use('/api/auth',          authRoutes)
-// app.use('/api/users',         userRoutes)
-// app.use('/api/listings',      listingRoutes)
-// app.use('/api/bookings',      bookingRoutes)
-// app.use('/api/reviews',       reviewRoutes)
-// app.use('/api/favorites',     favoriteRoutes)
-// app.use('/api/conversations', conversationRoutes)
-// app.use('/api/messages',      messageRoutes)
-// app.use('/api/admin',         adminRoutes)
+// ── Routes ──
+app.use('/api/auth', authRoutes)
 
 // ── 404 ──
 app.use((req, res) => {
