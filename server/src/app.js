@@ -1,12 +1,18 @@
-import express from 'express'
-import cors from 'cors'
-import helmet from 'helmet'
-import morgan from 'morgan'
-import compression from 'compression'
-import rateLimit from 'express-rate-limit'
-import { config } from './config/env.js'
-import authRoutes from './routes/authRoutes.js'
-import listingRoutes from './routes/listingRoutes.js'
+import express        from 'express'
+import cors           from 'cors'
+import helmet         from 'helmet'
+import morgan         from 'morgan'
+import compression    from 'compression'
+import rateLimit      from 'express-rate-limit'
+import { config }     from './config/env.js'
+
+// Routes
+import authRoutes     from './routes/authRoutes.js'
+import listingRoutes  from './routes/listingRoutes.js'
+import bookingRoutes  from './routes/bookingRoutes.js'
+import reviewRoutes   from './routes/reviewRoutes.js'
+import favoriteRoutes from './routes/favoriteRoutes.js'
+import messageRoutes  from './routes/messageRoutes.js'
 
 const app = express()
 
@@ -38,9 +44,12 @@ app.get('/api/health', (req, res) => {
 })
 
 // ── Routes ──
-app.use('/api/auth', authRoutes)
-app.use('/api/auth',     authRoutes)
-app.use('/api/listings', listingRoutes)
+app.use('/api/auth',      authRoutes)
+app.use('/api/listings',  listingRoutes)
+app.use('/api/bookings',  bookingRoutes)
+app.use('/api/reviews',   reviewRoutes)
+app.use('/api/favorites', favoriteRoutes)
+app.use('/api/messages',  messageRoutes)
 
 // ── 404 ──
 app.use((req, res) => {
