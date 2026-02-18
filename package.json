@@ -1,0 +1,31 @@
+{
+  "name": "aria",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "client",
+      "server",
+      "e2e-cypress",
+      "e2e-playwright"
+    ],
+    "nohoist": [
+      "**/tailwindcss",
+      "**/tailwindcss/**",
+      "**/postcss",
+      "**/postcss/**",
+      "**/autoprefixer",
+      "**/autoprefixer/**"
+    ]
+  },
+  "scripts": {
+    "client": "yarn workspace client dev",
+    "server": "yarn workspace server dev",
+    "dev": "concurrently \"yarn server\" \"yarn client\"",
+    "lint": "yarn workspaces run lint",
+    "test": "yarn workspaces run test"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

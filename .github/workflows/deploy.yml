@@ -1,0 +1,59 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-client:
+    name: Deploy Client → Netlify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build client
+        run: yarn workspace client build
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v3
+        with:
+          publish-dir: client/dist
+          production-branch: main
+          production-deploy: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy from GitHub Actions — ${{ github.sha }}"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
+  deploy-server:
+    name: Deploy Server → Render
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deploy Hook
+        run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+```
+
+---
+
+### 4. GitHub Secrets you'll need to add
+
+Once your repo is on GitHub, go to **Settings → Secrets and variables → Actions** and add these:
+```
+NETLIFY_AUTH_TOKEN       # from netlify.com → User Settings → Personal Access Tokens
+NETLIFY_SITE_ID          # from your Netlify site → Site Settings → General
+VITE_API_BASE_URL        # your Render server URL e.g. https://aria-api.onrender.com/api
+RENDER_DEPLOY_HOOK_URL   # from Render → your service → Settings → Deploy Hook

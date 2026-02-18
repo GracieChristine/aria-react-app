@@ -1,0 +1,269 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  # ─────────────────────────────────────────
+  # Lint
+  # ─────────────────────────────────────────
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint client
+        run: yarn workspace client lint
+
+      - name: Lint server
+        run: yarn workspace server lint
+
+  # ─────────────────────────────────────────
+  # Unit & Integration Tests (Server)
+  # ─────────────────────────────────────────
+  unit-tests:
+    name: Unit & Integration Tests
+    runs-on: ubuntu-latest
+    needs: lint
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: aria_user
+          POSTGRES_PASSWORD: aria_password
+          POSTGRES_DB: aria_test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      PORT: 5000
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: aria_test_db
+      DB_USER: aria_user
+      DB_PASSWORD: aria_password
+      DATABASE_URL: postgresql://aria_user:aria_password@localhost:5432/aria_test_db
+      JWT_SECRET: ci_test_jwt_secret
+      JWT_REFRESH_SECRET: ci_test_refresh_secret
+      JWT_EXPIRES_IN: 15m
+      JWT_REFRESH_EXPIRES_IN: 7d
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run migrations
+        run: yarn workspace server migrate
+
+      - name: Run unit & integration tests
+        run: yarn workspace server test
+
+  # ─────────────────────────────────────────
+  # Cypress E2E (JavaScript)
+  # ─────────────────────────────────────────
+  cypress:
+    name: Cypress E2E
+    runs-on: ubuntu-latest
+    needs: unit-tests
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: aria_user
+          POSTGRES_PASSWORD: aria_password
+          POSTGRES_DB: aria_test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      PORT: 5000
+      DATABASE_URL: postgresql://aria_user:aria_password@localhost:5432/aria_test_db
+      JWT_SECRET: ci_test_jwt_secret
+      JWT_REFRESH_SECRET: ci_test_refresh_secret
+      JWT_EXPIRES_IN: 15m
+      JWT_REFRESH_EXPIRES_IN: 7d
+      VITE_API_BASE_URL: http://localhost:5000/api
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run migrations + seed
+        run: yarn workspace server migrate && yarn workspace server seed
+
+      - name: Build client
+        run: yarn workspace client build
+
+      - name: Start server
+        run: yarn workspace server start &
+        
+      - name: Wait for server
+        run: npx wait-on http://localhost:5000/api/health
+
+      - name: Serve client build
+        run: npx serve client/dist -p 5173 &
+
+      - name: Wait for client
+        run: npx wait-on http://localhost:5173
+
+      - name: Run Cypress
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: e2e-cypress
+          browser: chrome
+          headed: false
+
+      - name: Upload Cypress screenshots on failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: e2e-cypress/cypress/screenshots
+
+  # ─────────────────────────────────────────
+  # Playwright E2E (TypeScript) — parallel
+  # ─────────────────────────────────────────
+  playwright:
+    name: Playwright E2E (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    needs: unit-tests
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: aria_user
+          POSTGRES_PASSWORD: aria_password
+          POSTGRES_DB: aria_test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      PORT: 5000
+      DATABASE_URL: postgresql://aria_user:aria_password@localhost:5432/aria_test_db
+      JWT_SECRET: ci_test_jwt_secret
+      JWT_REFRESH_SECRET: ci_test_refresh_secret
+      JWT_EXPIRES_IN: 15m
+      JWT_REFRESH_EXPIRES_IN: 7d
+      VITE_API_BASE_URL: http://localhost:5000/api
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: yarn workspace e2e-playwright playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Run migrations + seed
+        run: yarn workspace server migrate && yarn workspace server seed
+
+      - name: Start server
+        run: yarn workspace server start &
+
+      - name: Wait for server
+        run: npx wait-on http://localhost:5000/api/health
+
+      - name: Serve client build
+        run: npx serve client/dist -p 5173 &
+
+      - name: Wait for client
+        run: npx wait-on http://localhost:5173
+
+      - name: Run Playwright (${{ matrix.browser }})
+        run: yarn workspace e2e-playwright test --project=${{ matrix.browser }}
+
+      - name: Upload Playwright report on failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-${{ matrix.browser }}
+          path: e2e-playwright/playwright-report
+
+  # ─────────────────────────────────────────
+  # Build Check
+  # ─────────────────────────────────────────
+  build:
+    name: Build Check
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build client
+        run: yarn workspace client build
+        env:
+          VITE_API_BASE_URL: http://localhost:5000/api
+
+      - name: Build server
+        run: yarn workspace server build
