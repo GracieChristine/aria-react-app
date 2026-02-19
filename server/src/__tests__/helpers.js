@@ -5,10 +5,10 @@ export const api = request(app)
 
 export const registerUser = async (overrides = {}) => {
   const defaults = {
-    email:     'test@aria.com',
+    email:     'JaneDoe@aria.com',
     password:  'password123',
-    firstName: 'Test',
-    lastName:  'User',
+    firstName: 'Jane',
+    lastName:  'Doe',
     role:      'guest',
   }
   const res = await api
