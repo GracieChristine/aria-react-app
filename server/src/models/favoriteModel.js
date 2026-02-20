@@ -1,4 +1,4 @@
-import pool from '../db/pool.js'
+import pool from '../db/pool.js';
 
 export const favoriteModel = {
   async add(userId, listingId) {
@@ -8,8 +8,8 @@ export const favoriteModel = {
        ON CONFLICT (user_id, listing_id) DO NOTHING
        RETURNING *`,
       [userId, listingId]
-    )
-    return rows[0] || null
+    );
+    return rows[0] || null;
   },
 
   async remove(userId, listingId) {
@@ -18,8 +18,8 @@ export const favoriteModel = {
        WHERE user_id = $1 AND listing_id = $2
        RETURNING id`,
       [userId, listingId]
-    )
-    return rows[0] || null
+    );
+    return rows[0] || null;
   },
 
   async findByUser(userId) {
@@ -37,8 +37,8 @@ export const favoriteModel = {
        GROUP BY f.id, l.id, l.title, l.city, l.country, l.price_per_night
        ORDER BY f.created_at DESC`,
       [userId]
-    )
-    return rows
+    );
+    return rows;
   },
 
   async isFavorited(userId, listingId) {
@@ -46,7 +46,7 @@ export const favoriteModel = {
       `SELECT id FROM favorites
        WHERE user_id = $1 AND listing_id = $2`,
       [userId, listingId]
-    )
-    return rows.length > 0
+    );
+    return rows.length > 0;
   },
-}
+};

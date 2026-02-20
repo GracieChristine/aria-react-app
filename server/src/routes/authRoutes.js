@@ -1,10 +1,10 @@
-import { Router }         from 'express'
-import { body }           from 'express-validator'
-import { authController } from '../controllers/authController.js'
-import { authenticate }   from '../middleware/authenticate.js'
-import { validate }       from '../middleware/validate.js'
+import { Router }         from 'express';
+import { body }           from 'express-validator';
+import { authController } from '../controllers/authController.js';
+import { authenticate }   from '../middleware/authenticate.js';
+import { validate }       from '../middleware/validate.js';
 
-const router = Router()
+const router = Router();
 
 // ── Validation rules ──
 const registerRules = [
@@ -19,7 +19,7 @@ const registerRules = [
   body('lastName')
     .notEmpty().withMessage('Last name required')
     .trim(),
-]
+];
 
 const loginRules = [
   body('email')
@@ -27,13 +27,13 @@ const loginRules = [
     .normalizeEmail(),
   body('password')
     .notEmpty().withMessage('Password required'),
-]
+];
 
 // ── Routes ──
-router.post('/register', registerRules, validate, authController.register)
-router.post('/login',    loginRules,    validate, authController.login)
-router.post('/refresh',                           authController.refresh)
-router.post('/logout',   authenticate,            authController.logout)
-router.get('/me',        authenticate,            authController.me)
+router.post('/register', registerRules, validate, authController.register);
+router.post('/login',    loginRules,    validate, authController.login);
+router.post('/refresh',                           authController.refresh);
+router.post('/logout',   authenticate,            authController.logout);
+router.get('/me',        authenticate,            authController.me);
 
-export default router
+export default router;

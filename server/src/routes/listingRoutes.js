@@ -1,11 +1,11 @@
-import { Router }            from 'express'
-import { body, query }       from 'express-validator'
-import { listingController } from '../controllers/listingController.js'
-import { authenticate }      from '../middleware/authenticate.js'
-import { authorize }         from '../middleware/authorize.js'
-import { validate }          from '../middleware/validate.js'
+import { Router }            from 'express';
+import { body }              from 'express-validator';
+import { listingController } from '../controllers/listingController.js';
+import { authenticate }      from '../middleware/authenticate.js';
+import { authorize }         from '../middleware/authorize.js';
+import { validate }          from '../middleware/validate.js';
 
-const router = Router()
+const router = Router();
 
 const updateListingRules = [
   body('title').optional().notEmpty().withMessage('Title cannot be empty').trim(),
@@ -20,7 +20,7 @@ const updateListingRules = [
   body('propertyType').optional().isIn([
     'apartment','house','villa','cabin','condo','townhouse','studio','other'
   ]).withMessage('Invalid property type'),
-]
+];
 
 const listingRules = [
   body('title').notEmpty().withMessage('Title is required').trim(),
@@ -35,11 +35,11 @@ const listingRules = [
   body('propertyType').isIn([
     'apartment','house','villa','cabin','condo','townhouse','studio','other'
   ]).withMessage('Invalid property type'),
-]
+];
 
 // ── Public routes ──
-router.get('/',     listingController.getAll)
-router.get('/:id',  listingController.getOne)
+router.get('/',     listingController.getAll);
+router.get('/:id',  listingController.getOne);
 
 // ── Host routes ──
 router.get(
@@ -47,7 +47,7 @@ router.get(
   authenticate,
   authorize('host', 'admin', 'super_admin'),
   listingController.getHostListings
-)
+);
 
 router.post(
   '/',
@@ -56,7 +56,7 @@ router.post(
   listingRules,
   validate,
   listingController.create
-)
+);
 
 router.put(
   '/:id',
@@ -65,7 +65,7 @@ router.put(
   updateListingRules,
   validate,
   listingController.update
-)
+);
 
 router.patch(
   '/:id/status',
@@ -74,27 +74,27 @@ router.patch(
   body('status').notEmpty().withMessage('Status required'),
   validate,
   listingController.updateStatus
-)
+);
 
 router.delete(
   '/:id',
   authenticate,
   authorize('host'),
   listingController.remove
-)
+);
 
 router.post(
   '/:id/images',
   authenticate,
   authorize('host', 'admin', 'super_admin'),
   listingController.addImage
-)
+);
 
 router.delete(
   '/:id/images/:imageId',
   authenticate,
   authorize('host', 'admin', 'super_admin'),
   listingController.removeImage
-)
+);
 
-export default router
+export default router;

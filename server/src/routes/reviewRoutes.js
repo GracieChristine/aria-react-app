@@ -1,10 +1,10 @@
-import { Router }           from 'express'
-import { body }             from 'express-validator'
-import { reviewController } from '../controllers/reviewController.js'
-import { authenticate }     from '../middleware/authenticate.js'
-import { validate }         from '../middleware/validate.js'
+import { Router }           from 'express';
+import { body }             from 'express-validator';
+import { reviewController } from '../controllers/reviewController.js';
+import { authenticate }     from '../middleware/authenticate.js';
+import { validate }         from '../middleware/validate.js';
 
-const router = Router()
+const router = Router();
 
 router.post(
   '/',
@@ -16,9 +16,9 @@ router.post(
   ],
   validate,
   reviewController.create
-)
+);
 
-router.get('/listing/:listingId', reviewController.getByListing)
-router.get('/me', authenticate,   reviewController.getMyReviews)
+router.get('/listing/:listingId', reviewController.getByListing);
+router.get('/me', authenticate,   reviewController.getMyReviews);
 
-export default router
+export default router;

@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeAll, afterEach, afterAll }   from '@jest/globals'
-import { api, registerUser, loginUser, createTestListing }        from './helpers.js'
-import { setupTestDB, clearTestDB, closeTestDB }                  from './setup.js'
+import { describe, it, expect, beforeAll, afterEach, afterAll }   from '@jest/globals';
+import { api, registerUser, createTestListing }                   from './helpers.js';
+import { setupTestDB, clearTestDB, closeTestDB }                  from './setup.js';
 
-beforeAll(async () => await setupTestDB())
-afterEach(async () => await clearTestDB())
-afterAll(async ()  => await closeTestDB())
+beforeAll(async () => await setupTestDB());
+afterEach(async () => await clearTestDB());
+afterAll(async ()  => await closeTestDB());
 
 describe(`POST /api/listings`, () => {
   it(`should create a listing as host with all info successfully`, async() => {
@@ -13,7 +13,7 @@ describe(`POST /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const response = await api
       .post('/api/listings')
@@ -29,7 +29,7 @@ describe(`POST /api/listings`, () => {
         bedrooms:        2,
         bathrooms:       1,
         propertyType:    'apartment'
-      })
+      });
 
     expect(response.status).toBe(201);
     expect(response.body.listing.title).toBe('Beautiful Apartment');
@@ -42,7 +42,7 @@ describe(`POST /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'guest'
       }
-    )
+    );
 
     const response = await api
       .post('/api/listings')
@@ -58,7 +58,7 @@ describe(`POST /api/listings`, () => {
         bedrooms:        2,
         bathrooms:       1,
         propertyType:    'apartment'
-      })
+      });
 
     expect(response.status).toBe(403);
   });
@@ -123,7 +123,7 @@ describe(`POST /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const response = await api
       .post('/api/listings')
@@ -139,7 +139,7 @@ describe(`POST /api/listings`, () => {
         bedrooms:        2,
         bathrooms:       1,
         propertyType:    'apartment'
-      })
+      });
 
     expect(response.status).toBe(422);
   });
@@ -150,7 +150,7 @@ describe(`POST /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const response = await api
       .post('/api/listings')
@@ -166,7 +166,7 @@ describe(`POST /api/listings`, () => {
         bedrooms:        2,
         bathrooms:       1,
         propertyType:    'apartment'
-      })
+      });
 
     expect(response.status).toBe(422);
   });
@@ -177,7 +177,7 @@ describe(`POST /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const response = await api
       .post('/api/listings')
@@ -193,7 +193,7 @@ describe(`POST /api/listings`, () => {
         bedrooms:        2,
         bathrooms:       1,
         propertyType:    'apartment'
-      })
+      });
 
     expect(response.status).toBe(422);
   });
@@ -204,7 +204,7 @@ describe(`POST /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const response = await api
       .post('/api/listings')
@@ -220,7 +220,7 @@ describe(`POST /api/listings`, () => {
         bedrooms:        2,
         bathrooms:       1,
         propertyType:    'apartment'
-      })
+      });
 
     expect(response.status).toBe(422);
   });
@@ -231,7 +231,7 @@ describe(`POST /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const response = await api
       .post('/api/listings')
@@ -247,7 +247,7 @@ describe(`POST /api/listings`, () => {
         bedrooms:        2,
         bathrooms:       1,
         propertyType:    'apartment'
-      })
+      });
 
     expect(response.status).toBe(422);
   });
@@ -258,7 +258,7 @@ describe(`POST /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const response = await api
       .post('/api/listings')
@@ -274,7 +274,7 @@ describe(`POST /api/listings`, () => {
         bedrooms:        2,
         bathrooms:       1,
         propertyType:    'apartment'
-      })
+      });
 
     expect(response.status).toBe(422);
   });
@@ -285,7 +285,7 @@ describe(`POST /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const response = await api
       .post('/api/listings')
@@ -301,7 +301,7 @@ describe(`POST /api/listings`, () => {
         bedrooms:        2,
         bathrooms:       1,
         propertyType:    'apartment'
-      })
+      });
 
     expect(response.status).toBe(422);
   });
@@ -312,7 +312,7 @@ describe(`POST /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const response = await api
       .post('/api/listings')
@@ -328,7 +328,7 @@ describe(`POST /api/listings`, () => {
         // bedrooms:        2,
         bathrooms:       1,
         propertyType:    'apartment'
-      })
+      });
 
     expect(response.status).toBe(422);
   });
@@ -339,7 +339,7 @@ describe(`POST /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const response = await api
       .post('/api/listings')
@@ -355,7 +355,7 @@ describe(`POST /api/listings`, () => {
         bedrooms:        2,
         // bathrooms:       1,
         propertyType:    'apartment'
-      })
+      });
 
     expect(response.status).toBe(422);
   });
@@ -366,7 +366,7 @@ describe(`POST /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const response = await api
       .post('/api/listings')
@@ -383,7 +383,7 @@ describe(`POST /api/listings`, () => {
         bedrooms:        2,
         bathrooms:       1,
         propertyType:    ''
-      })
+      });
 
     expect(response.status).toBe(422);
   });
@@ -751,16 +751,16 @@ describe(`GET /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
-    const { listing } = await createTestListing(accessToken)
+    const { listing } = await createTestListing(accessToken);
 
     await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ status: 'active' })
+      .send({ status: 'active' });
 
-    const response = await api.get('/api/listings')
+    const response = await api.get('/api/listings');
 
     expect(response.status).toBe(200);
     expect(response.body.listings.length).toBeGreaterThan(0);
@@ -773,23 +773,23 @@ describe(`GET /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
-    const { accessToken: guestToken } = await registerUser(
+    await registerUser(
       {
         email:          'JohnDoe@aria.com', 
         role:           'guest'
       }
-    )
+    );
 
-    const { listing } = await createTestListing(hostToken)
+    const { listing } = await createTestListing(hostToken);
 
     await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${hostToken}`)
-      .send({ status: 'active' })
+      .send({ status: 'active' });
 
-    const response = await api.get('/api/listings')
+    const response = await api.get('/api/listings');
 
     expect(response.status).toBe(200);
   });
@@ -800,18 +800,18 @@ describe(`GET /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
-    const { listing } = await createTestListing(accessToken, { city: 'Denver' })
+    const { listing } = await createTestListing(accessToken, { city: 'Denver' });
     await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ status: 'active' })
+      .send({ status: 'active' });
 
-    const response = await api.get('/api/listings?city=Denver')
+    const response = await api.get('/api/listings?city=Denver');
 
-    expect(response.status).toBe(200)
-    expect(response.body.listings.every((l) => l.city === 'Denver')).toBe(true)
+    expect(response.status).toBe(200);
+    expect(response.body.listings.every((l) => l.city === 'Denver')).toBe(true);
   });
 
   it(`should returns active listings filter by invalid city`, async () => {
@@ -820,18 +820,18 @@ describe(`GET /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
-    const { listing } = await createTestListing(accessToken, { city: 'isNotValid' })
+    const { listing } = await createTestListing(accessToken, { city: 'isNotValid' });
     await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ status: 'active' })
+      .send({ status: 'active' });
 
-    const response = await api.get('/api/listings?city=Denver')
+    const response = await api.get('/api/listings?city=Denver');
 
-    expect(response.status).toBe(200)
-    expect(response.body.listings.length).toBe(0)
+    expect(response.status).toBe(200);
+    expect(response.body.listings.length).toBe(0);
   });
 });
 
@@ -842,16 +842,16 @@ describe(`GET /api/listings/:id`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
-    const { listing } = await createTestListing(accessToken)
+    const { listing } = await createTestListing(accessToken);
 
     await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ status: 'active' })
+      .send({ status: 'active' });
 
-    const response = await api.get(`/api/listings/${listing.id}`)
+    const response = await api.get(`/api/listings/${listing.id}`);
 
     expect(response.status).toBe(200);
     expect(response.body.listing.id).toBe(listing.id);
@@ -863,16 +863,16 @@ describe(`GET /api/listings/:id`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
-    const { listing } = await createTestListing(accessToken)
+    const { listing } = await createTestListing(accessToken);
 
     await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ status: 'active' })
+      .send({ status: 'active' });
 
-    const response = await api.get(`/api/listings/00000000-0000-0000-0000-000000000000`)
+    const response = await api.get(`/api/listings/00000000-0000-0000-0000-000000000000`);
 
     expect(response.status).toBe(404);
   });
@@ -885,9 +885,9 @@ describe(`PUT /api/listings/:id`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
-    const { listing } = await createTestListing(accessToken)
+    const { listing } = await createTestListing(accessToken);
 
     const response = await api
       .put(`/api/listings/${listing.id}`)
@@ -903,7 +903,7 @@ describe(`PUT /api/listings/:id`, () => {
         bedrooms:        3,
         bathrooms:       2,
         propertyType:    'house'
-      })
+      });
 
     expect(response.status).toBe(200);
     expect(response.body.listing.title).toBe('Update Title');
@@ -924,16 +924,16 @@ describe(`PUT /api/listings/:id`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const { accessToken: host2Token } = await registerUser(
       {
         email:          'JohnDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
-    const { listing } = await createTestListing(host1Token)
+    const { listing } = await createTestListing(host1Token);
 
     const response = await api
       .put(`/api/listings/${listing.id}`)
@@ -949,7 +949,7 @@ describe(`PUT /api/listings/:id`, () => {
         bedrooms:        3,
         bathrooms:       2,
         propertyType:    'house'
-      })
+      });
 
     expect(response.status).toBe(404);
   });
@@ -960,16 +960,16 @@ describe(`PUT /api/listings/:id`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const { accessToken: host2Token } = await registerUser(
       {
         email:          'CeeCeeDoe@aria.com', 
         role:           'guest'
       }
-    )
+    );
 
-    const { listing } = await createTestListing(host1Token)
+    const { listing } = await createTestListing(host1Token);
 
     const response = await api
       .put(`/api/listings/${listing.id}`)
@@ -985,7 +985,7 @@ describe(`PUT /api/listings/:id`, () => {
         bedrooms:        3,
         bathrooms:       2,
         propertyType:    'house'
-      })
+      });
 
     expect(response.status).toBe(403);
   });
@@ -996,16 +996,16 @@ describe(`PUT /api/listings/:id`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const { accessToken: host2Token } = await registerUser(
       {
         email:          'JohnDoe@aria.com', 
         role:           'admin'
       }
-    )
+    );
 
-    const { listing } = await createTestListing(host1Token)
+    const { listing } = await createTestListing(host1Token);
 
     const response = await api
       .put(`/api/listings/${listing.id}`)
@@ -1021,7 +1021,7 @@ describe(`PUT /api/listings/:id`, () => {
         bedrooms:        3,
         bathrooms:       2,
         propertyType:    'house'
-      })
+      });
 
     expect(response.status).toBe(403);
   });
@@ -1032,16 +1032,16 @@ describe(`PUT /api/listings/:id`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const { accessToken: host2Token } = await registerUser(
       {
         email:          'JohnDoe@aria.com', 
         role:           'super-admin'
       }
-    )
+    );
 
-    const { listing } = await createTestListing(host1Token)
+    const { listing } = await createTestListing(host1Token);
 
     const response = await api
       .put(`/api/listings/${listing.id}`)
@@ -1057,7 +1057,7 @@ describe(`PUT /api/listings/:id`, () => {
         bedrooms:        3,
         bathrooms:       2,
         propertyType:    'house'
-      })
+      });
 
     expect(response.status).toBe(403);
   });
@@ -1476,7 +1476,7 @@ describe(`PUT /api/listings/:id`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const response = await api
       .put(`/api/listings/00000000-0000-0000-0000-000000000000`)
@@ -1492,7 +1492,7 @@ describe(`PUT /api/listings/:id`, () => {
         bedrooms:        3,
         bathrooms:       2,
         propertyType:    'house'
-      })
+      });
 
     expect(response.status).toBe(404);
   });
@@ -1544,13 +1544,13 @@ describe(`DELETE /api/listings/:id`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
-    const { listing } = await createTestListing(accessToken)
+    const { listing } = await createTestListing(accessToken);
 
     const response = await api
       .delete(`/api/listings/${listing.id}`)
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Authorization', `Bearer ${accessToken}`);
 
     expect(response.status).toBe(200);
   });
@@ -1561,20 +1561,20 @@ describe(`DELETE /api/listings/:id`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const { accessToken: host2Token } = await registerUser(
       {
         email:          'JohnDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
-    const { listing } = await createTestListing(host1Token)
+    const { listing } = await createTestListing(host1Token);
 
     const response = await api
       .delete(`/api/listings/${listing.id}`)
-      .set('Authorization', `Bearer ${host2Token}`)
+      .set('Authorization', `Bearer ${host2Token}`);
 
     expect(response.status).toBe(404);
   });
@@ -1585,20 +1585,20 @@ describe(`DELETE /api/listings/:id`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const { accessToken: host2Token } = await registerUser(
       {
         email:          'JohnDoe@aria.com', 
         role:           'guest'
       }
-    )
+    );
 
-    const { listing } = await createTestListing(host1Token)
+    const { listing } = await createTestListing(host1Token);
 
     const response = await api
       .delete(`/api/listings/${listing.id}`)
-      .set('Authorization', `Bearer ${host2Token}`)
+      .set('Authorization', `Bearer ${host2Token}`);
 
     expect(response.status).toBe(403);
   });
@@ -1609,20 +1609,20 @@ describe(`DELETE /api/listings/:id`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const { accessToken: host2Token } = await registerUser(
       {
         email:          'JohnDoe@aria.com', 
         role:           'admin'
       }
-    )
+    );
 
-    const { listing } = await createTestListing(host1Token)
+    const { listing } = await createTestListing(host1Token);
 
     const response = await api
       .delete(`/api/listings/${listing.id}`)
-      .set('Authorization', `Bearer ${host2Token}`)
+      .set('Authorization', `Bearer ${host2Token}`);
 
     expect(response.status).toBe(403);
   });
@@ -1633,20 +1633,20 @@ describe(`DELETE /api/listings/:id`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const { accessToken: host2Token } = await registerUser(
       {
         email:          'JohnDoe@aria.com', 
         role:           'super-admin'
       }
-    )
+    );
 
-    const { listing } = await createTestListing(host1Token)
+    const { listing } = await createTestListing(host1Token);
 
     const response = await api
       .delete(`/api/listings/${listing.id}`)
-      .set('Authorization', `Bearer ${host2Token}`)
+      .set('Authorization', `Bearer ${host2Token}`);
 
     expect(response.status).toBe(403);
   });
@@ -1657,11 +1657,11 @@ describe(`DELETE /api/listings/:id`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'host'
       }
-    )
+    );
 
     const response = await api
       .delete(`/api/listings/00000000-0000-0000-0000-000000000000`)
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Authorization', `Bearer ${accessToken}`);
 
     expect(response.status).toBe(404);
   });

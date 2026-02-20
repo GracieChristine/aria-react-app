@@ -1,4 +1,4 @@
-import pool from '../db/pool.js'
+import pool from '../db/pool.js';
 
 export const reviewModel = {
   async create({ bookingId, listingId, reviewerId, revieweeId, rating, comment }) {
@@ -8,8 +8,8 @@ export const reviewModel = {
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
       [bookingId, listingId, reviewerId, revieweeId, rating, comment]
-    )
-    return rows[0]
+    );
+    return rows[0];
   },
 
   async findByListing(listingId) {
@@ -23,8 +23,8 @@ export const reviewModel = {
        WHERE r.listing_id = $1
        ORDER BY r.created_at DESC`,
       [listingId]
-    )
-    return rows
+    );
+    return rows;
   },
 
   async findByUser(userId) {
@@ -36,8 +36,8 @@ export const reviewModel = {
        WHERE r.reviewer_id = $1
        ORDER BY r.created_at DESC`,
       [userId]
-    )
-    return rows
+    );
+    return rows;
   },
 
   async existsForBooking(bookingId, reviewerId) {
@@ -45,7 +45,7 @@ export const reviewModel = {
       `SELECT id FROM reviews
        WHERE booking_id = $1 AND reviewer_id = $2`,
       [bookingId, reviewerId]
-    )
-    return rows.length > 0
+    );
+    return rows.length > 0;
   },
-}
+};
