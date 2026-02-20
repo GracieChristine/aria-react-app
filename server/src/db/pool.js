@@ -1,7 +1,7 @@
-import pg from 'pg'
-import { config } from '../config/env.js'
+import pg from 'pg';
+import { config } from '../config/env.js';
 
-const { Pool } = pg
+const { Pool } = pg;
 
 const pool = new Pool(
   config.db.url
@@ -13,17 +13,17 @@ const pool = new Pool(
         user:     config.db.user,
         password: config.db.password,
       }
-)
+);
 
 pool.on('connect', () => {
   if (config.env === 'development') {
-    console.log('📦 Connected to PostgreSQL')
+    console.log('📦 Connected to PostgreSQL');
   }
-})
+});
 
 pool.on('error', (err) => {
-  console.error('❌ PostgreSQL pool error:', err)
-  process.exit(-1)
-})
+  console.error('❌ PostgreSQL pool error:', err);
+  process.exit(-1);
+});
 
-export default pool
+export default pool;

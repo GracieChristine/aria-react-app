@@ -1,4 +1,4 @@
-import pool from '../db/pool.js'
+import pool from '../db/pool.js';
 
 export const messageModel = {
   async findOrCreateConversation(listingId, guestId, hostId) {
@@ -6,15 +6,15 @@ export const messageModel = {
       `SELECT * FROM conversations
        WHERE listing_id = $1 AND guest_id = $2 AND host_id = $3`,
       [listingId, guestId, hostId]
-    )
-    if (existing[0]) return existing[0]
+    );
+    if (existing[0]) return existing[0];
 
     const { rows } = await pool.query(
       `INSERT INTO conversations (listing_id, guest_id, host_id)
        VALUES ($1, $2, $3) RETURNING *`,
       [listingId, guestId, hostId]
-    )
-    return rows[0]
+    );
+    return rows[0];
   },
 
   async findConversationsByUser(userId) {
@@ -45,8 +45,8 @@ export const messageModel = {
        WHERE c.guest_id = $1 OR c.host_id = $1
        ORDER BY last_message_at DESC NULLS LAST`,
       [userId]
-    )
-    return rows
+    );
+    return rows;
   },
 
   async findMessages(conversationId) {
@@ -60,8 +60,8 @@ export const messageModel = {
        WHERE m.conversation_id = $1
        ORDER BY m.created_at ASC`,
       [conversationId]
-    )
-    return rows
+    );
+    return rows;
   },
 
   async sendMessage(conversationId, senderId, body) {
@@ -69,8 +69,8 @@ export const messageModel = {
       `INSERT INTO messages (conversation_id, sender_id, body)
        VALUES ($1, $2, $3) RETURNING *`,
       [conversationId, senderId, body]
-    )
-    return rows[0]
+    );
+    return rows[0];
   },
 
   async markAsRead(conversationId, userId) {
@@ -80,6 +80,6 @@ export const messageModel = {
          AND sender_id != $2
          AND is_read = false`,
       [conversationId, userId]
-    )
+    );
   },
-}
+};

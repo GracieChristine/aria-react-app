@@ -1,4 +1,4 @@
-import pool from '../db/pool.js'
+import pool from '../db/pool.js';
 
 export const bookingModel = {
   async create({ listingId, guestId, checkIn, checkOut, numGuests, totalPrice }) {
@@ -8,8 +8,8 @@ export const bookingModel = {
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
       [listingId, guestId, checkIn, checkOut, numGuests, totalPrice]
-    )
-    return rows[0]
+    );
+    return rows[0];
   },
 
   async findById(id) {
@@ -31,8 +31,8 @@ export const bookingModel = {
        JOIN users u    ON u.id = b.guest_id
        WHERE b.id = $1`,
       [id]
-    )
-    return rows[0] || null
+    );
+    return rows[0] || null;
   },
 
   async findByGuest(guestId) {
@@ -49,8 +49,8 @@ export const bookingModel = {
        WHERE b.guest_id = $1
        ORDER BY b.created_at DESC`,
       [guestId]
-    )
-    return rows
+    );
+    return rows;
   },
 
   async findByListing(listingId) {
@@ -64,8 +64,8 @@ export const bookingModel = {
        WHERE b.listing_id = $1
        ORDER BY b.created_at DESC`,
       [listingId]
-    )
-    return rows
+    );
+    return rows;
   },
 
   async updateStatus(id, status) {
@@ -73,8 +73,8 @@ export const bookingModel = {
       `UPDATE bookings SET status = $1, updated_at = NOW()
        WHERE id = $2 RETURNING *`,
       [status, id]
-    )
-    return rows[0] || null
+    );
+    return rows[0] || null;
   },
 
   async checkAvailability(listingId, checkIn, checkOut) {
@@ -84,7 +84,7 @@ export const bookingModel = {
          AND status IN ('pending', 'confirmed')
          AND NOT (check_out <= $2 OR check_in >= $3)`,
       [listingId, checkIn, checkOut]
-    )
-    return rows.length === 0
+    );
+    return rows.length === 0;
   },
-}
+};
