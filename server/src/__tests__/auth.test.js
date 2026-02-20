@@ -157,7 +157,7 @@ describe(`POST /api/auth/register`, () => {
       );
     
     expect(response.status).toBe(201);
-    expect(response.body.user.role).toBe('guest');
+    expect(response.body.user.role).toBe('host');
   });
 
   it(`should default role to guest even if admin role requested`, async () => {
