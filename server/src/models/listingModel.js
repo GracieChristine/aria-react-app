@@ -1,37 +1,37 @@
-import pool from '../db/pool.js'
+import pool from '../db/pool.js';
 
 export const listingModel = {
   async findAll({ city, country, minPrice, maxPrice, guests, propertyType, status = 'active', limit = 20, offset = 0 }) {
-    const conditions = ['l.status = $1']
-    const values     = [status]
-    let   paramCount = 2
+    const conditions = ['l.status = $1'];
+    const values     = [status];
+    let   paramCount = 2;
 
     if (city) {
-      conditions.push(`l.city ILIKE $${paramCount++}`)
-      values.push(`%${city}%`)
+      conditions.push(`l.city ILIKE $${paramCount++}`);
+      values.push(`%${city}%`);
     }
     if (country) {
-      conditions.push(`l.country ILIKE $${paramCount++}`)
-      values.push(`%${country}%`)
+      conditions.push(`l.country ILIKE $${paramCount++}`);
+      values.push(`%${country}%`);
     }
     if (minPrice) {
-      conditions.push(`l.price_per_night >= $${paramCount++}`)
-      values.push(minPrice)
+      conditions.push(`l.price_per_night >= $${paramCount++}`);
+      values.push(minPrice);
     }
     if (maxPrice) {
-      conditions.push(`l.price_per_night <= $${paramCount++}`)
-      values.push(maxPrice)
+      conditions.push(`l.price_per_night <= $${paramCount++}`);
+      values.push(maxPrice);
     }
     if (guests) {
-      conditions.push(`l.max_guests >= $${paramCount++}`)
-      values.push(guests)
+      conditions.push(`l.max_guests >= $${paramCount++}`);
+      values.push(guests);
     }
     if (propertyType) {
-      conditions.push(`l.property_type = $${paramCount++}`)
-      values.push(propertyType)
+      conditions.push(`l.property_type = $${paramCount++}`);
+      values.push(propertyType);
     }
 
-    const where = conditions.join(' AND ')
+    const where = conditions.join(' AND ');
 
     const { rows } = await pool.query(
       `SELECT 
@@ -45,16 +45,16 @@ export const listingModel = {
         COALESCE(AVG(r.rating), 0)  AS avg_rating,
         COUNT(DISTINCT r.id)        AS review_count
        FROM listings l
-       JOIN users u          ON u.id = l.host_id
+       JOIN users u               ON u.id = l.host_id
        LEFT JOIN listing_images li ON li.listing_id = l.id
-       LEFT JOIN reviews r        ON r.listing_id  = l.id
+       LEFT JOIN reviews r         ON r.listing_id  = l.id
        WHERE ${where}
        GROUP BY l.id, u.first_name, u.last_name, u.avatar_url
        ORDER BY l.created_at DESC
        LIMIT $${paramCount} OFFSET $${paramCount + 1}`,
       [...values, limit, offset]
-    )
-    return rows
+    );
+    return rows;
   },
 
   async findById(id) {
@@ -85,8 +85,8 @@ export const listingModel = {
        WHERE l.id = $1
        GROUP BY l.id, u.id, u.first_name, u.last_name, u.avatar_url, u.bio`,
       [id]
-    )
-    return rows[0] || null
+    );
+    return rows[0] || null;
   },
 
   async findByHost(hostId) {
@@ -105,8 +105,8 @@ export const listingModel = {
        GROUP BY l.id
        ORDER BY l.created_at DESC`,
       [hostId]
-    )
-    return rows
+    );
+    return rows;
   },
 
   async create({ hostId, title, description, address, city, country, lat, lng, pricePerNight, maxGuests, bedrooms, bathrooms, propertyType }) {
@@ -118,32 +118,51 @@ export const listingModel = {
        RETURNING *`,
       [hostId, title, description, address, city, country, lat, lng,
        pricePerNight, maxGuests, bedrooms, bathrooms, propertyType]
-    )
-    return rows[0]
+    );
+    return rows[0];
   },
 
   async update(id, hostId, fields) {
-    const keys   = Object.keys(fields)
-    const values = Object.values(fields)
-    const setClause = keys
-      .map((key, i) => `${key} = $${i + 1}`)
-      .join(', ')
+    const camelToSnake = {
+      title:         'title',
+      description:   'description',
+      address:       'address',
+      city:          'city',
+      country:       'country',
+      lat:           'lat',
+      lng:           'lng',
+      pricePerNight: 'price_per_night',
+      maxGuests:     'max_guests',
+      bedrooms:      'bedrooms',
+      bathrooms:     'bathrooms',
+      propertyType:  'property_type',
+      status:        'status',
+    };
+
+    const entries = Object.entries(fields)
+      .filter(([key, val]) => camelToSnake[key] && val !== undefined)
+      .map(([key, val]) => [camelToSnake[key], val]);
+
+    if (entries.length === 0) return null;
+
+    const setClause = entries.map(([col], i) => `${col} = $${i + 1}`).join(', ');
+    const values    = entries.map(([, val]) => val);
 
     const { rows } = await pool.query(
       `UPDATE listings SET ${setClause}, updated_at = NOW()
-       WHERE id = $${keys.length + 1} AND host_id = $${keys.length + 2}
+       WHERE id = $${entries.length + 1} AND host_id = $${entries.length + 2}
        RETURNING *`,
       [...values, id, hostId]
-    )
-    return rows[0] || null
+    );
+    return rows[0] || null;
   },
 
   async delete(id, hostId) {
     const { rows } = await pool.query(
       `DELETE FROM listings WHERE id = $1 AND host_id = $2 RETURNING id`,
       [id, hostId]
-    )
-    return rows[0] || null
+    );
+    return rows[0] || null;
   },
 
   async addImage(listingId, url, displayOrder = 0) {
@@ -151,35 +170,35 @@ export const listingModel = {
       `INSERT INTO listing_images (listing_id, url, display_order)
        VALUES ($1, $2, $3) RETURNING *`,
       [listingId, url, displayOrder]
-    )
-    return rows[0]
+    );
+    return rows[0];
   },
 
   async deleteImage(imageId, listingId) {
     const { rows } = await pool.query(
       `DELETE FROM listing_images WHERE id = $1 AND listing_id = $2 RETURNING id`,
       [imageId, listingId]
-    )
-    return rows[0] || null
+    );
+    return rows[0] || null;
   },
 
   async countAll(filters) {
-    const { city, country, minPrice, maxPrice, guests, propertyType, status = 'active' } = filters
-    const conditions = ['status = $1']
-    const values     = [status]
-    let   paramCount = 2
+    const { city, country, minPrice, maxPrice, guests, propertyType, status = 'active' } = filters;
+    const conditions = ['status = $1'];
+    const values     = [status];
+    let   paramCount = 2;
 
-    if (city)         { conditions.push(`city ILIKE $${paramCount++}`);           values.push(`%${city}%`) }
-    if (country)      { conditions.push(`country ILIKE $${paramCount++}`);        values.push(`%${country}%`) }
-    if (minPrice)     { conditions.push(`price_per_night >= $${paramCount++}`);   values.push(minPrice) }
-    if (maxPrice)     { conditions.push(`price_per_night <= $${paramCount++}`);   values.push(maxPrice) }
-    if (guests)       { conditions.push(`max_guests >= $${paramCount++}`);        values.push(guests) }
-    if (propertyType) { conditions.push(`property_type = $${paramCount++}`);      values.push(propertyType) }
+    if (city)         { conditions.push(`city ILIKE $${paramCount++}`);           values.push(`%${city}%`); }
+    if (country)      { conditions.push(`country ILIKE $${paramCount++}`);        values.push(`%${country}%`); }
+    if (minPrice)     { conditions.push(`price_per_night >= $${paramCount++}`);   values.push(minPrice); }
+    if (maxPrice)     { conditions.push(`price_per_night <= $${paramCount++}`);   values.push(maxPrice); }
+    if (guests)       { conditions.push(`max_guests >= $${paramCount++}`);        values.push(guests); }
+    if (propertyType) { conditions.push(`property_type = $${paramCount++}`);      values.push(propertyType); }
 
     const { rows } = await pool.query(
       `SELECT COUNT(*) FROM listings WHERE ${conditions.join(' AND ')}`,
       values
-    )
-    return parseInt(rows[0].count)
+    );
+    return parseInt(rows[0].count);
   },
-}
+};

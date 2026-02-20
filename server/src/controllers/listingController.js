@@ -110,31 +110,66 @@ export const listingController = {
 
   // ── PUT /api/listings/:id ──
   async update(req, res) {
-    try {
-      const allowed = [
-        'title', 'description', 'address', 'city', 'country',
-        'lat', 'lng', 'price_per_night', 'max_guests',
-        'bedrooms', 'bathrooms', 'property_type', 'status',
-      ]
+  try {
+    const allowed = [
+      'title', 'description', 'address', 'city', 'country',
+      'lat', 'lng', 'pricePerNight', 'maxGuests',
+      'bedrooms', 'bathrooms', 'propertyType', 'status',
+    ];
 
-      const fields = {}
-      for (const key of allowed) {
-        if (req.body[key] !== undefined) fields[key] = req.body[key]
-      }
-
-      if (Object.keys(fields).length === 0) {
-        return errorResponse(res, 'No valid fields to update', 400)
-      }
-
-      const listing = await listingModel.update(req.params.id, req.user.id, fields)
-      if (!listing) return errorResponse(res, 'Listing not found or unauthorized', 404)
-
-      return successResponse(res, { listing: formatListing(listing) })
-    } catch (err) {
-      console.error('Update listing error:', err)
-      return errorResponse(res, 'Failed to update listing', 500)
+    const fields = {};
+    for (const key of allowed) {
+      if (req.body[key] !== undefined) fields[key] = req.body[key];
     }
-  },
+
+    if (Object.keys(fields).length === 0) {
+      return errorResponse(res, 'No valid fields to update', 400);
+    }
+
+    const listing = await listingModel.update(req.params.id, req.user.id, fields);
+    if (!listing) return errorResponse(res, 'Listing not found or unauthorized', 404);
+
+    return successResponse(res, { listing: formatListing(listing) });
+  } catch (err) {
+    console.error('Update listing error:', err);
+    return errorResponse(res, 'Failed to update listing', 500);
+  }
+},
+
+  // ── PATCH /api/listings/:id/status ──
+  async updateStatus(req, res) {
+  try {
+    const { status } = req.body
+    const { id }     = req.params
+    const user       = req.user
+
+    const listing = await listingModel.findById(id)
+    if (!listing) return errorResponse(res, 'Listing not found', 404)
+
+    if (user.role === 'host' && listing.host_id !== user.id) {
+      return errorResponse(res, 'Not authorized', 403)
+    }
+
+    const allowedStatuses = {
+      host:        ['active', 'inactive'],
+      admin:       ['inactive'],
+      super_admin: ['inactive'],
+    }
+
+    const allowed = allowedStatuses[user.role] || []
+    if (!allowed.includes(status)) {
+      return errorResponse(res, `Not allowed to set status to ${status}`, 403)
+    }
+
+    const updated = await listingModel.update(id, listing.host_id, { status })
+    if (!updated) return errorResponse(res, 'Failed to update status', 500)
+
+    return successResponse(res, { listing: formatListing(updated) })
+  } catch (err) {
+    console.error('Update status error:', err)
+    return errorResponse(res, 'Failed to update status', 500)
+  }
+},
 
   // ── DELETE /api/listings/:id ──
   async remove(req, res) {

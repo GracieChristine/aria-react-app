@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeAll, afterEach, afterAll } from '@jest/globals'
-import { api, registerUser, loginUser }                          from './helpers.js'
-import { setupTestDB, clearTestDB, closeTestDB }                 from './setup.js'
+import { describe, it, expect, beforeAll, afterEach, afterAll }   from '@jest/globals'
+import { api, registerUser, loginUser }                           from './helpers.js'
+import { setupTestDB, clearTestDB, closeTestDB }                  from './setup.js'
 
 beforeAll(async () => await setupTestDB())
 afterEach(async () => await clearTestDB())
