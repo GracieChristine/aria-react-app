@@ -28,8 +28,8 @@ export const authController = {
       }
 
       const passwordHash = await hashPassword(password)
-      const allowedRoles = ['guest', 'host']
-      const userRole     = allowedRoles.includes(role) ? role : 'guest'
+      const userRole     = ['host'].includes(role) ? 'host' : 'guest'
+
 
       const user = await userModel.create({
         email,

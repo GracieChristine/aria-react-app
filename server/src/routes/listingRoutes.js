@@ -7,6 +7,21 @@ import { validate }          from '../middleware/validate.js'
 
 const router = Router()
 
+const updateListingRules = [
+  body('title').optional().notEmpty().withMessage('Title cannot be empty').trim(),
+  body('description').optional().notEmpty().withMessage('Description cannot be empty').trim(),
+  body('address').optional().notEmpty().withMessage('Address cannot be empty').trim(),
+  body('city').optional().notEmpty().withMessage('City cannot be empty').trim(),
+  body('country').optional().notEmpty().withMessage('Country cannot be empty').trim(),
+  body('pricePerNight').optional().isFloat({ min: 1 }).withMessage('Price must be greater than 0'),
+  body('maxGuests').optional().isInt({ min: 1 }).withMessage('Max guests must be at least 1'),
+  body('bedrooms').optional().isInt({ min: 0 }).withMessage('Bedrooms must be 0 or more'),
+  body('bathrooms').optional().isInt({ min: 1 }).withMessage('Bathrooms must be at least 1'),
+  body('propertyType').optional().isIn([
+    'apartment','house','villa','cabin','condo','townhouse','studio','other'
+  ]).withMessage('Invalid property type'),
+]
+
 const listingRules = [
   body('title').notEmpty().withMessage('Title is required').trim(),
   body('description').notEmpty().withMessage('Description is required').trim(),
@@ -46,14 +61,25 @@ router.post(
 router.put(
   '/:id',
   authenticate,
-  authorize('host', 'admin', 'super_admin'),
+  authorize('host'),
+  updateListingRules,
+  validate,
   listingController.update
+)
+
+router.patch(
+  '/:id/status',
+  authenticate,
+  authorize('host', 'admin', 'super_admin'),
+  body('status').notEmpty().withMessage('Status required'),
+  validate,
+  listingController.updateStatus
 )
 
 router.delete(
   '/:id',
   authenticate,
-  authorize('host', 'admin', 'super_admin'),
+  authorize('host'),
   listingController.remove
 )
 
