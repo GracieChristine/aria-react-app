@@ -68,6 +68,18 @@ export const bookingModel = {
     return rows;
   },
 
+  async update(id, { checkIn, checkOut, numGuests, totalPrice }) {
+    const { rows } = await pool.query(
+      `UPDATE bookings
+      SET check_in = $1, check_out = $2, num_guests = $3,
+          total_price = $4, updated_at = NOW()
+      WHERE id = $5
+      RETURNING *`,
+      [checkIn, checkOut, numGuests, totalPrice, id]
+    );
+    return rows[0] || null;
+  },
+
   async updateStatus(id, status) {
     const { rows } = await pool.query(
       `UPDATE bookings SET status = $1, updated_at = NOW()
@@ -77,13 +89,14 @@ export const bookingModel = {
     return rows[0] || null;
   },
 
-  async checkAvailability(listingId, checkIn, checkOut) {
+  async checkAvailability(listingId, checkIn, checkOut, excludeBookingId = null) {
     const { rows } = await pool.query(
       `SELECT id FROM bookings
-       WHERE listing_id = $1
-         AND status IN ('pending', 'confirmed')
-         AND NOT (check_out <= $2 OR check_in >= $3)`,
-      [listingId, checkIn, checkOut]
+      WHERE listing_id = $1
+        AND status IN ('pending', 'confirmed')
+        AND NOT (check_out <= $2 OR check_in >= $3)
+        AND ($4::uuid IS NULL OR id != $4)`,
+      [listingId, checkIn, checkOut, excludeBookingId]
     );
     return rows.length === 0;
   },
