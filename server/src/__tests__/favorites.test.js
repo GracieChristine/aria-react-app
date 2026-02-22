@@ -21,7 +21,7 @@ describe(`POST /api/favorite/:id`, () => {
 
     const response = await api
       .post(`/api/favorites/${listing.id}`)
-      .set('Authorization', `Bearer ${guestToken}`)
+      .set('Authorization', `Bearer ${guestToken}`);
 
     expect(response.status).toBe(201);
   });
@@ -32,31 +32,22 @@ describe(`POST /api/favorite/:id`, () => {
       role:       'host'
     });
 
-    const { accessToken: guestToken } = await registerUser({
-      email:      'guest@aria.com'
-    });
-
     const { listing } = await createTestListing(hostToken);
 
     const response = await api
-      .post(`/api/favorites/${listing.id}`)
+      .post(`/api/favorites/${listing.id}`);
 
     expect(response.status).toBe(401);
   });
 
   it(`should reject if nonexistent listing`, async () => {
-    const { accessToken: hostToken } = await registerUser({
-      email:      'janedoe@aria.com',
-      role:       'host'
-    });
-
     const { accessToken: guestToken } = await registerUser({
       email:      'guest@aria.com'
     });
 
     const response = await api
       .post('/api/favorites/00000000-0000-0000-0000-000000000000')
-      .set('Authorization', `Bearer ${guestToken}`)
+      .set('Authorization', `Bearer ${guestToken}`);
 
     expect(response.status).toBe(404);
   });
@@ -81,7 +72,7 @@ describe(`GET /api/favorite`, () => {
 
     const response = await api
       .get('/api/favorites')
-      .set('Authorization', `Bearer ${guestToken}`)
+      .set('Authorization', `Bearer ${guestToken}`);
 
     expect(response.status).toBe(200);
     expect(response.body.favorites.length).toBe(1);
@@ -104,7 +95,7 @@ describe(`GET /api/favorite`, () => {
       .set('Authorization', `Bearer ${guestToken}`);
 
     const response = await api
-      .get('/api/favorites')
+      .get('/api/favorites');
 
     expect(response.status).toBe(401);
   });
@@ -125,11 +116,11 @@ describe(`DELETE /api/favorite/:id`, () => {
 
     await api
       .post(`/api/favorites/${listing.id}`)
-      .set('Authorization', `Bearer ${guestToken}`)
+      .set('Authorization', `Bearer ${guestToken}`);
 
     const response = await api
       .delete(`/api/favorites/${listing.id}`)
-      .set('Authorization', `Bearer ${guestToken}`)
+      .set('Authorization', `Bearer ${guestToken}`);
 
     expect(response.status).toBe(200);
 
@@ -154,10 +145,10 @@ describe(`DELETE /api/favorite/:id`, () => {
 
     await api
       .post(`/api/favorites/${listing.id}`)
-      .set('Authorization', `Bearer ${guestToken}`)
+      .set('Authorization', `Bearer ${guestToken}`);
 
     const response = await api
-      .delete(`/api/favorites/${listing.id}`)
+      .delete(`/api/favorites/${listing.id}`);
 
     expect(response.status).toBe(401);
   });
@@ -176,11 +167,11 @@ describe(`DELETE /api/favorite/:id`, () => {
 
     await api
       .post(`/api/favorites/${listing.id}`)
-      .set('Authorization', `Bearer ${guestToken}`)
+      .set('Authorization', `Bearer ${guestToken}`);
 
     const response = await api
       .delete('/api/favorites/00000000-0000-0000-0000-000000000000')
-      .set('Authorization', `Bearer ${guestToken}`)
+      .set('Authorization', `Bearer ${guestToken}`);
 
     expect(response.status).toBe(404);
   });
