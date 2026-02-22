@@ -1,5 +1,7 @@
 import request from 'supertest';
 import app     from '../app.js';
+import pool    from '../db/pool.js';
+import bcrypt  from 'bcryptjs';
 
 export const api = request(app);
 
@@ -11,9 +13,28 @@ export const registerUser = async (overrides = {}) => {
     lastName:  'Doe',
     role:      'guest',
   };
+
+  const merged = { ...defaults, ...overrides };
+
+  // if role is host, insert directly into DB to bypass registration
+  if (merged.role === 'host') {
+    const hash = await bcrypt.hash(merged.password, 10);
+    const { rows } = await pool.query(
+      `INSERT INTO users (email, password_hash, first_name, last_name, role)
+      VALUES ($1, $2, $3, $4, 'host') RETURNING *`,
+      [merged.email.toLowerCase(), hash, merged.firstName, merged.lastName]
+    );
+    
+    const loginRes = await api
+      .post('/api/auth/login')
+      .send({ email: merged.email, password: merged.password });
+
+    return loginRes.body;
+  }
+
   const res = await api
     .post('/api/auth/register')
-    .send({ ...defaults, ...overrides });
+    .send(merged);
   return res.body;
 };
 
