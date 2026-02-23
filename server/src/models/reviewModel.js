@@ -12,6 +12,20 @@ export const reviewModel = {
     return rows[0];
   },
 
+  async findById(id) {
+    const { rows } = await pool.query(
+      `SELECT r.*,
+        u.first_name AS reviewer_first_name,
+        u.last_name  AS reviewer_last_name,
+        u.avatar_url AS reviewer_avatar_url
+       FROM reviews r
+       JOIN users u ON u.id = r.reviewer_id
+       WHERE r.id = $1`,
+      [id]
+    );
+    return rows[0] || null;
+  },
+
   async findByListing(listingId) {
     const { rows } = await pool.query(
       `SELECT r.*,
@@ -21,6 +35,7 @@ export const reviewModel = {
        FROM reviews r
        JOIN users u ON u.id = r.reviewer_id
        WHERE r.listing_id = $1
+         AND r.status = 'active'
        ORDER BY r.created_at DESC`,
       [listingId]
     );
@@ -30,12 +45,28 @@ export const reviewModel = {
   async findByUser(userId) {
     const { rows } = await pool.query(
       `SELECT r.*,
-        l.title AS listing_title
+        u.first_name AS reviewer_first_name,
+        u.last_name  AS reviewer_last_name,
+        u.avatar_url AS reviewer_avatar_url
        FROM reviews r
-       JOIN listings l ON l.id = r.listing_id
+       JOIN users u ON u.id = r.reviewer_id
        WHERE r.reviewer_id = $1
        ORDER BY r.created_at DESC`,
       [userId]
+    );
+    return rows;
+  },
+
+  async findFlagged() {
+    const { rows } = await pool.query(
+      `SELECT r.*,
+        u.first_name AS reviewer_first_name,
+        u.last_name  AS reviewer_last_name,
+        u.avatar_url AS reviewer_avatar_url
+       FROM reviews r
+       JOIN users u ON u.id = r.reviewer_id
+       WHERE r.status = 'flagged'
+       ORDER BY r.flagged_at DESC`
     );
     return rows;
   },
@@ -47,5 +78,27 @@ export const reviewModel = {
       [bookingId, reviewerId]
     );
     return rows.length > 0;
+  },
+
+  async flag(id, flaggedBy, reason) {
+    const { rows } = await pool.query(
+      `UPDATE reviews
+       SET status      = 'flagged',
+           flag_reason = $1,
+           flagged_by  = $2,
+           flagged_at  = NOW()
+       WHERE id = $3
+       RETURNING *`,
+      [reason, flaggedBy, id]
+    );
+    return rows[0] || null;
+  },
+
+  async remove(id) {
+    const { rows } = await pool.query(
+      `UPDATE reviews SET status = 'removed' WHERE id = $1 RETURNING *`,
+      [id]
+    );
+    return rows[0] || null;
   },
 };

@@ -1,14 +1,17 @@
 import { favoriteModel }              from '../models/favoriteModel.js';
+import { listingModel } from '../models/listingModel.js';
 import { successResponse, errorResponse } from '../utils/response.js';
 
 export const favoriteController = {
   async add(req, res) {
     try {
-      const { listingId } = req.params;
-      const favorite = await favoriteModel.add(req.user.id, listingId);
-      if (!favorite) return successResponse(res, { message: 'Already favorited' });
+      const listing = await listingModel.findById(req.params.listingId);
+      if (!listing) return errorResponse(res, 'Listing not found', 404);
+
+      const favorite = await favoriteModel.add(req.user.id, req.params.listingId);
       return successResponse(res, { favorite }, 201);
     } catch (err) {
+      console.error('Add favorite error:', err);
       return errorResponse(res, 'Failed to add favorite', 500);
     }
   },

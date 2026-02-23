@@ -1,6 +1,7 @@
-import pool from '../db/pool.js';
+import pool   from '../db/pool.js';
+import bcrypt from 'bcryptjs';
 import { readFileSync, readdirSync } from 'fs';
-import path from 'path';
+import path   from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -9,7 +10,6 @@ const __dirname  = path.dirname(__filename);
 export const setupTestDB = async () => {
   const client = await pool.connect();
   try {
-    // Run migrations
     const migrationsDir = path.join(__dirname, '../db/migrations');
     const files = readdirSync(migrationsDir)
       .filter((f) => f.endsWith('.sql'))
@@ -34,6 +34,19 @@ export const setupTestDB = async () => {
       await client.query('INSERT INTO _migrations (filename) VALUES ($1)', [file]);
       await client.query('COMMIT');
     }
+
+    // Seed admin and super_admin users
+    const adminHash      = await bcrypt.hash('admin123', 10);
+    const superAdminHash = await bcrypt.hash('admin123', 10);
+
+    await client.query(`
+      INSERT INTO users (email, password_hash, first_name, last_name, role)
+      VALUES
+        ('admin@aria.com',      $1, 'Admin', 'User',  'admin'),
+        ('superadmin@aria.com', $2, 'Super', 'Admin', 'super_admin')
+      ON CONFLICT (email) DO NOTHING
+    `, [adminHash, superAdminHash]);
+
   } finally {
     client.release();
   }
@@ -45,6 +58,17 @@ export const clearTestDB = async () => {
              bookings, listing_amenities, listing_images,
              listings, users RESTART IDENTITY CASCADE
   `);
+
+  const adminHash      = await bcrypt.hash('admin123', 10);
+  const superAdminHash = await bcrypt.hash('admin123', 10);
+
+  await pool.query(`
+    INSERT INTO users (email, password_hash, first_name, last_name, role)
+    VALUES
+      ('admin@aria.com',      $1, 'Admin', 'User',  'admin'),
+      ('superadmin@aria.com', $2, 'Super', 'Admin', 'super_admin')
+    ON CONFLICT (email) DO NOTHING
+  `, [adminHash, superAdminHash]);
 };
 
 export const closeTestDB = async () => {

@@ -1,6 +1,7 @@
 import pool from '../db/pool.js';
 
 export const messageModel = {
+
   async findOrCreateConversation(listingId, guestId, hostId) {
     const { rows: existing } = await pool.query(
       `SELECT * FROM conversations
@@ -15,6 +16,14 @@ export const messageModel = {
       [listingId, guestId, hostId]
     );
     return rows[0];
+  },
+
+  async findConversationById(conversationId) {
+    const { rows } = await pool.query(
+      `SELECT * FROM conversations WHERE id = $1`,
+      [conversationId]
+    );
+    return rows[0] || null;
   },
 
   async findConversationsByUser(userId) {
