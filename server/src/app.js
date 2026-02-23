@@ -7,6 +7,7 @@ import rateLimit      from 'express-rate-limit';
 import { config }     from './config/env.js';
 
 // Routes
+import userRoutes     from './routes/userRoutes.js';
 import authRoutes     from './routes/authRoutes.js';
 import listingRoutes  from './routes/listingRoutes.js';
 import bookingRoutes  from './routes/bookingRoutes.js';
@@ -45,6 +46,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // ── Routes ──
+app.use('/api/users',     userRoutes);
 app.use('/api/auth',      authRoutes);
 app.use('/api/listings',  listingRoutes);
 app.use('/api/bookings',  bookingRoutes);
