@@ -16,29 +16,47 @@ export const registerUser = async (overrides = {}) => {
 
   const merged = { ...defaults, ...overrides };
 
-  if (['host', 'admin', 'super_admin'].includes(merged.role)) {
-    // admin and super_admin are pre-seeded, just log in
-    if (['admin', 'super_admin'].includes(merged.role)) {
+  // normalize super-admin (hyphen) → super_admin (underscore)
+  const normalizedRole = merged.role === 'super-admin' ? 'super_admin' : merged.role;
+
+  if (['host', 'admin', 'super_admin'].includes(normalizedRole)) {
+
+    if (['admin', 'super_admin'].includes(normalizedRole)) {
+      // pre-seeded accounts use admin123
+      if (merged.email === 'admin@aria.com' || merged.email === 'superadmin@aria.com') {
+        const loginRes = await api
+          .post('/api/auth/login')
+          .send({ email: merged.email, password: 'admin123' });
+        return loginRes.body;
+      }
+
+      // non-pre-seeded admin — insert directly then login
+      const hash = await bcrypt.hash(merged.password, 10);
+      await pool.query(
+        `INSERT INTO users (email, password_hash, first_name, last_name, role)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [merged.email.toLowerCase(), hash, merged.firstName, merged.lastName, normalizedRole]
+      );
       const loginRes = await api
         .post('/api/auth/login')
-        .send({ email: merged.email, password: 'admin123' });
+        .send({ email: merged.email, password: merged.password });
       return loginRes.body;
     }
 
-    // host needs to be inserted
+    // host — insert directly then login
     const hash = await bcrypt.hash(merged.password, 10);
     await pool.query(
       `INSERT INTO users (email, password_hash, first_name, last_name, role)
-      VALUES ($1, $2, $3, $4, $5)`,
-      [merged.email.toLowerCase(), hash, merged.firstName, merged.lastName, merged.role]
+       VALUES ($1, $2, $3, $4, $5)`,
+      [merged.email.toLowerCase(), hash, merged.firstName, merged.lastName, normalizedRole]
     );
-
     const loginRes = await api
       .post('/api/auth/login')
       .send({ email: merged.email, password: merged.password });
     return loginRes.body;
   }
 
+  // guest — use registration endpoint
   const res = await api
     .post('/api/auth/register')
     .send(merged);
