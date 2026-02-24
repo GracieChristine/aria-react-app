@@ -1,6 +1,7 @@
-import { config } from './config/env.js';
-import app from './app.js';
-import pool from './db/pool.js';
+import { config }     from './config/env.js';
+import app            from './app.js';
+import pool           from './db/pool.js';
+import { startJobs }  from './jobs/index.js';
 
 const PORT = config.port;
 
@@ -15,5 +16,6 @@ pool.query('SELECT NOW()', (err) => {
     console.log(`🚀 Aria server running on http://localhost:${PORT}`);
     console.log(`📡 Environment: ${config.env}`);
     console.log(`🏥 Health check: http://localhost:${PORT}/api/health`);
+    startJobs();
   });
 });

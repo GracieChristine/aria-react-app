@@ -100,6 +100,18 @@ export const bookingModel = {
     return rows[0] || null;
   },
 
+  async expireFailedBookings() {
+    const { rows } = await pool.query(
+      `UPDATE bookings
+      SET status = 'cancelled', updated_at = NOW()
+      WHERE payment_status = 'failed'
+        AND status = 'pending'
+        AND updated_at < NOW() - INTERVAL '2 days'
+      RETURNING id`
+    );
+    return rows;
+  },
+
   async checkAvailability(listingId, checkIn, checkOut, excludeBookingId = null) {
     const { rows } = await pool.query(
       `SELECT id FROM bookings
