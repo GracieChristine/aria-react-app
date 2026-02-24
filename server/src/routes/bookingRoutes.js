@@ -29,6 +29,12 @@ router.post(
   bookingController.create
 );
 
+router.post(
+  '/:id/pay', 
+  authenticate, 
+  bookingController.pay
+);
+
 router.get(
   '/me',
   authenticate,

@@ -10,6 +10,7 @@ const formatBooking = (b) => ({
   checkOut:   b.check_out,
   numGuests:  b.num_guests,
   status:     b.status,
+  paymentStatus: b.payment_status,
   totalPrice: parseFloat(b.total_price),
   listing: b.listing_title ? {
     title:   b.listing_title,
@@ -163,7 +164,7 @@ export const bookingController = {
   async updateStatus(req, res) {
     try {
       const { status } = req.body;
-      const allowed    = ['confirmed', 'cancelled', 'completed'];
+      const allowed    = ['cancelled', 'completed'];
       if (!allowed.includes(status)) {
         return errorResponse(res, 'Invalid status', 400);
       }
@@ -175,6 +176,33 @@ export const bookingController = {
       return successResponse(res, { booking: formatBooking(updated) });
     } catch (err) {
       return errorResponse(res, 'Failed to update booking', 500);
+    }
+  },
+
+  // ── POST /api/bookings/:id/pay ──
+  async pay(req, res) {
+    try {
+      const booking = await bookingModel.findById(req.params.id);
+      if (!booking)                          return errorResponse(res, 'Booking not found', 404);
+      if (booking.guest_id !== req.user.id)  return errorResponse(res, 'Not authorized', 403);
+      if (booking.status === 'cancelled')    return errorResponse(res, 'Cannot pay for a cancelled booking', 400);
+      if (booking.payment_status === 'paid') return errorResponse(res, 'Booking already paid', 400);
+
+      const paymentSucceeded = req.simulatePayment ? req.simulatePayment() : Math.random() > 0.2;
+
+      const updated = await bookingModel.updatePayment(req.params.id, {
+        status:        paymentSucceeded ? 'confirmed' : 'pending',
+        paymentStatus: paymentSucceeded ? 'paid'      : 'failed',
+      });
+
+      if (!paymentSucceeded) {
+        return errorResponse(res, 'Payment failed', 402);
+      }
+
+      return successResponse(res, { booking: formatBooking(updated) });
+    } catch (err) {
+      console.error('Pay booking error:', err);
+      return errorResponse(res, 'Failed to process payment', 500);
     }
   },
 };
