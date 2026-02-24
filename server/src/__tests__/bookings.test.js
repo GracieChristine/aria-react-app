@@ -523,9 +523,9 @@ describe(`PATCH /api/bookings/:id`, () => {
     const bookingId = bookingRes.body.booking.id;
 
     await api
-      .patch(`/api/bookings/${bookingId}/status`)
-      .set('Authorization', `Bearer ${hostToken}`)
-      .send({ status: 'confirmed' });
+      .post(`/api/bookings/${bookingId}/pay`)
+      .set('Authorization', `Bearer ${guestToken}`)
+      .set('x-payment-result', 'succeed');
 
     const response = await api
       .patch(`/api/bookings/${bookingId}`)
@@ -797,9 +797,9 @@ describe(`PATCH /api/bookings/:id/cancel`, () => {
     const bookingId = bookingRes.body.booking.id;
 
     await api
-      .patch(`/api/bookings/${bookingId}/status`)
-      .set('Authorization', `Bearer ${hostToken}`)
-      .send({ status: 'confirmed' });
+      .post(`/api/bookings/${bookingId}/pay`)
+      .set('Authorization', `Bearer ${guestToken}`)
+      .set('x-payment-result', 'succeed');
 
     const response = await api
       .patch(`/api/bookings/${bookingId}/cancel`)

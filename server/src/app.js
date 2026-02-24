@@ -45,6 +45,16 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', env: config.env, timestamp: new Date().toISOString() });
 });
 
+// ── Test-only payment simulation override ──
+if (config.env === 'test') {
+  app.use((req, res, next) => {
+    const override = req.headers['x-payment-result'];
+    if (override === 'succeed') req.simulatePayment = () => true;
+    if (override === 'fail')    req.simulatePayment = () => false;
+    next();
+  });
+}
+
 // ── Routes ──
 app.use('/api/users',     userRoutes);
 app.use('/api/auth',      authRoutes);
