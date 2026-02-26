@@ -373,7 +373,37 @@ describe(`GET /api/reviews/me`, () => {
   });
 
   it(`should reject if no auth`, async () => {
-    const response = await api.get('/api/reviews/me');
+    const { accessToken: hostToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { accessToken: guestToken } = await registerUser({
+      email: 'guest@aria.com',
+      role:  'guest'
+    });
+
+    const { listing } = await createTestListing(hostToken);
+    await api
+      .patch(`/api/listings/${listing.id}/status`)
+      .set('Authorization', `Bearer ${hostToken}`)
+      .send({ status: 'active' });
+
+    const { booking } = await createTestBooking(guestToken, listing.id);
+    await completeBooking(booking.id);
+
+    await api
+      .post('/api/reviews')
+      .set('Authorization', `Bearer ${guestToken}`)
+      .send({
+        bookingId: booking.id,
+        rating:    5,
+        comment:   'This is just a test review message.'
+      });
+
+    const response = await api
+      .get('/api/reviews/me');
+    
     expect(response.status).toBe(401);
   });
 });
@@ -661,7 +691,47 @@ describe(`GET /api/reviews/flagged`, () => {
   });
 
   it(`should reject if no auth`, async () => {
-    const response = await api.get('/api/reviews/flagged');
+    const { accessToken: hostToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { accessToken: guestToken } = await registerUser({
+      email: 'guest@aria.com',
+      role:  'guest'
+    });
+
+    const { accessToken: adminToken } = await registerUser({
+      email: 'admin@aria.com',
+      role:  'admin'
+    });
+
+    const { listing } = await createTestListing(hostToken);
+    await api
+      .patch(`/api/listings/${listing.id}/status`)
+      .set('Authorization', `Bearer ${hostToken}`)
+      .send({ status: 'active' });
+
+    const { booking } = await createTestBooking(guestToken, listing.id);
+    await completeBooking(booking.id);
+
+    const reviewRes = await api
+      .post('/api/reviews')
+      .set('Authorization', `Bearer ${guestToken}`)
+      .send({
+        bookingId: booking.id,
+        rating:    5,
+        comment:   'This is just a test review message.'
+      });
+
+    await pool.query(
+      `UPDATE reviews SET status = 'flagged' WHERE id = $1`,
+      [reviewRes.body.review.id]
+    );
+
+    const response = await api
+      .get('/api/reviews/flagged');
+
     expect(response.status).toBe(401);
   });
 });

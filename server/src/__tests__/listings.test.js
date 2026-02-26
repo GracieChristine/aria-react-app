@@ -742,6 +742,32 @@ describe(`POST /api/listings`, () => {
 
   //   expect(response.status).toBe(422);
   // });
+
+  it(`should reject if no auth`, async() => {
+    const { accessToken } = await registerUser(
+      {
+        email:          'JaneDoe@aria.com', 
+        role:           'host'
+      }
+    );
+
+    const response = await api
+      .post('/api/listings')
+      .send({
+        title:           'Beautiful Apartment',
+        description:     'Lovely place',
+        address:         '123 Main St',
+        city:            'Denver',
+        country:         'USA',
+        pricePerNight:   120,
+        maxGuests:       3,
+        bedrooms:        2,
+        bathrooms:       1,
+        propertyType:    'apartment'
+      });
+
+    expect(response.status).toBe(401);
+  });
 });
 
 describe(`GET /api/listings`, () => {
@@ -1496,46 +1522,74 @@ describe(`PUT /api/listings/:id`, () => {
 
     expect(response.status).toBe(404);
   });
-});
 
-describe(`PATCH /api/listings/:id/status`, () => {
-  it(`should update own listing to active as host successfully`, () => {
+  it(`should reject if no auth`, async () => {
+    const { accessToken } = await registerUser(
+      {
+        email:          'JaneDoe@aria.com', 
+        role:           'host'
+      }
+    );
 
-  });
+    const { listing } = await createTestListing(accessToken);
 
-  it(`should update own listing to inactive as host successfully`, () => {
+    const response = await api
+      .put(`/api/listings/${listing.id}`)
+      .send({
+        title:           'Update Title',
+        description:     'Update Description',
+        address:         '321 Main St',
+        city:            'Boulder',
+        country:         'America',
+        pricePerNight:   250,
+        maxGuests:       5,
+        bedrooms:        3,
+        bathrooms:       2,
+        propertyType:    'house'
+      });
 
-  });
-
-  it(`should not update listing to active from another host`, () => {
-
-  });
-
-  it(`should not update listing to inactive from another host`, () => {
-
-  });
-
-
-  it(`should not update listing to active as admin`, () => {
-
-  });
-
-  it(`should update listing to inactive/terminate as admin`, () => {
-
-  });
-
-  it(`should not update listing to active as super-admin`, () => {
-
-  });
-
-  it(`should update listing to inactive/terminate as super-admin`, () => {
-
-  });
-
-  it(`should return 404 if nonexistent`, () => {
-
+    expect(response.status).toBe(401);
   });
 });
+
+// describe(`PATCH /api/listings/:id/status`, () => {
+//   it(`should update own listing to active as host successfully`, () => {
+
+//   });
+
+//   it(`should update own listing to inactive as host successfully`, () => {
+
+//   });
+
+//   it(`should not update listing to active from another host`, () => {
+
+//   });
+
+//   it(`should not update listing to inactive from another host`, () => {
+
+//   });
+
+
+//   it(`should not update listing to active as admin`, () => {
+
+//   });
+
+//   it(`should update listing to inactive/terminate as admin`, () => {
+
+//   });
+
+//   it(`should not update listing to active as super-admin`, () => {
+
+//   });
+
+//   it(`should update listing to inactive/terminate as super-admin`, () => {
+
+//   });
+
+//   it(`should return 404 if nonexistent`, () => {
+
+//   });
+// });
 
 describe(`DELETE /api/listings/:id`, () => {
   it(`should delete own listing as host successfully`, async () => {
@@ -1664,5 +1718,21 @@ describe(`DELETE /api/listings/:id`, () => {
       .set('Authorization', `Bearer ${accessToken}`);
 
     expect(response.status).toBe(404);
+  });
+
+  it(`should reject if no auth`, async () => {
+    const { accessToken } = await registerUser(
+      {
+        email:          'JaneDoe@aria.com', 
+        role:           'host'
+      }
+    );
+
+    const { listing } = await createTestListing(accessToken);
+
+    const response = await api
+      .delete(`/api/listings/${listing.id}`);
+
+    expect(response.status).toBe(401);
   });
 });

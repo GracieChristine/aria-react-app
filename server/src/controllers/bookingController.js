@@ -98,7 +98,9 @@ export const bookingController = {
 
       if (!booking) return errorResponse(res, 'Booking not found', 404);
       if (booking.guest_id !== req.user.id) return errorResponse(res, 'Not authorized', 403);
-      if (booking.status !== 'pending') return errorResponse(res, 'Can only update pending bookings', 400);
+      if (booking.status !== 'pending' || booking.payment_status !== 'unpaid') {
+        return errorResponse(res, 'Can only update pending bookings', 400);
+      }
 
       if (checkIn && new Date(checkIn) < new Date()) {
         return errorResponse(res, 'Check-in date cannot be in the past', 400);
@@ -183,10 +185,11 @@ export const bookingController = {
   async pay(req, res) {
     try {
       const booking = await bookingModel.findById(req.params.id);
-      if (!booking)                          return errorResponse(res, 'Booking not found', 404);
-      if (booking.guest_id !== req.user.id)  return errorResponse(res, 'Not authorized', 403);
-      if (booking.status === 'cancelled')    return errorResponse(res, 'Cannot pay for a cancelled booking', 400);
-      if (booking.payment_status === 'paid') return errorResponse(res, 'Booking already paid', 400);
+      if (!booking)                             return errorResponse(res, 'Booking not found', 404);
+      if (booking.guest_id !== req.user.id)     return errorResponse(res, 'Not authorized', 403);
+      if (booking.status === 'cancelled')       return errorResponse(res, 'Cannot pay for a cancelled booking', 400);
+      if (booking.payment_status === 'paid')    return errorResponse(res, 'Booking already paid', 400);
+      if (booking.payment_status === 'refunded') return errorResponse(res, 'Cannot pay for a refunded booking', 400);
 
       const paymentSucceeded = req.simulatePayment ? req.simulatePayment() : Math.random() > 0.2;
 

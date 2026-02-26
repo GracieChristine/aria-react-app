@@ -1,6 +1,6 @@
 import { bookingModel } from '../models/bookingModel.js';
 
-export const expireFailedBookings = async () => {
+export const bookingsPaymentExpiry = async () => {
   try {
     const expired = await bookingModel.expireFailedBookings();
     if (expired.length > 0) {

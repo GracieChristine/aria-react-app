@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterEach, afterAll } from '@jest/globals';
 import { api, registerUser, createTestListing, createTestBooking } from './helpers.js';
 import { setupTestDB, clearTestDB, closeTestDB }                   from './setup.js';
-import { expireFailedBookings }                                     from '../jobs/expireBookings.js';
+import { bookingsPaymentExpiry } from '../jobs/bookingsPaymentExpiry.js';
 import pool                                                         from '../db/pool.js';
 
 beforeAll(async () => await setupTestDB());
@@ -41,7 +41,7 @@ describe(``, () => {
 
     await setBookingUpdatedAt(booking.id, 3);
 
-    const expired = await expireFailedBookings();
+    const expired = await bookingsPaymentExpiry();
 
     expect(expired.length).toBe(1);
     expect(expired[0].id).toBe(booking.id);
@@ -72,7 +72,7 @@ describe(``, () => {
 
     await setBookingUpdatedAt(booking.id, 1);
 
-    const expired = await expireFailedBookings();
+    const expired = await bookingsPaymentExpiry();
 
     expect(expired.length).toBe(0);
   });
@@ -102,7 +102,7 @@ describe(``, () => {
 
     await setBookingUpdatedAt(booking.id, 3);
 
-    const expired = await expireFailedBookings();
+    const expired = await bookingsPaymentExpiry();
 
     expect(expired.length).toBe(0);
   });
@@ -136,7 +136,7 @@ describe(``, () => {
       .patch(`/api/bookings/${booking.id}/cancel`)
       .set('Authorization', `Bearer ${guestToken}`);
 
-    const expired = await expireFailedBookings();
+    const expired = await bookingsPaymentExpiry();
 
     expect(expired.length).toBe(0);
   });
@@ -157,7 +157,7 @@ describe(``, () => {
       .set('Authorization', `Bearer ${hostToken}`)
       .send({ status: 'active' });
 
-    const expired = await expireFailedBookings();
+    const expired = await bookingsPaymentExpiry();
 
     expect(expired.length).toBe(0);
   });
