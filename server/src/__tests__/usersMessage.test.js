@@ -247,7 +247,30 @@ describe(`GET /api/messages`, () => {
   });
 
   it(`should reject if no auth`, async () => {
-    const response = await api.get('/api/messages');
+    const { accessToken: hostToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { accessToken: guestToken } = await registerUser({
+      email: 'guest@aria.com',
+      role:  'guest'
+    });
+
+    const { listing } = await createTestListing(hostToken);
+
+    await api
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${guestToken}`)
+      .send({
+        listingId: listing.id,
+        hostId:    listing.hostId,
+        message:   'Hi, is this listing available?'
+      });
+
+    const response = await api
+      .get('/api/messages');
+    
     expect(response.status).toBe(401);
   });
 });
@@ -401,11 +424,34 @@ describe(`POST /api/messages/:conversationId`, () => {
   });
 
   it(`should reject if no auth`, async () => {
-    const response = await api
-      .post('/api/messages/00000000-0000-0000-0000-000000000000')
+    const { accessToken: hostToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { accessToken: guestToken } = await registerUser({
+      email: 'guest@aria.com',
+      role:  'guest'
+    });
+
+    const { listing } = await createTestListing(hostToken);
+
+    const response1 = await api
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${guestToken}`)
+      .send({
+        listingId: listing.id,
+        hostId:    listing.hostId,
+        message:   'Hi, is this listing available?'
+      });
+
+    const conversationId = response1.body.conversation.id;
+
+    const response2 = await api
+      .post(`/api/messages/${conversationId}`)
       .send({ body: 'Also, do you allow pets?' });
 
-    expect(response.status).toBe(401);
+    expect(response2.status).toBe(401);
   });
 });
 
@@ -599,9 +645,42 @@ describe(`GET /api/messages/:conversationId`, () => {
   });
 
   it(`should reject if no auth`, async () => {
-    const response = await api
-      .get('/api/messages/00000000-0000-0000-0000-000000000000');
+    const { accessToken: hostToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
 
-    expect(response.status).toBe(401);
+    const { accessToken: guestToken } = await registerUser({
+      email: 'guest@aria.com',
+      role:  'guest'
+    });
+
+    const { listing } = await createTestListing(hostToken);
+
+    const response1 = await api
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${guestToken}`)
+      .send({
+        listingId: listing.id,
+        hostId:    listing.hostId,
+        message:   'Hi, is this listing available?'
+      });
+
+    const conversationId = response1.body.conversation.id;
+
+    await api
+      .post(`/api/messages/${conversationId}`)
+      .set('Authorization', `Bearer ${guestToken}`)
+      .send({ body: 'Hi, is your listing still available?' });
+
+    await api
+      .post(`/api/messages/${conversationId}`)
+      .set('Authorization', `Bearer ${hostToken}`)
+      .send({ body: 'Hello, yes, it is!' });
+
+    const response2 = await api
+      .get(`/api/messages/${conversationId}`);
+
+    expect(response2.status).toBe(401);
   });
 });

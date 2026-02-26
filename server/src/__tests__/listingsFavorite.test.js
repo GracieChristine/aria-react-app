@@ -32,10 +32,14 @@ describe(`POST /api/favorite/:id`, () => {
       role:       'host'
     });
 
+    const { accessToken: guestToken } = await registerUser({
+      email:      'guest@aria.com'
+    });
+
     const { listing } = await createTestListing(hostToken);
 
     const response = await api
-      .post(`/api/favorites/${listing.id}`);
+      .post(`/api/favorites/${listing.id}`)
 
     expect(response.status).toBe(401);
   });
