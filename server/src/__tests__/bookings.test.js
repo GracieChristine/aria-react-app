@@ -37,6 +37,7 @@ describe(`POST /api/bookings`, () => {
     expect(response.status).toBe(201);
     expect(response.body.booking.totalPrice).toBe(400);
     expect(response.body.booking.status).toBe('pending');
+    expect(response.body.booking.paymentStatus).toBe('unpaid');
   });
 
   it(`should reject if host tries to book their own listing`, async () => {
@@ -328,7 +329,7 @@ describe(`GET /api/bookings/me`, () => {
       });
 
     const response = await api
-      .get('/api/bookings/me')
+      .get('/api/bookings/me');
     
     expect(response.status).toBe(401);
   });
@@ -521,7 +522,7 @@ describe(`PATCH /api/bookings/:id`, () => {
     expect(response.body.booking.status).toBe('pending');
   });
 
-  it(`should reject if booking is not pending`, async () => {
+  it(`should reject if booking is not pending (confirmed)`, async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -554,6 +555,95 @@ describe(`PATCH /api/bookings/:id`, () => {
       .post(`/api/bookings/${bookingId}/pay`)
       .set('Authorization', `Bearer ${guestToken}`)
       .set('x-payment-result', 'succeed');
+
+    const response = await api
+      .patch(`/api/bookings/${bookingId}`)
+      .set('Authorization', `Bearer ${guestToken}`)
+      .send({
+        checkIn:  '2026-07-01',
+        checkOut: '2026-07-05'
+      });
+
+    expect(response.status).toBe(400);
+  });
+
+  it(`should reject if booking is not pending (cancelled)`, async () => {
+    const { accessToken: hostToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { accessToken: guestToken } = await registerUser({
+      email: 'guest@aria.com',
+      role:  'guest'
+    });
+
+    const { listing } = await createTestListing(hostToken);
+    await api
+      .patch(`/api/listings/${listing.id}/status`)
+      .set('Authorization', `Bearer ${hostToken}`)
+      .send({ status: 'active' });
+
+    const bookingRes = await api
+      .post('/api/bookings')
+      .set('Authorization', `Bearer ${guestToken}`)
+      .send({
+        listingId: listing.id,
+        checkIn:   '2026-06-01',
+        checkOut:  '2026-06-05',
+        numGuests: 1
+      });
+
+    const bookingId = bookingRes.body.booking.id;
+
+    await api
+      .patch(`/api/bookings/${bookingId}/cancel`)
+      .set('Authorization', `Bearer ${guestToken}`);
+
+    const response = await api
+      .patch(`/api/bookings/${bookingId}`)
+      .set('Authorization', `Bearer ${guestToken}`)
+      .send({
+        checkIn:  '2026-07-01',
+        checkOut: '2026-07-05'
+      });
+
+    expect(response.status).toBe(400);
+  });
+
+  it(`should reject if booking has a failed payment`, async () => {
+    const { accessToken: hostToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { accessToken: guestToken } = await registerUser({
+      email: 'guest@aria.com',
+      role:  'guest'
+    });
+
+    const { listing } = await createTestListing(hostToken);
+    await api
+      .patch(`/api/listings/${listing.id}/status`)
+      .set('Authorization', `Bearer ${hostToken}`)
+      .send({ status: 'active' });
+
+    const bookingRes = await api
+      .post('/api/bookings')
+      .set('Authorization', `Bearer ${guestToken}`)
+      .send({
+        listingId: listing.id,
+        checkIn:   '2026-06-01',
+        checkOut:  '2026-06-05',
+        numGuests: 1
+      });
+
+    const bookingId = bookingRes.body.booking.id;
+
+    await api
+      .post(`/api/bookings/${bookingId}/pay`)
+      .set('Authorization', `Bearer ${guestToken}`)
+      .set('x-payment-result', 'fail');
 
     const response = await api
       .patch(`/api/bookings/${bookingId}`)
@@ -755,6 +845,51 @@ describe(`PATCH /api/bookings/:id`, () => {
 
     expect(response.status).toBe(404);
   });
+
+  it(`should reject if not the booking's guest`, async () => {
+    const { accessToken: hostToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { accessToken: guest1Token } = await registerUser({
+      email: 'guest1@aria.com',
+      role:  'guest'
+    });
+
+    const { accessToken: guest2Token } = await registerUser({
+      email: 'guest2@aria.com',
+      role:  'guest'
+    });
+
+    const { listing } = await createTestListing(hostToken);
+    await api
+      .patch(`/api/listings/${listing.id}/status`)
+      .set('Authorization', `Bearer ${hostToken}`)
+      .send({ status: 'active' });
+
+    const bookingRes = await api
+      .post('/api/bookings')
+      .set('Authorization', `Bearer ${guest1Token}`)
+      .send({
+        listingId: listing.id,
+        checkIn:   '2026-06-01',
+        checkOut:  '2026-06-05',
+        numGuests: 1
+      });
+
+    const bookingId = bookingRes.body.booking.id;
+
+    const response = await api
+      .patch(`/api/bookings/${bookingId}`)
+      .set('Authorization', `Bearer ${guest2Token}`)
+      .send({
+        checkIn:  '2026-07-01',
+        checkOut: '2026-07-05'
+      });
+
+    expect(response.status).toBe(403);
+  });
 });
 
 describe(`PATCH /api/bookings/:id/cancel`, () => {
@@ -909,7 +1044,7 @@ describe(`PATCH /api/bookings/:id/cancel`, () => {
       .set('x-payment-result', 'succeed');
 
     const response = await api
-      .patch(`/api/bookings/${bookingId}/cancel`)
+      .patch(`/api/bookings/${bookingId}/cancel`);
 
     expect(response.status).toBe(401);
   });

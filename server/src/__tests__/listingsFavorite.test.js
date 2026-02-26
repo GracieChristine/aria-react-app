@@ -39,7 +39,7 @@ describe(`POST /api/favorite/:id`, () => {
     const { listing } = await createTestListing(hostToken);
 
     const response = await api
-      .post(`/api/favorites/${listing.id}`)
+      .post(`/api/favorites/${listing.id}`);
 
     expect(response.status).toBe(401);
   });

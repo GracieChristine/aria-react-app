@@ -1731,7 +1731,7 @@ describe(`DELETE /api/listings/:id`, () => {
     const { listing } = await createTestListing(accessToken);
 
     const response = await api
-      .delete(`/api/listings/${listing.id}`)
+      .delete(`/api/listings/${listing.id}`);
 
     expect(response.status).toBe(401);
   });

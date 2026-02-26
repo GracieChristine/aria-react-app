@@ -402,7 +402,7 @@ describe(`GET /api/reviews/me`, () => {
       });
 
     const response = await api
-      .get('/api/reviews/me')
+      .get('/api/reviews/me');
     
     expect(response.status).toBe(401);
   });
@@ -730,7 +730,7 @@ describe(`GET /api/reviews/flagged`, () => {
     );
 
     const response = await api
-      .get('/api/reviews/flagged')
+      .get('/api/reviews/flagged');
 
     expect(response.status).toBe(401);
   });
