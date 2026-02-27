@@ -112,6 +112,20 @@ export const bookingModel = {
     return rows;
   },
 
+  async updateRefund(id, { status, paymentStatus, refundAmount }) {
+    const { rows } = await pool.query(
+      `UPDATE bookings
+      SET status         = COALESCE($1, status),
+          payment_status = $2,
+          refund_amount  = $3,
+          updated_at     = NOW()
+      WHERE id = $4
+      RETURNING *`,
+      [status ?? null, paymentStatus, refundAmount, id]
+    );
+    return rows[0] || null;
+  },
+
   async checkAvailability(listingId, checkIn, checkOut, excludeBookingId = null) {
     const { rows } = await pool.query(
       `SELECT id FROM bookings
