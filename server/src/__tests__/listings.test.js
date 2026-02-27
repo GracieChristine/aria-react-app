@@ -977,7 +977,7 @@ describe(`PUT /api/listings/:id`, () => {
         propertyType:    'house'
       });
 
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(403);
   });
 
   it(`should not update a listing as guest`, async () => {
@@ -1630,7 +1630,7 @@ describe(`DELETE /api/listings/:id`, () => {
       .delete(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${host2Token}`);
 
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(403);
   });
 
   it(`should not delete a listing as guest`, async () => {
