@@ -126,10 +126,13 @@ export const listingController = {
       return errorResponse(res, 'No valid fields to update', 400);
     }
 
-    const listing = await listingModel.update(req.params.id, req.user.id, fields);
-    if (!listing) return errorResponse(res, 'Listing not found or unauthorized', 404);
+    const listing = await listingModel.findById(req.params.id);
+    if (!listing) return errorResponse(res, 'Listing not found', 404);
+    if (listing.host_id !== req.user.id) return errorResponse(res, 'Not authorized', 403);
 
-    return successResponse(res, { listing: formatListing(listing) });
+    const updated = await listingModel.update(req.params.id, req.user.id, fields);
+    
+    return successResponse(res, { listing: formatListing(updated) });
   } catch (err) {
     console.error('Update listing error:', err);
     return errorResponse(res, 'Failed to update listing', 500);
@@ -158,7 +161,7 @@ export const listingController = {
 
     const allowed = allowedStatuses[user.role] || [];
     if (!allowed.includes(status)) {
-      return errorResponse(res, `Not allowed to set status to ${status}`, 403);
+      return errorResponse(res, `Not allowed to set status to ${status}`, 400); // ✅
     }
 
     const updated = await listingModel.update(id, listing.host_id, { status });
@@ -174,8 +177,11 @@ export const listingController = {
   // ── DELETE /api/listings/:id ──
   async remove(req, res) {
     try {
-      const deleted = await listingModel.delete(req.params.id, req.user.id);
-      if (!deleted) return errorResponse(res, 'Listing not found or unauthorized', 404);
+      const listing = await listingModel.findById(req.params.id);
+      if (!listing) return errorResponse(res, 'Listing not found', 404);
+      if (listing.host_id !== req.user.id) return errorResponse(res, 'Not authorized', 403);
+
+      await listingModel.delete(req.params.id, req.user.id);
       return successResponse(res, { message: 'Listing deleted successfully' });
     } catch (err) {
       console.error('Delete listing error:', err);
@@ -186,6 +192,10 @@ export const listingController = {
   // ── POST /api/listings/:id/images ──
   async addImage(req, res) {
     try {
+      const listing = await listingModel.findById(req.params.id);
+      if (!listing) return errorResponse(res, 'Listing not found', 404);
+      if (listing.host_id !== req.user.id) return errorResponse(res, 'Not authorized', 403);
+
       const { url, displayOrder } = req.body;
       const image = await listingModel.addImage(req.params.id, url, displayOrder);
       return successResponse(res, { image }, 201);
@@ -198,10 +208,15 @@ export const listingController = {
   // ── DELETE /api/listings/:id/images/:imageId ──
   async removeImage(req, res) {
     try {
+      const listing = await listingModel.findById(req.params.id);
+      if (!listing) return errorResponse(res, 'Listing not found', 404);
+      if (listing.host_id !== req.user.id) return errorResponse(res, 'Not authorized', 403);
+
       const deleted = await listingModel.deleteImage(
         req.params.imageId,
         req.params.id
       );
+      
       if (!deleted) return errorResponse(res, 'Image not found', 404);
       return successResponse(res, { message: 'Image deleted successfully' });
     } catch (err) {
