@@ -30,8 +30,8 @@ router.post(
 );
 
 router.post(
-  '/:id/pay', 
-  authenticate, 
+  '/:id/pay',
+  authenticate,
   bookingController.pay
 );
 
@@ -61,6 +61,20 @@ router.patch(
   '/:id/cancel',
   authenticate,
   bookingController.cancel
+);
+
+router.patch(
+  '/:id/cancel/approve',
+  authenticate,
+  authorize('host', 'admin', 'super_admin'),
+  bookingController.cancelApprove
+);
+
+router.patch(
+  '/:id/cancel/reject',
+  authenticate,
+  authorize('host', 'admin', 'super_admin'),
+  bookingController.cancelReject
 );
 
 router.patch(

@@ -930,7 +930,7 @@ describe(`PATCH /api/bookings/:id/cancel`, () => {
     expect(response.body.booking.status).toBe('cancelled');
   });
 
-  it(`should cancel a confirmed booking as guest successfully`, async () => {
+  it(`should request cancel for a confirmed booking as guest successfully`, async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -969,7 +969,7 @@ describe(`PATCH /api/bookings/:id/cancel`, () => {
       .set('Authorization', `Bearer ${guestToken}`);
 
     expect(response.status).toBe(200);
-    expect(response.body.booking.status).toBe('cancelled');
+    expect(response.body.booking.status).toBe('cancellation_requested');
   });
 
   it(`should cancel a pending booking as host successfully`, async () => {
