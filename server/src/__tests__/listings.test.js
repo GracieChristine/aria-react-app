@@ -63,59 +63,59 @@ describe(`POST /api/listings`, () => {
     expect(response.status).toBe(403);
   });
 
-  // it(`should not create a listing as admin`, async () => {
-  //   const { accessToken } = await registerUser(
-  //     {
-  //       email:          'JaneDoe@aria.com', 
-  //       role:           'admin'
-  //     }
-  //   )
+  it(`should not create a listing as admin`, async () => {
+    const { accessToken } = await registerUser(
+      {
+        email:          'JaneDoe@aria.com', 
+        role:           'admin'
+      }
+    )
 
-  //   const response = await api
-  //     .post('/api/listings')
-  //     .set('Authorization', `Bearer ${accessToken}`)
-  //     .send({
-  //       title:           'Beautiful Apartment',
-  //       description:     'Lovely place',
-  //       address:         '123 Main St',
-  //       city:            'Denver',
-  //       country:         'USA',
-  //       pricePerNight:   120,
-  //       maxGuests:       3,
-  //       bedrooms:        2,
-  //       bathrooms:       1,
-  //       propertyType:    'apartment'
-  //     })
+    const response = await api
+      .post('/api/listings')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        title:           'Beautiful Apartment',
+        description:     'Lovely place',
+        address:         '123 Main St',
+        city:            'Denver',
+        country:         'USA',
+        pricePerNight:   120,
+        maxGuests:       3,
+        bedrooms:        2,
+        bathrooms:       1,
+        propertyType:    'apartment'
+      })
 
-  //   expect(response.status).toBe(403);
-  // });
+    expect(response.status).toBe(403);
+  });
 
-  // it(`should not create a listing as super-admin`, async () => {
-  //   const { accessToken } = await registerUser(
-  //     {
-  //       email:          'JaneDoe@aria.com', 
-  //       role:           'super-admin'
-  //     }
-  //   )
+  it(`should not create a listing as super-admin`, async () => {
+    const { accessToken } = await registerUser(
+      {
+        email:          'JaneDoe@aria.com', 
+        role:           'super-admin'
+      }
+    )
 
-  //   const response = await api
-  //     .post('/api/listings')
-  //     .set('Authorization', `Bearer ${accessToken}`)
-  //     .send({
-  //       title:           'Beautiful Apartment',
-  //       description:     'Lovely place',
-  //       address:         '123 Main St',
-  //       city:            'Denver',
-  //       country:         'USA',
-  //       pricePerNight:   120,
-  //       maxGuests:       3,
-  //       bedrooms:        2,
-  //       bathrooms:       1,
-  //       propertyType:    'apartment'
-  //     })
+    const response = await api
+      .post('/api/listings')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        title:           'Beautiful Apartment',
+        description:     'Lovely place',
+        address:         '123 Main St',
+        city:            'Denver',
+        country:         'USA',
+        pricePerNight:   120,
+        maxGuests:       3,
+        bedrooms:        2,
+        bathrooms:       1,
+        propertyType:    'apartment'
+      })
 
-  //   expect(response.status).toBe(403);
-  // });
+    expect(response.status).toBe(403);
+  });
 
   it(`should reject if create with no title`, async () => {
     const { accessToken } = await registerUser(

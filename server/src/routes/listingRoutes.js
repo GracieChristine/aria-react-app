@@ -42,20 +42,20 @@ router.get('/',     listingController.getAll);
 router.get('/:id',  listingController.getOne);
 
 // ── Host routes ──
-router.get(
-  '/host/me',
-  authenticate,
-  authorize('host', 'admin', 'super_admin'),
-  listingController.getHostListings
-);
-
 router.post(
   '/',
   authenticate,
-  authorize('host', 'admin', 'super_admin'),
+  authorize('host'),
   listingRules,
   validate,
   listingController.create
+);
+
+router.get(
+  '/host/me',
+  authenticate,
+  authorize('host'),
+  listingController.getHostListings
 );
 
 router.put(
@@ -86,14 +86,14 @@ router.delete(
 router.post(
   '/:id/images',
   authenticate,
-  authorize('host', 'admin', 'super_admin'),
+  authorize('host'),
   listingController.addImage
 );
 
 router.delete(
   '/:id/images/:imageId',
   authenticate,
-  authorize('host', 'admin', 'super_admin'),
+  authorize('host'),
   listingController.removeImage
 );
 
