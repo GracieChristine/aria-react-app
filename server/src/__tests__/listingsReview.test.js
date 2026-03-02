@@ -701,11 +701,6 @@ describe(`GET /api/reviews/flagged`, () => {
       role:  'guest'
     });
 
-    const { accessToken: adminToken } = await registerUser({
-      email: 'admin@aria.com',
-      role:  'admin'
-    });
-
     const { listing } = await createTestListing(hostToken);
     await api
       .patch(`/api/listings/${listing.id}/status`)

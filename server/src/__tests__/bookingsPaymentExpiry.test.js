@@ -142,19 +142,15 @@ describe(``, () => {
   });
 
   it(`should return empty array if no bookings to expire`, async () => {
-    const { accessToken: hostToken } = await registerUser({
+    const { accessToken } = await registerUser({
       email: 'host@aria.com',
       role:  'host',
     });
-    const { accessToken: guestToken } = await registerUser({
-      email: 'guest@aria.com',
-      role:  'guest',
-    });
 
-    const { listing } = await createTestListing(hostToken);
+    const { listing } = await createTestListing(accessToken);
     await api
       .patch(`/api/listings/${listing.id}/status`)
-      .set('Authorization', `Bearer ${hostToken}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send({ status: 'active' });
 
     const expired = await bookingsPaymentExpiry();
