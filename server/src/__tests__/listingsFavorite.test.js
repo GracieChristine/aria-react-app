@@ -27,16 +27,12 @@ describe(`POST /api/favorite/:id`, () => {
   });
 
   it(`should reject if no auth`, async () => {
-    const { accessToken: hostToken } = await registerUser({
+    const { accessToken } = await registerUser({
       email:      'janedoe@aria.com',
       role:       'host'
     });
 
-    const { accessToken: guestToken } = await registerUser({
-      email:      'guest@aria.com'
-    });
-
-    const { listing } = await createTestListing(hostToken);
+    const { listing } = await createTestListing(accessToken);
 
     const response = await api
       .post(`/api/favorites/${listing.id}`);

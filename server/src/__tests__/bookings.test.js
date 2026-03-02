@@ -1147,18 +1147,6 @@ describe(`PATCH /api/bookings/:id/cancel`, () => {
       .set('Authorization', `Bearer ${hostToken}`)
       .send({ status: 'active' });
 
-    const bookingRes = await api
-      .post('/api/bookings')
-      .set('Authorization', `Bearer ${guestToken}`)
-      .send({
-        listingId: listing.id,
-        checkIn:   '2026-06-01',
-        checkOut:  '2026-06-05',
-        numGuests: 1
-      });
-
-    const bookingId = bookingRes.body.booking.id;
-
     const response = await api
       .patch('/api/bookings/00000000-0000-0000-0000-000000000000/cancel')
       .set('Authorization', `Bearer ${guestToken}`);

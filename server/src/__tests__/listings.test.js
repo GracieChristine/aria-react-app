@@ -69,7 +69,7 @@ describe(`POST /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'admin'
       }
-    )
+    );
 
     const response = await api
       .post('/api/listings')
@@ -85,7 +85,7 @@ describe(`POST /api/listings`, () => {
         bedrooms:        2,
         bathrooms:       1,
         propertyType:    'apartment'
-      })
+      });
 
     expect(response.status).toBe(403);
   });
@@ -96,7 +96,7 @@ describe(`POST /api/listings`, () => {
         email:          'JaneDoe@aria.com', 
         role:           'super-admin'
       }
-    )
+    );
 
     const response = await api
       .post('/api/listings')
@@ -112,7 +112,7 @@ describe(`POST /api/listings`, () => {
         bedrooms:        2,
         bathrooms:       1,
         propertyType:    'apartment'
-      })
+      });
 
     expect(response.status).toBe(403);
   });
@@ -744,13 +744,6 @@ describe(`POST /api/listings`, () => {
   // });
 
   it(`should reject if no auth`, async() => {
-    const { accessToken } = await registerUser(
-      {
-        email:          'JaneDoe@aria.com', 
-        role:           'host'
-      }
-    );
-
     const response = await api
       .post('/api/listings')
       .send({

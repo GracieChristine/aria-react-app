@@ -104,7 +104,7 @@ export const createTestBooking = async (guestToken, listingId, overrides = {}) =
   return res.body;
 };
 
-const setBookingUpdatedAt = async (bookingId, daysAgo) => {
+export const setBookingUpdatedAt = async (bookingId, daysAgo) => {
   await pool.query(
     `UPDATE bookings 
      SET updated_at = NOW() - INTERVAL '${daysAgo} days'
