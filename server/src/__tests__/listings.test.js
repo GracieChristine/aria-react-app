@@ -1552,44 +1552,255 @@ describe(`PUT /api/listings/:id`, () => {
   });
 });
 
-// describe(`PATCH /api/listings/:id/status`, () => {
-//   it(`should update own listing to active as host successfully`, () => {
+describe(`PATCH /api/listings/:id/status`, () => {
+  it(`should update own listing to active as host successfully`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
 
-//   });
+    const { listing } = await createTestListing(accessToken);
 
-//   it(`should update own listing to inactive as host successfully`, () => {
+    const response = await api
+      .patch(`/api/listings/${listing.id}/status`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ status: 'active' });
 
-//   });
+    expect(response.status).toBe(200);
+    expect(response.body.listing.status).toBe('active');
+  });
 
-//   it(`should not update listing to active from another host`, () => {
+  it(`should update own listing to inactive as host successfully`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
 
-//   });
+    const { listing } = await createTestListing(accessToken);
 
-//   it(`should not update listing to inactive from another host`, () => {
+    const response = await api
+      .patch(`/api/listings/${listing.id}/status`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ status: 'inactive' });
 
-//   });
+    expect(response.status).toBe(200);
+    expect(response.body.listing.status).toBe('inactive');
+  });
 
+  it(`should not update listing to active from another host`, async () => {
+    const { accessToken: host1Token } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
 
-//   it(`should not update listing to active as admin`, () => {
+    const { accessToken: host2Token } = await registerUser({
+      email: 'host@aria.com',
+      role:  'host'
+    });
 
-//   });
+    const { listing } = await createTestListing(host1Token);
 
-//   it(`should update listing to inactive/terminate as admin`, () => {
+    const response = await api
+      .patch(`/api/listings/${listing.id}/status`)
+      .set('Authorization', `Bearer ${host2Token}`)
+      .send({ status: 'active' });
 
-//   });
+    expect(response.status).toBe(403);
+  });
 
-//   it(`should not update listing to active as super-admin`, () => {
+  it(`should not update listing to inactive from another host`, async  () => {
+    const { accessToken: host1Token } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
 
-//   });
+    const { accessToken: host2Token } = await registerUser({
+      email: 'host@aria.com',
+      role:  'host'
+    });
 
-//   it(`should update listing to inactive/terminate as super-admin`, () => {
+    const { listing } = await createTestListing(host1Token);
 
-//   });
+    const response = await api
+      .patch(`/api/listings/${listing.id}/status`)
+      .set('Authorization', `Bearer ${host2Token}`)
+      .send({ status: 'inactive' });
 
-//   it(`should return 404 if nonexistent`, () => {
+    expect(response.status).toBe(403);
+  });
 
-//   });
-// });
+  it(`should not update listing to active from guest`, async () => {
+    const { accessToken: hostToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { accessToken: guestToken } = await registerUser({
+      email: 'guest@aria.com',
+      role:  'guest'
+    });
+
+    const { listing } = await createTestListing(hostToken);
+
+    const response = await api
+      .patch(`/api/listings/${listing.id}/status`)
+      .set('Authorization', `Bearer ${guestToken}`)
+      .send({ status: 'active' });
+
+    expect(response.status).toBe(403);
+  });
+
+  it(`should not update listing to inactive from guest`, async () => {
+    const { accessToken: hostToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { accessToken: guestToken } = await registerUser({
+      email: 'guest@aria.com',
+      role:  'guest'
+    });
+
+    const { listing } = await createTestListing(hostToken);
+
+    const response = await api
+      .patch(`/api/listings/${listing.id}/status`)
+      .set('Authorization', `Bearer ${guestToken}`)
+      .send({ status: 'inactive' });
+
+    expect(response.status).toBe(403);
+  });
+
+  it(`should not update listing to active as admin`, async () => {
+    const { accessToken: hostToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { accessToken: adminToken } = await registerUser({
+      email: 'admin@aria.com',
+      role:  'admin'
+    });
+
+    const { listing } = await createTestListing(hostToken);
+
+    const response = await api
+      .patch(`/api/listings/${listing.id}/status`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ status: 'active' });
+
+    expect(response.status).toBe(400);
+  });
+
+  it(`should update listing to inactive/terminate as admin`, async () => {
+    const { accessToken: hostToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { accessToken: adminToken } = await registerUser({
+      email: 'admin@aria.com',
+      role:  'admin'
+    });
+
+    const { listing } = await createTestListing(hostToken);
+
+    const response = await api
+      .patch(`/api/listings/${listing.id}/status`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ status: 'inactive' });
+
+    expect(response.status).toBe(200);
+    expect(response.body.listing.status).toBe('inactive');
+  });
+
+  it(`should not update listing to active as super-admin`, async () => {
+    const { accessToken: hostToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { accessToken: superAdminToken } = await registerUser({
+      email: 'super_admin@aria.com',
+      role:  'super_admin'
+    });
+
+    const { listing } = await createTestListing(hostToken);
+
+    const response = await api
+      .patch(`/api/listings/${listing.id}/status`)
+      .set('Authorization', `Bearer ${superAdminToken}`)
+      .send({ status: 'active' });
+
+    expect(response.status).toBe(400);
+  });
+
+  it(`should update listing to inactive/terminate as super-admin`, async () => {
+    const { accessToken: hostToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { accessToken: superAdminToken } = await registerUser({
+      email: 'super_admin@aria.com',
+      role:  'super_admin'
+    });
+
+    const { listing } = await createTestListing(hostToken);
+
+    const response = await api
+      .patch(`/api/listings/${listing.id}/status`)
+      .set('Authorization', `Bearer ${superAdminToken}`)
+      .send({ status: 'inactive' });
+
+    expect(response.status).toBe(200);
+    expect(response.body.listing.status).toBe('inactive');
+  });
+
+  it(`should reject if body with no status field`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { listing } = await createTestListing(accessToken);
+
+    const response = await api
+      .patch(`/api/listings/${listing.id}/status`)
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(response.status).toBe(422);
+  });
+
+  it(`should return 404 if nonexistent`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const response = await api
+      .patch('/api/listings/00000000-0000-0000-0000-000000000000/status')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ status: 'active' });
+
+    expect(response.status).toBe(404);
+  });
+
+  it(`should reject if no auth`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { listing } = await createTestListing(accessToken);
+
+    const response = await api
+      .patch(`/api/listings/${listing.id}/status`)
+      .send({ status: 'active' });
+
+    expect(response.status).toBe(401);
+  });
+});
 
 describe(`DELETE /api/listings/:id`, () => {
   it(`should delete own listing as host successfully`, async () => {
