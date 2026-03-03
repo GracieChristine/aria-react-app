@@ -1940,3 +1940,234 @@ describe(`DELETE /api/listings/:id`, () => {
     expect(response.status).toBe(401);
   });
 });
+
+describe(`GET /api/listings/:id/images`, () => {
+  it(`should return images for a listing`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { listing } = await createTestListing(accessToken);
+
+    await api
+      .post(`/api/listings/${listing.id}/images`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ url: 'https://example.com/image.jpg' });
+
+    const response = await api
+      .get(`/api/listings/${listing.id}/images`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.images.length).toBe(1);
+    expect(response.body.images[0].url).toBe('https://example.com/image.jpg');
+  });
+
+  it(`should return empty array if no images`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { listing } = await createTestListing(accessToken);
+
+    const response = await api
+      .get(`/api/listings/${listing.id}/images`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.images.length).toBe(0);
+  });
+
+  it(`should return 404 if nonexistent listing`, async () => {
+    const response = await api
+      .get('/api/listings/00000000-0000-0000-0000-000000000000/images');
+
+    expect(response.status).toBe(404);
+  });
+});
+
+describe(`POST /api/listings/:id/images`, () => {
+  it(`should add image to own listing as host`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { listing } = await createTestListing(accessToken);
+
+    const response = await api
+      .post(`/api/listings/${listing.id}/images`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ url: 'https://example.com/image.jpg' });
+
+    expect(response.status).toBe(201);
+    expect(response.body.image.url).toBe('https://example.com/image.jpg');
+  });
+
+  it(`should reject if no url`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { listing } = await createTestListing(accessToken);
+
+    const response = await api
+      .post(`/api/listings/${listing.id}/images`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({});
+
+    expect(response.status).toBe(422);
+  });
+
+  it(`should reject if not the listing's host`, async () => {
+    const { accessToken: host1Token } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { accessToken: host2Token } = await registerUser({
+      email: 'JohnDoe@aria.com',
+      role:  'host'
+    });
+
+    const { listing } = await createTestListing(host1Token);
+
+    const response = await api
+      .post(`/api/listings/${listing.id}/images`)
+      .set('Authorization', `Bearer ${host2Token}`)
+      .send({ url: 'https://example.com/image.jpg' });
+
+    expect(response.status).toBe(403);
+  });
+
+  it(`should reject if nonexistent listing`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const response = await api
+      .post('/api/listings/00000000-0000-0000-0000-000000000000/images')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ url: 'https://example.com/image.jpg' });
+
+    expect(response.status).toBe(404);
+  });
+
+  it(`should reject if no auth`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { listing } = await createTestListing(accessToken);
+
+    const response = await api
+      .post(`/api/listings/${listing.id}/images`)
+      .send({ url: 'https://example.com/image.jpg' });
+
+    expect(response.status).toBe(401);
+  });
+});
+
+describe(`DELETE /api/listings/:id/images/:imageId`, () => {
+  it(`should remove image from own listing as host`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { listing } = await createTestListing(accessToken);
+
+    const imageRes = await api
+      .post(`/api/listings/${listing.id}/images`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ url: 'https://example.com/image.jpg' });
+
+    const imageId = imageRes.body.image.id;
+
+    const response = await api
+      .delete(`/api/listings/${listing.id}/images/${imageId}`)
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.message).toBe('Image deleted successfully');
+  });
+
+  it(`should reject if not the listing's host`, async () => {
+    const { accessToken: host1Token } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { accessToken: host2Token } = await registerUser({
+      email: 'JohnDoe@aria.com',
+      role:  'host'
+    });
+
+    const { listing } = await createTestListing(host1Token);
+
+    const imageRes = await api
+      .post(`/api/listings/${listing.id}/images`)
+      .set('Authorization', `Bearer ${host1Token}`)
+      .send({ url: 'https://example.com/image.jpg' });
+
+    const imageId = imageRes.body.image.id;
+
+    const response = await api
+      .delete(`/api/listings/${listing.id}/images/${imageId}`)
+      .set('Authorization', `Bearer ${host2Token}`);
+
+    expect(response.status).toBe(403);
+  });
+
+  it(`should reject if nonexistent listing`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const response = await api
+      .delete('/api/listings/00000000-0000-0000-0000-000000000000/images/00000000-0000-0000-0000-000000000000')
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(response.status).toBe(404);
+  });
+
+  it(`should reject if nonexistent image`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { listing } = await createTestListing(accessToken);
+
+    const response = await api
+      .delete(`/api/listings/${listing.id}/images/00000000-0000-0000-0000-000000000000`)
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(response.status).toBe(404);
+  });
+
+  it(`should reject if no auth`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const { listing } = await createTestListing(accessToken);
+
+    const imageRes = await api
+      .post(`/api/listings/${listing.id}/images`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ url: 'https://example.com/image.jpg' });
+
+    const imageId = imageRes.body.image.id;
+
+    const response = await api
+      .delete(`/api/listings/${listing.id}/images/${imageId}`);
+
+    expect(response.status).toBe(401);
+  });
+});
