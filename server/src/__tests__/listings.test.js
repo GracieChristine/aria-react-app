@@ -759,6 +759,85 @@ describe(`GET /api/listings/:id`, () => {
   });
 });
 
+describe(`GET /api/listings/host/me`, () => {
+  it(`should return own listings as host`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    await createTestListing(accessToken);
+    await createTestListing(accessToken);
+
+    const response = await api
+      .get('/api/listings/host/me')
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.listings.length).toBe(2);
+  });
+
+  it(`should return empty array if host has no listings`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
+
+    const response = await api
+      .get('/api/listings/host/me')
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.listings.length).toBe(0);
+  });
+
+  it(`should reject if guest`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'guest'
+    });
+
+    const response = await api
+      .get('/api/listings/host/me')
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(response.status).toBe(403);
+  });
+
+  it(`should reject if admin`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'admin'
+    });
+
+    const response = await api
+      .get('/api/listings/host/me')
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(response.status).toBe(403);
+  });
+
+  it(`should reject if super_admin`, async () => {
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'super_admin'
+    });
+
+    const response = await api
+      .get('/api/listings/host/me')
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(response.status).toBe(403);
+  });
+
+  it(`should reject if no auth`, async () => {
+    const response = await api
+      .get('/api/listings/host/me');
+
+    expect(response.status).toBe(401);
+  });
+});
+
 describe(`PUT /api/listings/:id`, () => {
   it(`should update own listing as host with info successfully`, async () => {
     const { accessToken } = await registerUser({
