@@ -165,6 +165,14 @@ export const listingModel = {
     return rows[0] || null;
   },
 
+  async getImages(listingId) {
+    const { rows } = await pool.query(
+      `SELECT * FROM listing_images WHERE listing_id = $1 ORDER BY display_order ASC`,
+      [listingId]
+    );
+    return rows;
+  },
+
   async addImage(listingId, url, displayOrder = 0) {
     const { rows } = await pool.query(
       `INSERT INTO listing_images (listing_id, url, display_order)

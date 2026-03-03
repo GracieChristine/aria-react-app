@@ -189,6 +189,20 @@ export const listingController = {
     }
   },
 
+  // ── GET /api/listings/:id/images ──
+  async getImages(req, res) {
+    try {
+      const listing = await listingModel.findById(req.params.id);
+      if (!listing) return errorResponse(res, 'Listing not found', 404);
+
+      const images = await listingModel.getImages(req.params.id);
+      return successResponse(res, { images });
+    } catch (err) {
+      console.error('Get images error:', err);
+      return errorResponse(res, 'Failed to fetch images', 500);
+    }
+  },
+
   // ── POST /api/listings/:id/images ──
   async addImage(req, res) {
     try {

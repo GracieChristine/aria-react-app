@@ -7,39 +7,63 @@ import { validate }          from '../middleware/validate.js';
 
 const router = Router();
 
-const updateListingRules = [
-  body('title').optional().notEmpty().withMessage('Title cannot be empty').trim(),
-  body('description').optional().notEmpty().withMessage('Description cannot be empty').trim(),
-  body('address').optional().notEmpty().withMessage('Address cannot be empty').trim(),
-  body('city').optional().notEmpty().withMessage('City cannot be empty').trim(),
-  body('country').optional().notEmpty().withMessage('Country cannot be empty').trim(),
-  body('pricePerNight').optional().isFloat({ min: 1 }).withMessage('Price must be greater than 0'),
-  body('maxGuests').optional().isInt({ min: 1 }).withMessage('Max guests must be at least 1'),
-  body('bedrooms').optional().isInt({ min: 0 }).withMessage('Bedrooms must be 0 or more'),
-  body('bathrooms').optional().isInt({ min: 1 }).withMessage('Bathrooms must be at least 1'),
-  body('propertyType').optional().isIn([
-    'apartment','house','villa','cabin','condo','townhouse','studio','other'
-  ]).withMessage('Invalid property type'),
+const listingRules = [
+  body('title')
+    .notEmpty().withMessage('Title is required').trim()
+    .isLength({ max: 50 }).withMessage('Title cannot exceed 50 characters'),
+  body('description')
+    .notEmpty().withMessage('Description is required').trim()
+    .isLength({ max: 500 }).withMessage('Description cannot exceed 500 characters'),
+  body('address')
+    .notEmpty().withMessage('Address is required').trim(),
+  body('city')
+    .notEmpty().withMessage('City is required').trim(),
+  body('country')
+    .notEmpty().withMessage('Country is required').trim(),
+  body('pricePerNight')
+    .isFloat({ min: 1 }).withMessage('Price must be greater than 0'),
+  body('maxGuests')
+    .isInt({ min: 1, max: 20 }).withMessage('Max guests must be between 1 and 20'),
+  body('bedrooms')
+    .isInt({ min: 0, max: 20 }).withMessage('Bedrooms must be between 0 and 20'),
+  body('bathrooms')
+    .isInt({ min: 1, max: 20 }).withMessage('Bathrooms must be between 1 and 20'),
+  body('propertyType')
+    .isIn(['apartment','house','villa','cabin','condo','townhouse','studio','other'])
+    .withMessage('Invalid property type'),
 ];
 
-const listingRules = [
-  body('title').notEmpty().withMessage('Title is required').trim(),
-  body('description').notEmpty().withMessage('Description is required').trim(),
-  body('address').notEmpty().withMessage('Address is required').trim(),
-  body('city').notEmpty().withMessage('City is required').trim(),
-  body('country').notEmpty().withMessage('Country is required').trim(),
-  body('pricePerNight').isFloat({ min: 1 }).withMessage('Price must be greater than 0'),
-  body('maxGuests').isInt({ min: 1 }).withMessage('Max guests must be at least 1'),
-  body('bedrooms').isInt({ min: 0 }).withMessage('Bedrooms must be 0 or more'),
-  body('bathrooms').isInt({ min: 1 }).withMessage('Bathrooms must be at least 1'),
-  body('propertyType').isIn([
-    'apartment','house','villa','cabin','condo','townhouse','studio','other'
-  ]).withMessage('Invalid property type'),
+const updateListingRules = [
+  body('title')
+    .optional().notEmpty().withMessage('Title cannot be empty').trim()
+    .isLength({ max: 50 }).withMessage('Title cannot exceed 50 characters'),
+  body('description')
+    .optional().notEmpty().withMessage('Description cannot be empty').trim()
+    .isLength({ max: 500 }).withMessage('Description cannot exceed 500 characters'),
+  body('address')
+    .optional().notEmpty().withMessage('Address cannot be empty').trim(),
+  body('city')
+    .optional().notEmpty().withMessage('City cannot be empty').trim(),
+  body('country')
+    .optional().notEmpty().withMessage('Country cannot be empty').trim(),
+  body('pricePerNight')
+    .optional().isFloat({ min: 1 }).withMessage('Price must be greater than 0'),
+  body('maxGuests')
+    .optional().isInt({ min: 1, max: 20 }).withMessage('Max guests must be between 1 and 20'),
+  body('bedrooms')
+    .optional().isInt({ min: 0, max: 20 }).withMessage('Bedrooms must be between 0 and 20'),
+  body('bathrooms')
+    .optional().isInt({ min: 1, max: 20 }).withMessage('Bathrooms must be between 1 and 20'),
+  body('propertyType')
+    .optional()
+    .isIn(['apartment','house','villa','cabin','condo','townhouse','studio','other'])
+    .withMessage('Invalid property type'),
 ];
 
 // ── Public routes ──
-router.get('/',     listingController.getAll);
-router.get('/:id',  listingController.getOne);
+router.get('/',             listingController.getAll);
+router.get('/:id',          listingController.getOne);
+router.get('/:id/images',   listingController.getImages);
 
 // ── Host routes ──
 router.post(
@@ -87,6 +111,8 @@ router.post(
   '/:id/images',
   authenticate,
   authorize('host'),
+  body('url').notEmpty().withMessage('Image URL is required'),
+  validate,
   listingController.addImage
 );
 
