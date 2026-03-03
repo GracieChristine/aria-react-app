@@ -8,6 +8,9 @@ export const favoriteController = {
       const listing = await listingModel.findById(req.params.listingId);
       if (!listing) return errorResponse(res, 'Listing not found', 404);
 
+      const existing = await favoriteModel.isFavorited(req.user.id, req.params.listingId);
+      if (existing) return errorResponse(res, 'Already favorited', 409);
+
       const favorite = await favoriteModel.add(req.user.id, req.params.listingId);
       return successResponse(res, { favorite }, 201);
     } catch (err) {

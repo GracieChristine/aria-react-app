@@ -26,6 +26,29 @@ describe(`POST /api/favorite/:id`, () => {
     expect(response.status).toBe(201);
   });
 
+  it(`should reject if already favorited`, async () => {
+    const { accessToken: hostToken } = await registerUser({
+      email: 'janedoe@aria.com',
+      role:  'host'
+    });
+
+    const { accessToken: guestToken } = await registerUser({
+      email: 'guest@aria.com'
+    });
+
+    const { listing } = await createTestListing(hostToken);
+
+    await api
+      .post(`/api/favorites/${listing.id}`)
+      .set('Authorization', `Bearer ${guestToken}`);
+
+    const response = await api
+      .post(`/api/favorites/${listing.id}`)
+      .set('Authorization', `Bearer ${guestToken}`);
+
+    expect(response.status).toBe(409);
+  });
+
   it(`should reject if no auth`, async () => {
     const { accessToken } = await registerUser({
       email:      'janedoe@aria.com',
