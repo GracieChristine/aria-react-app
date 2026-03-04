@@ -128,7 +128,7 @@ describe(`POST /api/messages`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`sshould reject if nonexistent listing`, async () => {
+  it(`should reject if nonexistent listing`, async () => {
     const { accessToken: guestToken } = await registerUser({
       email: 'guest@aria.com',
       role:  'guest'

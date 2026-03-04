@@ -1,33 +1,45 @@
-import { describe, it, expect, beforeAll, afterEach, afterAll }   from '@jest/globals';
-import { api, registerUser, createTestListing }                   from './helpers.js';
-import { setupTestDB, clearTestDB, closeTestDB }                  from './setup.js';
+import { describe, it, expect, beforeAll, beforeEach, afterEach, afterAll } from '@jest/globals';
+import { api, registerUser, createTestListing }                             from './helpers.js';
+import { setupTestDB, clearTestDB, closeTestDB }                            from './setup.js';
 
 beforeAll(async () => await setupTestDB());
 afterEach(async () => await clearTestDB());
 afterAll(async ()  => await closeTestDB());
 
+// ─── Base payload used across POST and PUT validation tests ───────────────────
+const basePayload = {
+  title:         'Beautiful Apartment',
+  description:   'Lovely place',
+  address:       '123 Main St',
+  city:          'Denver',
+  country:       'USA',
+  pricePerNight: 120,
+  maxGuests:     3,
+  bedrooms:      2,
+  bathrooms:     1,
+  propertyType:  'apartment'
+};
+
+const omit = (obj, key) => {
+  const { [key]: _, ...rest } = obj; // eslint-disable-line no-unused-vars
+  return rest;
+};
+
 describe(`POST /api/listings`, () => {
-  it(`should create listing as host successfully`, async() => {
-    const { accessToken } = await registerUser({
+  let accessToken;
+
+  beforeEach(async () => {
+    ({ accessToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
-    });
+    }));
+  });
 
+  it(`should create listing as host successfully`, async () => {
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send(basePayload);
 
     expect(response.status).toBe(201);
     expect(response.body.listing.title).toBe('Beautiful Apartment');
@@ -35,591 +47,239 @@ describe(`POST /api/listings`, () => {
   });
 
   it(`should not create a listing as guest`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
+    ({ accessToken } = await registerUser({
+      email: 'guest@aria.com',
       role:  'guest'
-    });
+    }));
 
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send(basePayload);
 
     expect(response.status).toBe(403);
   });
 
   it(`should not create a listing as admin`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
+    ({ accessToken } = await registerUser({
+      email: 'admin@aria.com',
       role:  'admin'
-    });
+    }));
 
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send(basePayload);
 
     expect(response.status).toBe(403);
   });
 
   it(`should not create a listing as super_admin`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
+    ({ accessToken } = await registerUser({
+      email: 'superadmin@aria.com',
       role:  'super_admin'
-    });
+    }));
 
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send(basePayload);
 
     expect(response.status).toBe(403);
   });
 
   it(`should reject if create with no title`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         '',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send({ ...basePayload, title: '' });
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with title exceeding 50 characters`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Modern City Center Apartment w/ Fast WiFi & Parking',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send({ ...basePayload, title: 'Modern City Center Apartment w/ Fast WiFi & Parking' });
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with no description`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   '',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send({ ...basePayload, description: '' });
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with description exceeding 500 characters`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'A'.repeat(501),
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send({ ...basePayload, description: 'A'.repeat(501) });
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with no address`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send({ ...basePayload, address: '' });
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with no city`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          '',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send({ ...basePayload, city: '' });
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with no country`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       '',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send({ ...basePayload, country: '' });
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with no pricePerNight`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
+    const payload = omit(basePayload, 'pricePerNight');
 
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send(payload);
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with zero pricePerNight`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 0,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send({ ...basePayload, pricePerNight: 0 });
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with negative pricePerNight`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: -120,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send({ ...basePayload, pricePerNight: -120 });
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with no maxGuests`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
+    const payload = omit(basePayload, 'maxGuests');
 
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send(payload);
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with zero maxGuests`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     0,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send({ ...basePayload, maxGuests: 0 });
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with negative maxGuests`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     -1,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send({ ...basePayload, maxGuests: -1 });
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with no bedrooms`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
+    const payload = omit(basePayload, 'bedrooms');
 
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send(payload);
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with negative bedrooms`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      -1,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send({ ...basePayload, bedrooms: -1 });
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with no bathrooms`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
+    const payload = omit(basePayload, 'bathrooms');
 
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      2,
-        propertyType:  'apartment'
-      });
+      .send(payload);
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with zero bathrooms`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     0,
-        propertyType:  'apartment'
-      });
+      .send({ ...basePayload, bathrooms: 0 });
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with negative bathrooms`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     -1,
-        propertyType:  'apartment'
-      });
+      .send({ ...basePayload, bathrooms: -1 });
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with no propertyType`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  ''
-      });
+      .send({ ...basePayload, propertyType: '' });
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if create with invalid propertyType`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'notAnOption'
-      });
+      .send({ ...basePayload, propertyType: 'notAnOption' });
 
     expect(response.status).toBe(422);
   });
 
-  it(`should reject if no auth`, async() => {
+  it(`should reject if no auth`, async () => {
     const response = await api
       .post('/api/listings')
-      .send({
-        title:         'Beautiful Apartment',
-        description:   'Lovely place',
-        address:       '123 Main St',
-        city:          'Denver',
-        country:       'USA',
-        pricePerNight: 120,
-        maxGuests:     3,
-        bedrooms:      2,
-        bathrooms:     1,
-        propertyType:  'apartment'
-      });
+      .send(basePayload);
 
     expect(response.status).toBe(401);
   });
@@ -627,15 +287,12 @@ describe(`POST /api/listings`, () => {
 
 describe(`GET /api/listings`, () => {
   it(`should return active listings as host`, async () => {
-    const { accessToken } = await registerUser(
-      {
-        email:          'JaneDoe@aria.com', 
-        role:           'host'
-      }
-    );
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
 
     const { listing } = await createTestListing(accessToken);
-
     await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -649,22 +306,17 @@ describe(`GET /api/listings`, () => {
   });
 
   it(`should return active listings as guest`, async () => {
-    const { accessToken: hostToken } = await registerUser(
-      {
-        email:          'JaneDoe@aria.com', 
-        role:           'host'
-      }
-    );
+    const { accessToken: hostToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
 
-    await registerUser(
-      {
-        email:          'JohnDoe@aria.com', 
-        role:           'guest'
-      }
-    );
+    await registerUser({
+      email: 'JohnDoe@aria.com',
+      role:  'guest'
+    });
 
     const { listing } = await createTestListing(hostToken);
-
     await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${hostToken}`)
@@ -676,12 +328,10 @@ describe(`GET /api/listings`, () => {
   });
 
   it(`should return active listings filtered by city`, async () => {
-    const { accessToken } = await registerUser(
-      {
-        email:          'JaneDoe@aria.com', 
-        role:           'host'
-      }
-    );
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
 
     const { listing } = await createTestListing(accessToken, { city: 'Denver' });
     await api
@@ -696,12 +346,10 @@ describe(`GET /api/listings`, () => {
   });
 
   it(`should return empty array if city not found`, async () => {
-    const { accessToken } = await registerUser(
-      {
-        email:          'JaneDoe@aria.com', 
-        role:           'host'
-      }
-    );
+    const { accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    });
 
     const { listing } = await createTestListing(accessToken, { city: 'isNotValid' });
     await api
@@ -717,21 +365,24 @@ describe(`GET /api/listings`, () => {
 });
 
 describe(`GET /api/listings/:id`, () => {
-  it(`should return a specific listing`, async () => {
-    const { accessToken } = await registerUser(
-      {
-        email:          'JaneDoe@aria.com', 
-        role:           'host'
-      }
-    );
+  let accessToken;
+  let listing;
 
-    const { listing } = await createTestListing(accessToken);
+  beforeEach(async () => {
+    ({ accessToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    }));
+
+    ({ listing } = await createTestListing(accessToken));
 
     await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({ status: 'active' });
+  });
 
+  it(`should return a specific listing`, async () => {
     const response = await api.get(`/api/listings/${listing.id}`);
 
     expect(response.status).toBe(200);
@@ -739,20 +390,6 @@ describe(`GET /api/listings/:id`, () => {
   });
 
   it(`should reject if nonexistent listing`, async () => {
-    const { accessToken } = await registerUser(
-      {
-        email:          'JaneDoe@aria.com', 
-        role:           'host'
-      }
-    );
-
-    const { listing } = await createTestListing(accessToken);
-
-    await api
-      .put(`/api/listings/${listing.id}`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send({ status: 'active' });
-
     const response = await api.get(`/api/listings/00000000-0000-0000-0000-000000000000`);
 
     expect(response.status).toBe(404);
@@ -806,7 +443,7 @@ describe(`GET /api/listings/host/me`, () => {
 
   it(`should reject if admin`, async () => {
     const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
+      email: 'admin@aria.com',
       role:  'admin'
     });
 
@@ -819,7 +456,7 @@ describe(`GET /api/listings/host/me`, () => {
 
   it(`should reject if super_admin`, async () => {
     const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
+      email: 'superadmin@aria.com',
       role:  'super_admin'
     });
 
@@ -831,22 +468,26 @@ describe(`GET /api/listings/host/me`, () => {
   });
 
   it(`should reject if no auth`, async () => {
-    const response = await api
-      .get('/api/listings/host/me');
+    const response = await api.get('/api/listings/host/me');
 
     expect(response.status).toBe(401);
   });
 });
 
 describe(`PUT /api/listings/:id`, () => {
-  it(`should update own listing as host with info successfully`, async () => {
-    const { accessToken } = await registerUser({
+  let accessToken;
+  let listing;
+
+  beforeEach(async () => {
+    ({ accessToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
-    });
+    }));
 
-    const { listing } = await createTestListing(accessToken);
+    ({ listing } = await createTestListing(accessToken));
+  });
 
+  it(`should update own listing as host with info successfully`, async () => {
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -877,17 +518,10 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should not update a listing from another host`, async () => {
-    const { accessToken: host1Token } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const { accessToken: host2Token } = await registerUser({
       email: 'JohnDoe@aria.com',
       role:  'host'
     });
-
-    const { listing } = await createTestListing(host1Token);
 
     const response = await api
       .put(`/api/listings/${listing.id}`)
@@ -898,17 +532,10 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should not update a listing as guest`, async () => {
-    const { accessToken: hostToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const { accessToken: guestToken } = await registerUser({
       email: 'guest@aria.com',
       role:  'guest'
     });
-
-    const { listing } = await createTestListing(hostToken);
 
     const response = await api
       .put(`/api/listings/${listing.id}`)
@@ -919,17 +546,10 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should not update a listing as admin`, async () => {
-    const { accessToken: hostToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const { accessToken: adminToken } = await registerUser({
       email: 'admin@aria.com',
       role:  'admin'
     });
-
-    const { listing } = await createTestListing(hostToken);
 
     const response = await api
       .put(`/api/listings/${listing.id}`)
@@ -940,17 +560,10 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should not update a listing as super_admin`, async () => {
-    const { accessToken: hostToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const { accessToken: superAdminToken } = await registerUser({
-      email: 'super_admin@aria.com',
+      email: 'superadmin@aria.com',
       role:  'super_admin'
     });
-
-    const { listing } = await createTestListing(hostToken);
 
     const response = await api
       .put(`/api/listings/${listing.id}`)
@@ -961,13 +574,6 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should reject if update with empty title`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -977,13 +583,6 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should reject if update with title exceeding 50 characters`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -993,13 +592,6 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should reject if update with empty description`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1009,13 +601,6 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should reject if update with description exceeding 500 characters`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1025,13 +610,6 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should reject if update with empty address`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1041,13 +619,6 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should reject if update with empty city`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1057,13 +628,6 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should reject if update with empty country`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1073,13 +637,6 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should reject if update with zero pricePerNight`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1089,13 +646,6 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should reject if update with negative pricePerNight`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1105,13 +655,6 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should reject if update with zero maxGuests`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1121,13 +664,6 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should reject if update with negative maxGuests`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1137,13 +673,6 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should reject if update with negative bedrooms`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1153,13 +682,6 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should reject if update with zero bathrooms`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1169,13 +691,6 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should reject if update with negative bathrooms`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1185,13 +700,6 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should reject if update with invalid propertyType`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1201,11 +709,6 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should reject if nonexistent listing`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .put(`/api/listings/00000000-0000-0000-0000-000000000000`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1215,13 +718,6 @@ describe(`PUT /api/listings/:id`, () => {
   });
 
   it(`should reject if no auth`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .send({ title: 'Update Title' });
@@ -1231,17 +727,22 @@ describe(`PUT /api/listings/:id`, () => {
 });
 
 describe(`PATCH /api/listings/:id/status`, () => {
-  it(`should update own listing to active as host successfully`, async () => {
-    const { accessToken } = await registerUser({
+  let hostToken;
+  let listing;
+
+  beforeEach(async () => {
+    ({ accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
-    });
+    }));
 
-    const { listing } = await createTestListing(accessToken);
+    ({ listing } = await createTestListing(hostToken));
+  });
 
+  it(`should update own listing to active as host successfully`, async () => {
     const response = await api
       .patch(`/api/listings/${listing.id}/status`)
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Authorization', `Bearer ${hostToken}`)
       .send({ status: 'active' });
 
     expect(response.status).toBe(200);
@@ -1249,16 +750,9 @@ describe(`PATCH /api/listings/:id/status`, () => {
   });
 
   it(`should update own listing to inactive as host successfully`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .patch(`/api/listings/${listing.id}/status`)
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Authorization', `Bearer ${hostToken}`)
       .send({ status: 'inactive' });
 
     expect(response.status).toBe(200);
@@ -1266,17 +760,10 @@ describe(`PATCH /api/listings/:id/status`, () => {
   });
 
   it(`should not update listing to active from another host`, async () => {
-    const { accessToken: host1Token } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const { accessToken: host2Token } = await registerUser({
       email: 'host@aria.com',
       role:  'host'
     });
-
-    const { listing } = await createTestListing(host1Token);
 
     const response = await api
       .patch(`/api/listings/${listing.id}/status`)
@@ -1286,18 +773,11 @@ describe(`PATCH /api/listings/:id/status`, () => {
     expect(response.status).toBe(403);
   });
 
-  it(`should not update listing to inactive from another host`, async  () => {
-    const { accessToken: host1Token } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
+  it(`should not update listing to inactive from another host`, async () => {
     const { accessToken: host2Token } = await registerUser({
       email: 'host@aria.com',
       role:  'host'
     });
-
-    const { listing } = await createTestListing(host1Token);
 
     const response = await api
       .patch(`/api/listings/${listing.id}/status`)
@@ -1308,17 +788,10 @@ describe(`PATCH /api/listings/:id/status`, () => {
   });
 
   it(`should not update listing to active from guest`, async () => {
-    const { accessToken: hostToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const { accessToken: guestToken } = await registerUser({
       email: 'guest@aria.com',
       role:  'guest'
     });
-
-    const { listing } = await createTestListing(hostToken);
 
     const response = await api
       .patch(`/api/listings/${listing.id}/status`)
@@ -1329,17 +802,10 @@ describe(`PATCH /api/listings/:id/status`, () => {
   });
 
   it(`should not update listing to inactive from guest`, async () => {
-    const { accessToken: hostToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const { accessToken: guestToken } = await registerUser({
       email: 'guest@aria.com',
       role:  'guest'
     });
-
-    const { listing } = await createTestListing(hostToken);
 
     const response = await api
       .patch(`/api/listings/${listing.id}/status`)
@@ -1350,17 +816,10 @@ describe(`PATCH /api/listings/:id/status`, () => {
   });
 
   it(`should not update listing to active as admin`, async () => {
-    const { accessToken: hostToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const { accessToken: adminToken } = await registerUser({
       email: 'admin@aria.com',
       role:  'admin'
     });
-
-    const { listing } = await createTestListing(hostToken);
 
     const response = await api
       .patch(`/api/listings/${listing.id}/status`)
@@ -1371,17 +830,10 @@ describe(`PATCH /api/listings/:id/status`, () => {
   });
 
   it(`should update listing to inactive/terminate as admin`, async () => {
-    const { accessToken: hostToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const { accessToken: adminToken } = await registerUser({
       email: 'admin@aria.com',
       role:  'admin'
     });
-
-    const { listing } = await createTestListing(hostToken);
 
     const response = await api
       .patch(`/api/listings/${listing.id}/status`)
@@ -1393,17 +845,10 @@ describe(`PATCH /api/listings/:id/status`, () => {
   });
 
   it(`should not update listing to active as super_admin`, async () => {
-    const { accessToken: hostToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const { accessToken: superAdminToken } = await registerUser({
-      email: 'super_admin@aria.com',
+      email: 'superadmin@aria.com',
       role:  'super_admin'
     });
-
-    const { listing } = await createTestListing(hostToken);
 
     const response = await api
       .patch(`/api/listings/${listing.id}/status`)
@@ -1414,17 +859,10 @@ describe(`PATCH /api/listings/:id/status`, () => {
   });
 
   it(`should update listing to inactive/terminate as super_admin`, async () => {
-    const { accessToken: hostToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const { accessToken: superAdminToken } = await registerUser({
-      email: 'super_admin@aria.com',
+      email: 'superadmin@aria.com',
       role:  'super_admin'
     });
-
-    const { listing } = await createTestListing(hostToken);
 
     const response = await api
       .patch(`/api/listings/${listing.id}/status`)
@@ -1436,42 +874,23 @@ describe(`PATCH /api/listings/:id/status`, () => {
   });
 
   it(`should reject if no status field`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .patch(`/api/listings/${listing.id}/status`)
-      .set('Authorization', `Bearer ${accessToken}`);
+      .set('Authorization', `Bearer ${hostToken}`);
 
     expect(response.status).toBe(422);
   });
 
   it(`should reject if nonexistent listing`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .patch('/api/listings/00000000-0000-0000-0000-000000000000/status')
-      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Authorization', `Bearer ${hostToken}`)
       .send({ status: 'active' });
 
     expect(response.status).toBe(404);
   });
 
   it(`should reject if no auth`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .patch(`/api/listings/${listing.id}/status`)
       .send({ status: 'active' });
@@ -1481,39 +900,31 @@ describe(`PATCH /api/listings/:id/status`, () => {
 });
 
 describe(`DELETE /api/listings/:id`, () => {
+  let hostToken;
+  let listing;
+
+  beforeEach(async () => {
+    ({ accessToken: hostToken } = await registerUser({
+      email: 'JaneDoe@aria.com',
+      role:  'host'
+    }));
+
+    ({ listing } = await createTestListing(hostToken));
+  });
+
   it(`should delete own listing as host successfully`, async () => {
-    const { accessToken } = await registerUser(
-      {
-        email:          'JaneDoe@aria.com', 
-        role:           'host'
-      }
-    );
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .delete(`/api/listings/${listing.id}`)
-      .set('Authorization', `Bearer ${accessToken}`);
+      .set('Authorization', `Bearer ${hostToken}`);
 
     expect(response.status).toBe(200);
   });
 
   it(`should not delete a listing from another host`, async () => {
-    const { accessToken: host1Token } = await registerUser(
-      {
-        email:          'JaneDoe@aria.com', 
-        role:           'host'
-      }
-    );
-
-    const { accessToken: host2Token } = await registerUser(
-      {
-        email:          'JohnDoe@aria.com', 
-        role:           'host'
-      }
-    );
-
-    const { listing } = await createTestListing(host1Token);
+    const { accessToken: host2Token } = await registerUser({
+      email: 'JohnDoe@aria.com',
+      role:  'host'
+    });
 
     const response = await api
       .delete(`/api/listings/${listing.id}`)
@@ -1523,102 +934,53 @@ describe(`DELETE /api/listings/:id`, () => {
   });
 
   it(`should not delete a listing as guest`, async () => {
-    const { accessToken: host1Token } = await registerUser(
-      {
-        email:          'JaneDoe@aria.com', 
-        role:           'host'
-      }
-    );
-
-    const { accessToken: host2Token } = await registerUser(
-      {
-        email:          'JohnDoe@aria.com', 
-        role:           'guest'
-      }
-    );
-
-    const { listing } = await createTestListing(host1Token);
+    const { accessToken: guestToken } = await registerUser({
+      email: 'JohnDoe@aria.com',
+      role:  'guest'
+    });
 
     const response = await api
       .delete(`/api/listings/${listing.id}`)
-      .set('Authorization', `Bearer ${host2Token}`);
+      .set('Authorization', `Bearer ${guestToken}`);
 
     expect(response.status).toBe(403);
   });
 
   it(`should not delete a listing as admin`, async () => {
-    const { accessToken: host1Token } = await registerUser(
-      {
-        email:          'JaneDoe@aria.com', 
-        role:           'host'
-      }
-    );
-
-    const { accessToken: host2Token } = await registerUser(
-      {
-        email:          'JohnDoe@aria.com', 
-        role:           'admin'
-      }
-    );
-
-    const { listing } = await createTestListing(host1Token);
+    const { accessToken: adminToken } = await registerUser({
+      email: 'admin@aria.com',
+      role:  'admin'
+    });
 
     const response = await api
       .delete(`/api/listings/${listing.id}`)
-      .set('Authorization', `Bearer ${host2Token}`);
+      .set('Authorization', `Bearer ${adminToken}`);
 
     expect(response.status).toBe(403);
   });
 
   it(`should not delete a listing as super_admin`, async () => {
-    const { accessToken: host1Token } = await registerUser(
-      {
-        email:          'JaneDoe@aria.com', 
-        role:           'host'
-      }
-    );
-
-    const { accessToken: host2Token } = await registerUser(
-      {
-        email:          'JohnDoe@aria.com', 
-        role:           'super_admin'
-      }
-    );
-
-    const { listing } = await createTestListing(host1Token);
+    const { accessToken: superAdminToken } = await registerUser({
+      email: 'superadmin@aria.com',
+      role:  'super_admin'
+    });
 
     const response = await api
       .delete(`/api/listings/${listing.id}`)
-      .set('Authorization', `Bearer ${host2Token}`);
+      .set('Authorization', `Bearer ${superAdminToken}`);
 
     expect(response.status).toBe(403);
   });
 
   it(`should reject if nonexistent listing`, async () => {
-    const { accessToken } = await registerUser(
-      {
-        email:          'JaneDoe@aria.com', 
-        role:           'host'
-      }
-    );
-
     const response = await api
       .delete(`/api/listings/00000000-0000-0000-0000-000000000000`)
-      .set('Authorization', `Bearer ${accessToken}`);
+      .set('Authorization', `Bearer ${hostToken}`);
 
     expect(response.status).toBe(404);
   });
 
   it(`should reject if no auth`, async () => {
-    const { accessToken } = await registerUser(
-      {
-        email:          'JaneDoe@aria.com', 
-        role:           'host'
-      }
-    );
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .delete(`/api/listings/${listing.id}`);
 
@@ -1627,14 +989,19 @@ describe(`DELETE /api/listings/:id`, () => {
 });
 
 describe(`GET /api/listings/:id/images`, () => {
-  it(`should return images for a listing`, async () => {
-    const { accessToken } = await registerUser({
+  let accessToken;
+  let listing;
+
+  beforeEach(async () => {
+    ({ accessToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
-    });
+    }));
 
-    const { listing } = await createTestListing(accessToken);
+    ({ listing } = await createTestListing(accessToken));
+  });
 
+  it(`should return images for a listing`, async () => {
     await api
       .post(`/api/listings/${listing.id}/images`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1649,13 +1016,6 @@ describe(`GET /api/listings/:id/images`, () => {
   });
 
   it(`should return empty array if no images`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .get(`/api/listings/${listing.id}/images`);
 
@@ -1672,14 +1032,19 @@ describe(`GET /api/listings/:id/images`, () => {
 });
 
 describe(`POST /api/listings/:id/images`, () => {
-  it(`should add image to own listing as host`, async () => {
-    const { accessToken } = await registerUser({
+  let accessToken;
+  let listing;
+
+  beforeEach(async () => {
+    ({ accessToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
-    });
+    }));
 
-    const { listing } = await createTestListing(accessToken);
+    ({ listing } = await createTestListing(accessToken));
+  });
 
+  it(`should add image to own listing as host`, async () => {
     const response = await api
       .post(`/api/listings/${listing.id}/images`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1690,13 +1055,6 @@ describe(`POST /api/listings/:id/images`, () => {
   });
 
   it(`should reject if no url`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .post(`/api/listings/${listing.id}/images`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1706,17 +1064,10 @@ describe(`POST /api/listings/:id/images`, () => {
   });
 
   it(`should reject if not the listing's host`, async () => {
-    const { accessToken: host1Token } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const { accessToken: host2Token } = await registerUser({
       email: 'JohnDoe@aria.com',
       role:  'host'
     });
-
-    const { listing } = await createTestListing(host1Token);
 
     const response = await api
       .post(`/api/listings/${listing.id}/images`)
@@ -1727,11 +1078,6 @@ describe(`POST /api/listings/:id/images`, () => {
   });
 
   it(`should reject if nonexistent listing`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .post('/api/listings/00000000-0000-0000-0000-000000000000/images')
       .set('Authorization', `Bearer ${accessToken}`)
@@ -1741,13 +1087,6 @@ describe(`POST /api/listings/:id/images`, () => {
   });
 
   it(`should reject if no auth`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .post(`/api/listings/${listing.id}/images`)
       .send({ url: 'https://example.com/image.jpg' });
@@ -1757,21 +1096,27 @@ describe(`POST /api/listings/:id/images`, () => {
 });
 
 describe(`DELETE /api/listings/:id/images/:imageId`, () => {
-  it(`should remove image from own listing as host`, async () => {
-    const { accessToken } = await registerUser({
+  let accessToken;
+  let listing;
+  let imageId;
+
+  beforeEach(async () => {
+    ({ accessToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
-    });
+    }));
 
-    const { listing } = await createTestListing(accessToken);
+    ({ listing } = await createTestListing(accessToken));
 
     const imageRes = await api
       .post(`/api/listings/${listing.id}/images`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({ url: 'https://example.com/image.jpg' });
 
-    const imageId = imageRes.body.image.id;
+    imageId = imageRes.body.image.id;
+  });
 
+  it(`should remove image from own listing as host`, async () => {
     const response = await api
       .delete(`/api/listings/${listing.id}/images/${imageId}`)
       .set('Authorization', `Bearer ${accessToken}`);
@@ -1781,24 +1126,10 @@ describe(`DELETE /api/listings/:id/images/:imageId`, () => {
   });
 
   it(`should reject if not the listing's host`, async () => {
-    const { accessToken: host1Token } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const { accessToken: host2Token } = await registerUser({
       email: 'JohnDoe@aria.com',
       role:  'host'
     });
-
-    const { listing } = await createTestListing(host1Token);
-
-    const imageRes = await api
-      .post(`/api/listings/${listing.id}/images`)
-      .set('Authorization', `Bearer ${host1Token}`)
-      .send({ url: 'https://example.com/image.jpg' });
-
-    const imageId = imageRes.body.image.id;
 
     const response = await api
       .delete(`/api/listings/${listing.id}/images/${imageId}`)
@@ -1808,11 +1139,6 @@ describe(`DELETE /api/listings/:id/images/:imageId`, () => {
   });
 
   it(`should reject if nonexistent listing`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
     const response = await api
       .delete('/api/listings/00000000-0000-0000-0000-000000000000/images/00000000-0000-0000-0000-000000000000')
       .set('Authorization', `Bearer ${accessToken}`);
@@ -1821,13 +1147,6 @@ describe(`DELETE /api/listings/:id/images/:imageId`, () => {
   });
 
   it(`should reject if nonexistent image`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .delete(`/api/listings/${listing.id}/images/00000000-0000-0000-0000-000000000000`)
       .set('Authorization', `Bearer ${accessToken}`);
@@ -1836,20 +1155,6 @@ describe(`DELETE /api/listings/:id/images/:imageId`, () => {
   });
 
   it(`should reject if no auth`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'JaneDoe@aria.com',
-      role:  'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
-    const imageRes = await api
-      .post(`/api/listings/${listing.id}/images`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send({ url: 'https://example.com/image.jpg' });
-
-    const imageId = imageRes.body.image.id;
-
     const response = await api
       .delete(`/api/listings/${listing.id}/images/${imageId}`);
 
