@@ -1,18 +1,22 @@
-import { describe, it, expect, beforeAll, afterEach, afterAll } from '@jest/globals';
-import { api, registerUser }                                     from './helpers.js';
-import { setupTestDB, clearTestDB, closeTestDB }                from './setup.js';
+import { describe, it, expect, beforeAll, beforeEach, afterEach, afterAll }   from '@jest/globals';
+import { api, registerUser }                                                  from './helpers.js';
+import { setupTestDB, clearTestDB, closeTestDB }                              from './setup.js';
 
 beforeAll(async () => await setupTestDB());
 afterEach(async () => await clearTestDB());
 afterAll(async ()  => await closeTestDB());
 
 describe(`PATCH /api/users/me/become-host`, () => {
-  it(`should upgrade user to host successfully`, async () => {
-    const { accessToken } = await registerUser({
-      email: 'janedoe@aria.com',
-      role:  'guest',
-    });
+  let accessToken;
 
+  beforeEach(async () => {
+    ({ accessToken } = await registerUser({
+      email: 'janedoe@aria.com',
+      role:  'guest'
+    }));
+  });
+
+  it(`should upgrade guest to host successfully`, async () => {
     const response = await api
       .patch('/api/users/me/become-host')
       .set('Authorization', `Bearer ${accessToken}`);
@@ -21,11 +25,11 @@ describe(`PATCH /api/users/me/become-host`, () => {
     expect(response.body.user.role).toBe('host');
   });
 
-  it(`should not upgrade if already host`, async  () => {
-    const { accessToken } = await registerUser({
-      email: 'janedoe@aria.com',
-      role:  'host',
-    });
+  it(`should not upgrade if already host`, async () => {
+    ({ accessToken } = await registerUser({
+      email: 'host@aria.com',
+      role:  'host'
+    }));
 
     const response = await api
       .patch('/api/users/me/become-host')
@@ -35,10 +39,10 @@ describe(`PATCH /api/users/me/become-host`, () => {
   });
 
   it(`should not upgrade if admin`, async () => {
-    const { accessToken } = await registerUser({
+    ({ accessToken } = await registerUser({
       email: 'admin@aria.com',
-      role:  'admin',
-    });
+      role:  'admin'
+    }));
 
     const response = await api
       .patch('/api/users/me/become-host')
@@ -48,10 +52,10 @@ describe(`PATCH /api/users/me/become-host`, () => {
   });
 
   it(`should not upgrade if super_admin`, async () => {
-    const { accessToken } = await registerUser({
+    ({ accessToken } = await registerUser({
       email: 'superadmin@aria.com',
-      role:  'super_admin',
-    });
+      role:  'super_admin'
+    }));
 
     const response = await api
       .patch('/api/users/me/become-host')

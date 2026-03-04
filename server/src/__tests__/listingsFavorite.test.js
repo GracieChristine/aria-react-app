@@ -1,24 +1,30 @@
-import { describe, it, expect, beforeAll, afterEach, afterAll }  from '@jest/globals';
-import { api, registerUser, createTestListing }                  from './helpers.js';
-import { setupTestDB, clearTestDB, closeTestDB }                 from './setup.js';
+import { describe, it, expect, beforeAll, beforeEach, afterEach, afterAll } from '@jest/globals';
+import { api, registerUser, createTestListing }                             from './helpers.js';
+import { setupTestDB, clearTestDB, closeTestDB }                            from './setup.js';
 
 beforeAll(async () => await setupTestDB());
 afterEach(async () => await clearTestDB());
 afterAll(async ()  => await closeTestDB());
 
 describe(`POST /api/favorites/:id`, () => {
+  let hostToken;
+  let guestToken;
+  let listing;
+
+  beforeEach(async () => {
+    ({ accessToken: hostToken } = await registerUser({
+      email: 'janedoe@aria.com',
+      role:  'host'
+    }));
+
+    ({ accessToken: guestToken } = await registerUser({
+      email: 'guest@aria.com'
+    }));
+
+    ({ listing } = await createTestListing(hostToken));
+  });
+
   it(`should add listing to favorites as guest successfully`, async () => {
-    const { accessToken: hostToken } = await registerUser({
-      email:      'janedoe@aria.com',
-      role:       'host'
-    });
-
-    const { accessToken: guestToken } = await registerUser({
-      email:      'guest@aria.com'
-    });
-
-    const { listing } = await createTestListing(hostToken);
-
     const response = await api
       .post(`/api/favorites/${listing.id}`)
       .set('Authorization', `Bearer ${guestToken}`);
@@ -27,17 +33,6 @@ describe(`POST /api/favorites/:id`, () => {
   });
 
   it(`should reject if already favorited`, async () => {
-    const { accessToken: hostToken } = await registerUser({
-      email: 'janedoe@aria.com',
-      role:  'host'
-    });
-
-    const { accessToken: guestToken } = await registerUser({
-      email: 'guest@aria.com'
-    });
-
-    const { listing } = await createTestListing(hostToken);
-
     await api
       .post(`/api/favorites/${listing.id}`)
       .set('Authorization', `Bearer ${guestToken}`);
@@ -50,10 +45,6 @@ describe(`POST /api/favorites/:id`, () => {
   });
 
   it(`should reject if nonexistent listing`, async () => {
-    const { accessToken: guestToken } = await registerUser({
-      email:      'guest@aria.com'
-    });
-
     const response = await api
       .post('/api/favorites/00000000-0000-0000-0000-000000000000')
       .set('Authorization', `Bearer ${guestToken}`);
@@ -62,13 +53,6 @@ describe(`POST /api/favorites/:id`, () => {
   });
 
   it(`should reject if no auth`, async () => {
-    const { accessToken } = await registerUser({
-      email:      'janedoe@aria.com',
-      role:       'host'
-    });
-
-    const { listing } = await createTestListing(accessToken);
-
     const response = await api
       .post(`/api/favorites/${listing.id}`);
 
@@ -77,22 +61,26 @@ describe(`POST /api/favorites/:id`, () => {
 });
 
 describe(`GET /api/favorites`, () => {
-  it(`should return own favorites as guest`, async () => {
+  let guestToken;
+
+  beforeEach(async () => {
     const { accessToken: hostToken } = await registerUser({
-      email:      'janedoe@aria.com',
-      role:       'host'
+      email: 'janedoe@aria.com',
+      role:  'host'
     });
 
-    const { accessToken: guestToken } = await registerUser({
-      email:      'guest@aria.com'
-    });
+    ({ accessToken: guestToken } = await registerUser({
+      email: 'guest@aria.com'
+    }));
 
     const { listing } = await createTestListing(hostToken);
 
     await api
       .post(`/api/favorites/${listing.id}`)
       .set('Authorization', `Bearer ${guestToken}`);
+  });
 
+  it(`should return own favorites as guest`, async () => {
     const response = await api
       .get('/api/favorites')
       .set('Authorization', `Bearer ${guestToken}`);
@@ -102,45 +90,34 @@ describe(`GET /api/favorites`, () => {
   });
 
   it(`should reject if no auth`, async () => {
-    const { accessToken: hostToken } = await registerUser({
-      email:      'janedoe@aria.com',
-      role:       'host'
-    });
-
-    const { accessToken: guestToken } = await registerUser({
-      email:      'guest@aria.com'
-    });
-
-    const { listing } = await createTestListing(hostToken);
-
-    await api
-      .post(`/api/favorites/${listing.id}`)
-      .set('Authorization', `Bearer ${guestToken}`);
-
-    const response = await api
-      .get('/api/favorites');
+    const response = await api.get('/api/favorites');
 
     expect(response.status).toBe(401);
   });
 });
 
 describe(`DELETE /api/favorites/:id`, () => {
-  it(`should remove listing from favorites as guest successfully`, async () => {
+  let guestToken;
+  let listing;
+
+  beforeEach(async () => {
     const { accessToken: hostToken } = await registerUser({
-      email:      'janedoe@aria.com',
-      role:       'host'
+      email: 'janedoe@aria.com',
+      role:  'host'
     });
 
-    const { accessToken: guestToken } = await registerUser({
-      email:      'guest@aria.com'
-    });
+    ({ accessToken: guestToken } = await registerUser({
+      email: 'guest@aria.com'
+    }));
 
-    const { listing } = await createTestListing(hostToken);
+    ({ listing } = await createTestListing(hostToken));
 
     await api
       .post(`/api/favorites/${listing.id}`)
       .set('Authorization', `Bearer ${guestToken}`);
+  });
 
+  it(`should remove listing from favorites as guest successfully`, async () => {
     const response = await api
       .delete(`/api/favorites/${listing.id}`)
       .set('Authorization', `Bearer ${guestToken}`);
@@ -155,21 +132,6 @@ describe(`DELETE /api/favorites/:id`, () => {
   });
 
   it(`should reject if nonexistent listing`, async () => {
-    const { accessToken: hostToken } = await registerUser({
-      email:      'janedoe@aria.com',
-      role:       'host'
-    });
-
-    const { accessToken: guestToken } = await registerUser({
-      email:      'guest@aria.com'
-    });
-
-    const { listing } = await createTestListing(hostToken);
-
-    await api
-      .post(`/api/favorites/${listing.id}`)
-      .set('Authorization', `Bearer ${guestToken}`);
-
     const response = await api
       .delete('/api/favorites/00000000-0000-0000-0000-000000000000')
       .set('Authorization', `Bearer ${guestToken}`);
@@ -178,21 +140,6 @@ describe(`DELETE /api/favorites/:id`, () => {
   });
 
   it(`should reject if no auth`, async () => {
-    const { accessToken: hostToken } = await registerUser({
-      email:      'janedoe@aria.com',
-      role:       'host'
-    });
-
-    const { accessToken: guestToken } = await registerUser({
-      email:      'guest@aria.com'
-    });
-
-    const { listing } = await createTestListing(hostToken);
-
-    await api
-      .post(`/api/favorites/${listing.id}`)
-      .set('Authorization', `Bearer ${guestToken}`);
-
     const response = await api
       .delete(`/api/favorites/${listing.id}`);
 

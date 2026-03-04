@@ -331,7 +331,7 @@ describe(`GET /api/auth/me`, () => {
     expect(response.status).toBe(401);
   });
 
-  it(`should reject if no aut`, async () => {
+  it(`should reject if no auth`, async () => {
     const response = await api.get('/api/auth/me');
 
     expect(response.status).toBe(401);
