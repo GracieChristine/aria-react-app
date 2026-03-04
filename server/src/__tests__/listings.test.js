@@ -20,6 +20,11 @@ const basePayload = {
   propertyType:  'apartment'
 };
 
+const omit = (obj, key) => {
+  const { [key]: _, ...rest } = obj; // eslint-disable-line no-unused-vars
+  return rest;
+};
+
 describe(`POST /api/listings`, () => {
   let accessToken;
 
@@ -147,7 +152,7 @@ describe(`POST /api/listings`, () => {
   });
 
   it(`should reject if create with no pricePerNight`, async () => {
-    const { pricePerNight: _, ...payload } = basePayload;
+    const payload = omit(basePayload, 'pricePerNight');
 
     const response = await api
       .post('/api/listings')
@@ -176,7 +181,7 @@ describe(`POST /api/listings`, () => {
   });
 
   it(`should reject if create with no maxGuests`, async () => {
-    const { maxGuests: _, ...payload } = basePayload;
+    const payload = omit(basePayload, 'maxGuests');
 
     const response = await api
       .post('/api/listings')
@@ -205,7 +210,7 @@ describe(`POST /api/listings`, () => {
   });
 
   it(`should reject if create with no bedrooms`, async () => {
-    const { bedrooms: _, ...payload } = basePayload;
+    const payload = omit(basePayload, 'bedrooms');
 
     const response = await api
       .post('/api/listings')
@@ -225,7 +230,7 @@ describe(`POST /api/listings`, () => {
   });
 
   it(`should reject if create with no bathrooms`, async () => {
-    const { bathrooms: _, ...payload } = basePayload;
+    const payload = omit(basePayload, 'bathrooms');
 
     const response = await api
       .post('/api/listings')

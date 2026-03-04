@@ -1,19 +1,11 @@
 import { describe, it, expect, beforeAll, beforeEach, afterEach, afterAll } from '@jest/globals';
-import { api, registerUser, createTestListing, createTestBooking }          from './helpers.js';
+import { api, registerUser, createTestListing, createTestBooking, setBookingUpdatedAt } from './helpers.js';
 import { setupTestDB, clearTestDB, closeTestDB }                            from './setup.js';
 import { bookingsPaymentExpiry }                                            from '../jobs/bookingsPaymentExpiry.js';
-import pool                                                                 from '../db/pool.js';
 
 beforeAll(async () => await setupTestDB());
 afterEach(async () => await clearTestDB());
 afterAll(async ()  => await closeTestDB());
-
-const setBookingUpdatedAt = async (bookingId, daysAgo) => {
-  await pool.query(
-    `UPDATE bookings SET updated_at = NOW() - INTERVAL '${daysAgo} days' WHERE id = $1`,
-    [bookingId]
-  );
-};
 
 describe(`Bookings Payment Expiry Job`, () => {
   let guestToken;
