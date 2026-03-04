@@ -78,7 +78,7 @@ describe(`POST /api/messages`, () => {
     expect(response.status).toBe(201);
   });
 
-  it(`should reject if message body is empty`, async () => {
+  it(`should reject if empty message`, async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -103,25 +103,7 @@ describe(`POST /api/messages`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if listing does not exist`, async () => {
-    const { accessToken: guestToken } = await registerUser({
-      email: 'guest@aria.com',
-      role:  'guest'
-    });
-
-    const response = await api
-      .post('/api/messages')
-      .set('Authorization', `Bearer ${guestToken}`)
-      .send({
-        listingId: '00000000-0000-0000-0000-000000000000',
-        hostId:    '00000000-0000-0000-0000-000000000000',
-        message:   'Hi, is this listing available?'
-      });
-
-    expect(response.status).toBe(404);
-  });
-
-  it(`should reject if host does not match listing`, async () => {
+  it(`should reject if host does not belong to listing`, async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -144,6 +126,24 @@ describe(`POST /api/messages`, () => {
       });
 
     expect(response.status).toBe(400);
+  });
+
+  it(`sshould reject if nonexistent listing`, async () => {
+    const { accessToken: guestToken } = await registerUser({
+      email: 'guest@aria.com',
+      role:  'guest'
+    });
+
+    const response = await api
+      .post('/api/messages')
+      .set('Authorization', `Bearer ${guestToken}`)
+      .send({
+        listingId: '00000000-0000-0000-0000-000000000000',
+        hostId:    '00000000-0000-0000-0000-000000000000',
+        message:   'Hi, is this listing available?'
+      });
+
+    expect(response.status).toBe(404);
   });
 
   it(`should reject if no auth`, async () => {
@@ -342,7 +342,7 @@ describe(`POST /api/messages/:conversationId`, () => {
     expect(response2.body.message.body).toBe('Hello, yes, it is still available.');
   });
 
-  it(`should reject if empty message body`, async () => {
+  it(`should reject if empty message`, async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'

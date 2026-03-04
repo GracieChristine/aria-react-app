@@ -150,7 +150,7 @@ describe(`PATCH /api/bookings/:id/cancel`, () => {
 });
 
 describe(`PATCH /api/bookings/:id/cancel/approve`, () => {
-  it(`should approve cancellation with full refund (>14 days)`, async () => {
+  it(`should cancel with full refund if check-in is more than 14 days away`, async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -199,7 +199,7 @@ describe(`PATCH /api/bookings/:id/cancel/approve`, () => {
     expect(response.body.refund.amount).toBe(400);
   });
 
-  it(`should approve cancellation with partial refund (7-14 days)`, async  () => {
+  it(`should cancel with full refund if check-in is 7-14 days away`, async  () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -251,7 +251,7 @@ describe(`PATCH /api/bookings/:id/cancel/approve`, () => {
     expect(response.body.refund.amount).toBe(200);
   });
 
-  it(`should approve cancellation with no refund (<7 days)`, async () => {
+  it(`should cancel with full refund if check-in is less than 7 days away`, async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -303,7 +303,7 @@ describe(`PATCH /api/bookings/:id/cancel/approve`, () => {
     expect(response.body.refund.amount).toBe(0);
   });
 
-  it(`should reject if not the listing's host`, async () => {
+  it(`should not approve if not the listing's host`, async () => {
     const { accessToken: host1Token } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -353,7 +353,7 @@ describe(`PATCH /api/bookings/:id/cancel/approve`, () => {
     expect(response.status).toBe(403);
   });
 
-  it(`should reject if booking not in cancellation_requested status`, async () => {
+  it(`should reject if booking is not awaiting cancellation`, async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -582,7 +582,7 @@ describe(`PATCH /api/bookings/:id/cancel/reject`, () => {
     expect(response.status).toBe(403);
   });
 
-  it(`should reject if booking not in cancellation_requested status`, async () => {
+  it(`should not reject if not the listing's host`, async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'

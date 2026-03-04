@@ -21,7 +21,7 @@ describe(`PATCH /api/users/me/become-host`, () => {
     expect(response.body.user.role).toBe('host');
   });
 
-  it(`should reject if user is already a host`, async  () => {
+  it(`should not upgrade if already host`, async  () => {
     const { accessToken } = await registerUser({
       email: 'janedoe@aria.com',
       role:  'host',
@@ -34,7 +34,7 @@ describe(`PATCH /api/users/me/become-host`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if user is an admin`, async () => {
+  it(`should not upgrade if admin`, async () => {
     const { accessToken } = await registerUser({
       email: 'admin@aria.com',
       role:  'admin',
@@ -47,7 +47,7 @@ describe(`PATCH /api/users/me/become-host`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if user is an super_admin`, async () => {
+  it(`should not upgrade if super_admin`, async () => {
     const { accessToken } = await registerUser({
       email: 'superadmin@aria.com',
       role:  'super_admin',
@@ -60,7 +60,7 @@ describe(`PATCH /api/users/me/become-host`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if invalid token`, async () => {
+  it(`should reject if invalid auth`, async () => {
     const response = await api
       .patch('/api/users/me/become-host')
       .set('Authorization', `Bearer invalidtoken`);
