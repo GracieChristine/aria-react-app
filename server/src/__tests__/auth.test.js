@@ -28,6 +28,57 @@ describe(`POST /api/auth/register`, () => {
     expect(response.body.user.passwordHash).toBeUndefined();
   });
 
+  it(`should allow host role on registration`, async () => {
+    const response = await api
+      .post('/api/auth/register')
+      .send(
+        {
+          email:      'JaneDoe@aria.com',
+          password:   'password123',
+          firstName:  'Jane',
+          lastName:   'Doe',
+          role:       'host'
+        }
+      );
+    
+    expect(response.status).toBe(201);
+    expect(response.body.user.role).toBe('host');
+  });
+
+  it(`should default role to guest even if admin role requested`, async () => {
+    const response = await api
+      .post('/api/auth/register')
+      .send(
+        {
+          email:      'JaneDoe@aria.com',
+          password:   'password123',
+          firstName:  'Jane',
+          lastName:   'Doe',
+          role:       'admin'
+        }
+      );
+    
+    expect(response.status).toBe(201);
+    expect(response.body.user.role).toBe('guest');
+  });
+
+  it(`should default role to guest even if super_admin role requested`, async () => {
+    const response = await api
+      .post('/api/auth/register')
+      .send(
+        {
+          email:      'JaneDoe@aria.com',
+          password:   'password123',
+          firstName:  'Jane',
+          lastName:   'Doe',
+          role:       'super-admin'
+        }
+      );
+    
+    expect(response.status).toBe(201);
+    expect(response.body.user.role).toBe('guest');
+  });
+
   it(`should reject if no email`, async () => {
     const response = await api
       .post('/api/auth/register')
@@ -76,7 +127,7 @@ describe(`POST /api/auth/register`, () => {
     expect(response.body.success).toBe(false);
   });
 
-  it(`should reject if invalid password`, async () => {
+  it(`should reject if password too short`, async () => {
     const response = await api
       .post('/api/auth/register')
       .send(
@@ -141,57 +192,6 @@ describe(`POST /api/auth/register`, () => {
 
     expect(response.status).toBe(422);
     expect(response.body.success).toBe(false);
-  });
-
-  it(`should default role to guest even if host role requested`, async () => {
-    const response = await api
-      .post('/api/auth/register')
-      .send(
-        {
-          email:      'JaneDoe@aria.com',
-          password:   'password123',
-          firstName:  'Jane',
-          lastName:   'Doe',
-          role:       'host'
-        }
-      );
-    
-    expect(response.status).toBe(201);
-    expect(response.body.user.role).toBe('host');
-  });
-
-  it(`should default role to guest even if admin role requested`, async () => {
-    const response = await api
-      .post('/api/auth/register')
-      .send(
-        {
-          email:      'JaneDoe@aria.com',
-          password:   'password123',
-          firstName:  'Jane',
-          lastName:   'Doe',
-          role:       'admin'
-        }
-      );
-    
-    expect(response.status).toBe(201);
-    expect(response.body.user.role).toBe('guest');
-  });
-
-  it(`should default role to guest even if super-admin role requested`, async () => {
-    const response = await api
-      .post('/api/auth/register')
-      .send(
-        {
-          email:      'JaneDoe@aria.com',
-          password:   'password123',
-          firstName:  'Jane',
-          lastName:   'Doe',
-          role:       'super-admin'
-        }
-      );
-    
-    expect(response.status).toBe(201);
-    expect(response.body.user.role).toBe('guest');
   });
 });
 
@@ -323,16 +323,16 @@ describe(`GET /api/auth/me`, () => {
     expect(response.body.user.email).toBe('janedoe@aria.com');
   });
 
-  it(`should rejects request if no authentication/token`, async () => {
-    const response = await api.get('/api/auth/me');
+  it(`should reject if invalid token`, async () => {
+    const response = await api
+      .get('/api/auth/me')
+      .set('Authorization', 'Bearer invalidtoken');
 
     expect(response.status).toBe(401);
   });
 
-  it(`should rejects request if invalid authentication/token`, async () => {
-    const response = await api
-      .get('/api/auth/me')
-      .set('Authorization', 'Bearer invalidtoken');
+  it(`should reject if no aut`, async () => {
+    const response = await api.get('/api/auth/me');
 
     expect(response.status).toBe(401);
   });

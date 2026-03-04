@@ -98,7 +98,7 @@ describe(`POST /api/bookings/:id/pay`, () => {
       expect(response.body.booking.paymentStatus).toBe('paid');
   });
 
-  it(`should reject if booking already paid`, async () => {
+  it(`should reject if booking is already paid`, async () => {
     const { accessToken: hostToken} = await registerUser({
       email:   'janedoe@aria.com',
       role:    'host'
@@ -161,7 +161,7 @@ describe(`POST /api/bookings/:id/pay`, () => {
       expect(response.status).toBe(400);
   });
 
-  it(`should reject if not the guest's booking`, async () => {
+  it(`should not pay if not the booking's guest`, async () => {
     const { accessToken: hostToken} = await registerUser({
       email:   'janedoe@aria.com',
       role:    'host'

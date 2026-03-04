@@ -7,7 +7,7 @@ afterEach(async () => await clearTestDB());
 afterAll(async ()  => await closeTestDB());
 
 describe(`POST /api/listings`, () => {
-  it(`should create a listing as host with all info successfully`, async() => {
+  it(`should create listing as host successfully`, async() => {
     const { accessToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -626,7 +626,7 @@ describe(`POST /api/listings`, () => {
 });
 
 describe(`GET /api/listings`, () => {
-  it(`should returns active listings as host`, async () => {
+  it(`should return active listings as host`, async () => {
     const { accessToken } = await registerUser(
       {
         email:          'JaneDoe@aria.com', 
@@ -648,7 +648,7 @@ describe(`GET /api/listings`, () => {
     expect(response.body.pagination).toBeDefined();
   });
 
-  it(`should returns active listings not as its host`, async () => {
+  it(`should return active listings as guest`, async () => {
     const { accessToken: hostToken } = await registerUser(
       {
         email:          'JaneDoe@aria.com', 
@@ -675,7 +675,7 @@ describe(`GET /api/listings`, () => {
     expect(response.status).toBe(200);
   });
 
-  it(`should returns active listings filter by city`, async () => {
+  it(`should return active listings filtered by city`, async () => {
     const { accessToken } = await registerUser(
       {
         email:          'JaneDoe@aria.com', 
@@ -695,7 +695,7 @@ describe(`GET /api/listings`, () => {
     expect(response.body.listings.every((l) => l.city === 'Denver')).toBe(true);
   });
 
-  it(`should returns active listings filter by invalid city`, async () => {
+  it(`should return empty array if city not found`, async () => {
     const { accessToken } = await registerUser(
       {
         email:          'JaneDoe@aria.com', 
@@ -738,7 +738,7 @@ describe(`GET /api/listings/:id`, () => {
     expect(response.body.listing.id).toBe(listing.id);
   });
 
-  it(`should return 404 if nonexistent`, async () => {
+  it(`should reject if nonexistent listing`, async () => {
     const { accessToken } = await registerUser(
       {
         email:          'JaneDoe@aria.com', 
@@ -1200,7 +1200,7 @@ describe(`PUT /api/listings/:id`, () => {
     expect(response.status).toBe(422);
   });
 
-  it(`should return 404 if nonexistent`, async () => {
+  it(`should reject if nonexistent listing`, async () => {
     const { accessToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -1435,7 +1435,7 @@ describe(`PATCH /api/listings/:id/status`, () => {
     expect(response.body.listing.status).toBe('inactive');
   });
 
-  it(`should reject if body with no status field`, async () => {
+  it(`should reject if no status field`, async () => {
     const { accessToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -1450,7 +1450,7 @@ describe(`PATCH /api/listings/:id/status`, () => {
     expect(response.status).toBe(422);
   });
 
-  it(`should return 404 if nonexistent`, async () => {
+  it(`should reject if nonexistent listing`, async () => {
     const { accessToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -1594,7 +1594,7 @@ describe(`DELETE /api/listings/:id`, () => {
     expect(response.status).toBe(403);
   });
 
-  it(`should return 404 if nonexistent`, async () => {
+  it(`should reject if nonexistent listing`, async () => {
     const { accessToken } = await registerUser(
       {
         email:          'JaneDoe@aria.com', 
@@ -1663,7 +1663,7 @@ describe(`GET /api/listings/:id/images`, () => {
     expect(response.body.images.length).toBe(0);
   });
 
-  it(`should return 404 if nonexistent listing`, async () => {
+  it(`should reject if nonexistent listing`, async () => {
     const response = await api
       .get('/api/listings/00000000-0000-0000-0000-000000000000/images');
 
