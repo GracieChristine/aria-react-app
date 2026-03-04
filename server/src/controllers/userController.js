@@ -7,7 +7,7 @@ export const userController = {
   async becomeHost(req, res) {
     try {
       if (req.user.role !== 'guest') {
-        return errorResponse(res, 'Only guests can become hosts', 403);
+        return errorResponse(res, 'Only guests can become hosts', 400);
       }
 
       const user = await userModel.update(req.user.id, { role: 'host' });

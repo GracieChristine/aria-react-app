@@ -31,7 +31,7 @@ describe(`PATCH /api/users/me/become-host`, () => {
       .patch('/api/users/me/become-host')
       .set('Authorization', `Bearer ${accessToken}`);
 
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(400);
   });
 
   it(`should reject if user is an admin`, async () => {
@@ -44,7 +44,7 @@ describe(`PATCH /api/users/me/become-host`, () => {
       .patch('/api/users/me/become-host')
       .set('Authorization', `Bearer ${accessToken}`);
 
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(400);
   });
 
   it(`should reject if user is an super_admin`, async () => {
@@ -57,7 +57,7 @@ describe(`PATCH /api/users/me/become-host`, () => {
       .patch('/api/users/me/become-host')
       .set('Authorization', `Bearer ${accessToken}`);
 
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(400);
   });
 
   it(`should reject if invalid token`, async () => {
