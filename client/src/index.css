@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Raleway:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,17 +6,17 @@
 
 /* ── CSS Custom Properties ── */
 :root {
-  --aria-blush:        #F9A8A8;
-  --aria-blush-light:  #FDE8E8;
-  --aria-teal:         #4DADA8;
-  --aria-teal-dark:    #3A8A85;
-  --aria-teal-light:   #E6F5F4;
+  --aria-blush:        #A8B8C0;
+  --aria-blush-light:  #EEF2F4;
+  --aria-teal:         #3A6070;
+  --aria-teal-dark:    #2C4D5C;
+  --aria-teal-light:   #E2E8EC;
   --aria-white:        #FFFFFF;
-  --aria-offwhite:     #F9FAFB;
-  --aria-soft-gray:    #E5E7EB;
-  --aria-text-dark:    #1F2937;
-  --aria-text-mid:     #6B7280;
-  --aria-text-light:   #9CA3AF;
+  --aria-offwhite:     #F7F9FA;
+  --aria-soft-gray:    #E2E8EC;
+  --aria-text-dark:    #162028;
+  --aria-text-mid:     #4A6070;
+  --aria-text-light:   #A8B8C0;
   --aria-success:      #6EE7B7;
   --aria-warning:      #FCD34D;
   --aria-error:        #F87171;
@@ -33,7 +33,7 @@ html {
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Raleway', system-ui, sans-serif;
   background-color: var(--aria-offwhite);
   color: var(--aria-text-dark);
   -webkit-font-smoothing: antialiased;
