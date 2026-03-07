@@ -22,6 +22,9 @@
   --aria-error:        #F87171;
 }
 
+/* ── Third-party overrides ── */
+div[data-lastpass-icon-root] { display: none !important; }
+
 /* ── Base ── */
 *, *::before, *::after {
   box-sizing: border-box;
