@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { AuthProvider } from './context/AuthContext'
+import { AuthProvider } from './context/AuthProvider'
 
 // Pages
 import LandingPage from './pages/LandingPage'
