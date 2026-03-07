@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "test": "cypress run",
+    "test:smoke": "cypress run --env grep=@smoke,grepFilterSpecs=true",
     "open": "cypress open"
   },
   "devDependencies": {
+    "@bahmutov/cy-grep": "^2.1.0",
     "cypress": "^14.0.0"
   }
 }

@@ -1,5 +1,5 @@
 import cron                  from 'node-cron';
-import { bookingsPaymentExpiry } from './jobs/bookingsPaymentExpiry.js';
+import { bookingsPaymentExpiry } from './bookingsPaymentExpiry.js';
 import { config }            from '../config/env.js';
 
 export const startJobs = () => {

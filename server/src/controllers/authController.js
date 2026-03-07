@@ -60,7 +60,7 @@ export const authController = {
 
       const user = await userModel.findByEmail(email);
       if (!user) {
-        return errorResponse(res, 'Invalid email or password', 401);
+        return errorResponse(res, 'No account found with this email', 404);
       }
 
       const valid = await comparePassword(password, user.password_hash);
