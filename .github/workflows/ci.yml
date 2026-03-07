@@ -131,8 +131,8 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Run migrations + seed
-        run: yarn workspace server migrate && yarn workspace server seed
+      - name: Run migrations
+        run: yarn workspace server migrate
 
       - name: Build client
         run: yarn workspace client build
@@ -221,8 +221,8 @@ jobs:
         env:
           VITE_API_BASE_URL: http://localhost:5000/api
 
-      - name: Run migrations + seed
-        run: yarn workspace server migrate && yarn workspace server seed
+      - name: Run migrations
+        run: yarn workspace server migrate
 
       - name: Start server
         run: yarn workspace server start &
