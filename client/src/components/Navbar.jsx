@@ -12,7 +12,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           <span className="text-sm text-aria-text-mid">Hi, {user.firstName} {user.lastName}</span>
           <button onClick={logout} className="btn-ghost text-sm">
-            Log out
+            Logout
           </button>
         </div>
       ) : (
