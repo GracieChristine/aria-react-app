@@ -140,7 +140,7 @@ test.describe('Auth', () => {
     })
 
     test.beforeEach(async ({ page }) => {
-      await page.getByRole('link', { name: 'Log in' }).click()
+      await page.getByRole('navigation').getByRole('link', { name: 'Log in' }).click()
       await expect(page).toHaveURL('/login')
     })
 

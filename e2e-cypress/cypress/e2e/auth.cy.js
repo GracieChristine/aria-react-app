@@ -135,7 +135,7 @@ describe('Auth', () => {
     })
 
     beforeEach(() => {
-      cy.contains('a', 'Log in').click()
+      cy.get('nav').contains('a', 'Log in').click()
       cy.url().should('eq', Cypress.config('baseUrl') + '/login')
     })
 
