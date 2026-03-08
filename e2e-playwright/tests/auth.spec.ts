@@ -224,8 +224,8 @@ test.describe('Auth', () => {
       await page.getByRole('button', { name: 'Logout' }).click()
 
       await expect(page).toHaveURL('/')
-      await expect(page.getByText('Log in')).toBeVisible()
-      await expect(page.getByText('Sign up')).toBeVisible()
+      await expect(page.getByRole('navigation').getByText('Log in')).toBeVisible()
+      await expect(page.getByRole('navigation').getByText('Sign up')).toBeVisible()
     })
 
     test('should logout as a new registered user and redirect to home', async ({ page }) => {
@@ -243,8 +243,8 @@ test.describe('Auth', () => {
       await page.getByRole('button', { name: 'Logout' }).click()
 
       await expect(page).toHaveURL('/')
-      await expect(page.getByText('Log in')).toBeVisible()
-      await expect(page.getByText('Sign up')).toBeVisible()
+      await expect(page.getByRole('navigation').getByText('Log in')).toBeVisible()
+      await expect(page.getByRole('navigation').getByText('Sign up')).toBeVisible()
 
       await page.goto('/login')
 
@@ -258,8 +258,8 @@ test.describe('Auth', () => {
       await page.getByRole('button', { name: 'Logout' }).click()
 
       await expect(page).toHaveURL('/')
-      await expect(page.getByText('Log in')).toBeVisible()
-      await expect(page.getByText('Sign up')).toBeVisible()
+      await expect(page.getByRole('navigation').getByText('Log in')).toBeVisible()
+      await expect(page.getByRole('navigation').getByText('Sign up')).toBeVisible()
     })
   })
 })
