@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
@@ -13,15 +14,13 @@ export default function LandingPage() {
           <p className="text-aria-text-mid text-lg mb-10 max-w-md">
             Discover unique places to stay, from cozy cottages to city apartments.
           </p>
-          <div className="flex w-full max-w-lg gap-3">
-            <input
-              className="input flex-1"
-              type="text"
-              placeholder="Where are you going?"
-            />
-            <button className="btn-primary px-6">
-              Search
-            </button>
+          <div className="flex gap-3">
+            <Link to="/register" className="btn-primary px-8">
+              Get started
+            </Link>
+            <Link to="/login" className="btn-secondary px-8">
+              Log in
+            </Link>
           </div>
         </section>
       </main>
