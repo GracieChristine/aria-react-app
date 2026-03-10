@@ -4,6 +4,9 @@ import { authenticate }     from '../middleware/authenticate.js';
 
 const router = Router();
 
-router.patch('/me/become-host', authenticate, userController.becomeHost);
+router.get   ('/me',              authenticate, userController.getMe);
+router.patch ('/me',              authenticate, userController.updateMe);
+router.patch ('/me/password',     authenticate, userController.changePassword);
+router.patch ('/me/become-host',  authenticate, userController.becomeHost);
 
 export default router;
