@@ -10,7 +10,7 @@ export default function Navbar() {
       </Link>
       {user ? (
         <div className="flex items-center gap-3">
-          <span className="text-sm text-aria-text-mid">Hi, {user.firstName} {user.lastName}</span>
+          <Link to="/profile" className="text-sm text-aria-text-mid hover:text-aria-teal transition-colors">Hi, {user.firstName} {user.lastName}</Link>
           <button onClick={logout} className="btn-ghost text-sm">
             Logout
           </button>
