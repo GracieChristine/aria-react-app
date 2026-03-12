@@ -23,10 +23,10 @@ describe('GET /api/users/me', () => {
 
     expect(res.status).toBe(200);
     expect(res.body.user).toMatchObject({
-      email:      'jane@aria.com',
-      first_name: 'Jane',
-      last_name:  'Doe',
-      role:       'guest',
+      email:     'jane@aria.com',
+      firstName: 'Jane',
+      lastName:  'Doe',
+      role:      'guest',
     });
     expect(res.body.user).not.toHaveProperty('password_hash');
   });
@@ -61,7 +61,7 @@ describe('PATCH /api/users/me', () => {
       .send({ firstName: 'Janet' });
 
     expect(res.status).toBe(200);
-    expect(res.body.user.first_name).toBe('Janet');
+    expect(res.body.user.firstName).toBe('Janet');
   });
 
   it('should update last name', async () => {
@@ -71,7 +71,7 @@ describe('PATCH /api/users/me', () => {
       .send({ lastName: 'Smith' });
 
     expect(res.status).toBe(200);
-    expect(res.body.user.last_name).toBe('Smith');
+    expect(res.body.user.lastName).toBe('Smith');
   });
 
   it('should update email', async () => {

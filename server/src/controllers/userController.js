@@ -2,6 +2,19 @@ import { userModel }                          from '../models/userModel.js';
 import { successResponse, errorResponse }     from '../utils/response.js';
 import { hashPassword, comparePassword }      from '../utils/password.js';
 
+const formatUser = (user) => ({
+  id:         user.id,
+  email:      user.email,
+  firstName:  user.first_name,
+  lastName:   user.last_name,
+  avatarUrl:  user.avatar_url,
+  role:       user.role,
+  bio:        user.bio,
+  phone:      user.phone,
+  isVerified: user.is_verified,
+  createdAt:  user.created_at,
+});
+
 export const userController = {
 
   // ── GET /api/users/me ──
@@ -9,7 +22,7 @@ export const userController = {
     try {
       const user = await userModel.findById(req.user.id);
       if (!user) return errorResponse(res, 'User not found', 404);
-      return successResponse(res, { user });
+      return successResponse(res, { user: formatUser(user) });
     } catch {
       return errorResponse(res, 'Failed to fetch profile', 500);
     }
@@ -40,7 +53,7 @@ export const userController = {
       }
 
       const user = await userModel.update(req.user.id, updates);
-      return successResponse(res, { user });
+      return successResponse(res, { user: formatUser(user) });
     } catch {
       return errorResponse(res, 'Failed to update profile', 500);
     }
@@ -80,7 +93,7 @@ export const userController = {
 
       const user = await userModel.update(req.user.id, { role: 'host' });
 
-      return successResponse(res, { user });
+      return successResponse(res, { user: formatUser(user) });
     } catch {
       return errorResponse(res, 'Failed to update role', 500);
     }
