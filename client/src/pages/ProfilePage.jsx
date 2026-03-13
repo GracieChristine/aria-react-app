@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import Navbar from '../components/Navbar'
 
 export default function ProfilePage() {
-  const { user, token, logout, updateUser } = useAuth()
+  const { user, token, updateUser } = useAuth()
   const navigate = useNavigate()
 
   const [activeSection, setActiveSection] = useState('profile')
@@ -17,6 +17,7 @@ export default function ProfilePage() {
     phone:     user?.phone     ?? '',
     bio:       user?.bio       ?? '',
   })
+  const [profileEditing, setProfileEditing] = useState(false)
   const [profileError, setProfileError]     = useState('')
   const [profileSuccess, setProfileSuccess] = useState('')
   const [profileLoading, setProfileLoading] = useState(false)
@@ -60,6 +61,7 @@ export default function ProfilePage() {
       }
       updateUser(data.user)
       setProfileSuccess('Profile updated.')
+      setProfileEditing(false)
     } catch {
       setProfileError('Unable to connect. Please try again.')
     } finally {
@@ -176,12 +178,6 @@ export default function ProfilePage() {
                   {item.label}
                 </button>
               ))}
-              <button
-                onClick={() => { logout(); navigate('/') }}
-                className="w-full text-left px-6 py-[0.8rem] text-sm text-aria-text-light border-l-[3px] border-l-transparent hover:bg-aria-offwhite transition-colors"
-              >
-                Sign out
-              </button>
             </nav>
           </aside>
 
@@ -190,75 +186,100 @@ export default function ProfilePage() {
 
             {activeSection === 'profile' && (
               <>
-                <div className="px-7 py-5 bg-aria-offwhite border-b border-aria-soft-gray">
+                <div className="flex items-center justify-between px-7 py-5 bg-aria-offwhite border-b border-aria-soft-gray">
                   <span className="font-serif italic text-aria-text-dark text-[1.1rem]">Profile</span>
-                </div>
-                <form onSubmit={handleProfileSave} className="px-7 py-6 flex flex-col gap-4">
-                  {profileError   && <p className="text-aria-error text-sm">{profileError}</p>}
-                  {profileSuccess && <p className="text-aria-teal text-sm">{profileSuccess}</p>}
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="label">First name</label>
-                      <input
-                        className="input"
-                        type="text"
-                        value={profileForm.firstName}
-                        onChange={e => setProfileForm({ ...profileForm, firstName: e.target.value })}
-                        data-lpignore="true"
-                      />
-                    </div>
-                    <div>
-                      <label className="label">Last name</label>
-                      <input
-                        className="input"
-                        type="text"
-                        value={profileForm.lastName}
-                        onChange={e => setProfileForm({ ...profileForm, lastName: e.target.value })}
-                        data-lpignore="true"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="label">Email address</label>
-                    <input
-                      className="input"
-                      type="email"
-                      value={profileForm.email}
-                      onChange={e => setProfileForm({ ...profileForm, email: e.target.value })}
-                      data-lpignore="true"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="label">Phone</label>
-                    <input
-                      className="input"
-                      type="tel"
-                      value={profileForm.phone}
-                      onChange={e => setProfileForm({ ...profileForm, phone: e.target.value })}
-                      placeholder="Add a phone number"
-                      data-lpignore="true"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="label">Bio</label>
-                    <textarea
-                      className="input min-h-[90px] resize-y"
-                      value={profileForm.bio}
-                      onChange={e => setProfileForm({ ...profileForm, bio: e.target.value })}
-                      placeholder="Tell hosts a little about yourself…"
-                    />
-                  </div>
-
-                  <div className="flex justify-end pt-1">
-                    <button className="btn-primary text-sm" type="submit" disabled={profileLoading}>
-                      {profileLoading ? 'Saving…' : 'Save changes'}
+                  {!profileEditing && (
+                    <button className="btn-ghost text-sm" onClick={() => { setProfileError(''); setProfileSuccess(''); setProfileEditing(true) }}>
+                      Edit
                     </button>
+                  )}
+                </div>
+
+                {profileError   && <p className="px-7 pt-5 text-aria-error text-sm">{profileError}</p>}
+                {profileSuccess && <p className="px-7 pt-5 text-aria-teal text-sm">{profileSuccess}</p>}
+
+                {!profileEditing ? (
+                  <div className="px-7 py-6 flex flex-col gap-0">
+                    {[
+                      { label: 'Name',  value: `${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim() },
+                      { label: 'Email', value: user?.email },
+                      { label: 'Phone', value: user?.phone || '—' },
+                      { label: 'Bio',   value: user?.bio   || '—' },
+                    ].map(({ label, value }) => (
+                      <div key={label} className="flex items-baseline py-[0.55rem] border-b border-aria-offwhite last:border-b-0">
+                        <span className="text-[0.65rem] font-bold uppercase tracking-[0.06em] text-aria-text-light w-20 shrink-0">{label}</span>
+                        <span className="text-sm text-aria-text-dark">{value}</span>
+                      </div>
+                    ))}
                   </div>
-                </form>
+                ) : (
+                  <form onSubmit={handleProfileSave} className="px-7 py-6 flex flex-col gap-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="label">First name</label>
+                        <input
+                          className="input"
+                          type="text"
+                          value={profileForm.firstName}
+                          onChange={e => setProfileForm({ ...profileForm, firstName: e.target.value })}
+                          data-lpignore="true"
+                        />
+                      </div>
+                      <div>
+                        <label className="label">Last name</label>
+                        <input
+                          className="input"
+                          type="text"
+                          value={profileForm.lastName}
+                          onChange={e => setProfileForm({ ...profileForm, lastName: e.target.value })}
+                          data-lpignore="true"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="label">Email address</label>
+                      <input
+                        className="input"
+                        type="email"
+                        value={profileForm.email}
+                        onChange={e => setProfileForm({ ...profileForm, email: e.target.value })}
+                        data-lpignore="true"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="label">Phone</label>
+                      <input
+                        className="input"
+                        type="tel"
+                        value={profileForm.phone}
+                        onChange={e => setProfileForm({ ...profileForm, phone: e.target.value })}
+                        placeholder="Add a phone number"
+                        data-lpignore="true"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="label">Bio</label>
+                      <textarea
+                        className="input min-h-[90px] resize-y"
+                        value={profileForm.bio}
+                        onChange={e => setProfileForm({ ...profileForm, bio: e.target.value })}
+                        placeholder="Tell hosts a little about yourself…"
+                      />
+                    </div>
+
+                    <div className="flex justify-end gap-3 pt-1">
+                      <button type="button" className="btn-ghost text-sm" onClick={() => setProfileEditing(false)}>
+                        Cancel
+                      </button>
+                      <button className="btn-primary text-sm" type="submit" disabled={profileLoading}>
+                        {profileLoading ? 'Saving…' : 'Save changes'}
+                      </button>
+                    </div>
+                  </form>
+                )}
               </>
             )}
 

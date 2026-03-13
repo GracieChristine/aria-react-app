@@ -82,8 +82,8 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-aria-offwhite px-4">
       <div className="card p-8 w-full max-w-md">
-        <h1 className="font-serif text-3xl font-medium text-aria-text-dark mb-1">
-          Welcome to Aria
+        <h1 className="font-serif italic font-normal text-3xl text-aria-text-dark mb-1">
+          Welcome to <span className="font-bold tracking-tight text-aria-teal">aria</span>
         </h1>
         <p className="text-aria-text-mid text-sm mb-6">
           Sign up for your next perfect stay
