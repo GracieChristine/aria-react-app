@@ -73,11 +73,11 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-aria-offwhite px-4">
       <div className="card p-8 w-full max-w-md">
-        <h1 className="font-serif text-3xl font-medium text-aria-text-dark mb-1">
+        <h1 className="font-serif italic font-normal text-3xl text-aria-text-dark mb-1">
           Welcome back
         </h1>
         <p className="text-aria-text-mid text-sm mb-6">
-          Log in to your Aria account
+          Log in to your <span className="font-serif italic font-bold tracking-tight text-aria-teal">aria</span> account
         </p>
 
         {serverError && (

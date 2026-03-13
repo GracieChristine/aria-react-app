@@ -8,7 +8,7 @@ export default function LandingPage() {
       <Navbar />
       <main className="page flex-1">
         <section className="flex flex-col items-center text-center py-24 px-4">
-          <h1 className="text-5xl font-serif font-medium text-aria-text-dark tracking-tight mb-4">
+          <h1 className="text-5xl font-serif italic font-normal text-aria-text-dark tracking-tight mb-4">
             Find your perfect stay
           </h1>
           <p className="text-aria-text-mid text-lg mb-10 max-w-md">
