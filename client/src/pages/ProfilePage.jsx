@@ -288,7 +288,7 @@ export default function ProfilePage() {
                 <div className="px-7 py-5 bg-aria-offwhite border-b border-aria-soft-gray">
                   <span className="font-serif italic text-aria-text-dark text-[1.1rem]">Change password</span>
                 </div>
-                <form onSubmit={handlePasswordSave} className="px-7 py-6 flex flex-col gap-4">
+                <form onSubmit={handlePasswordSave} noValidate autoComplete="off" className="px-7 py-6 flex flex-col gap-4">
                   {passwordError   && <p className="text-aria-error text-sm">{passwordError}</p>}
                   {passwordSuccess && <p className="text-aria-teal text-sm">{passwordSuccess}</p>}
 
