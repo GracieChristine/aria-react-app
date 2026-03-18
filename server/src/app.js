@@ -31,7 +31,7 @@ app.use(rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100,
   message: { error: 'Too many requests, please try again later.' },
-  skip:     () => config.env === 'test',
+  skip:     () => ['test', 'development'].includes(config.env),
 }));
 
 // ── General middleware ──

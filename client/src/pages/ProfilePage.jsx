@@ -7,15 +7,22 @@ export default function ProfilePage() {
   const { user, token, updateUser } = useAuth()
   const navigate = useNavigate()
 
+  if (!token) return <Navigate to="/login" replace />
+  if (!user)  return null
+
+  return <ProfileContent user={user} token={token} updateUser={updateUser} navigate={navigate} />
+}
+
+function ProfileContent({ user, token, updateUser, navigate }) {
   const [activeSection, setActiveSection] = useState('profile')
 
   // Profile form
   const [profileForm, setProfileForm] = useState({
-    firstName: user?.firstName ?? '',
-    lastName:  user?.lastName  ?? '',
-    email:     user?.email     ?? '',
-    phone:     user?.phone     ?? '',
-    bio:       user?.bio       ?? '',
+    firstName: user.firstName ?? '',
+    lastName:  user.lastName  ?? '',
+    email:     user.email     ?? '',
+    phone:     user.phone     ?? '',
+    bio:       user.bio       ?? '',
   })
   const [profileEditing, setProfileEditing] = useState(false)
   const [profileError, setProfileError]     = useState('')
@@ -36,17 +43,31 @@ export default function ProfilePage() {
   const [hostError, setHostError]     = useState('')
   const [hostLoading, setHostLoading] = useState(false)
 
-  if (!token) return <Navigate to="/login" replace />
-
-  const initials = user
-    ? `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}`.toUpperCase()
-    : '?'
+  const initials = `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}`.toUpperCase()
 
   // ── Profile ───────────────────────────────────────────────
   async function handleProfileSave(e) {
     e.preventDefault()
     setProfileError('')
     setProfileSuccess('')
+
+    if (!profileForm.firstName.trim()) {
+      setProfileError('First name is required.')
+      return
+    }
+    if (!profileForm.lastName.trim()) {
+      setProfileError('Last name is required.')
+      return
+    }
+    if (!profileForm.email.trim()) {
+      setProfileError('Email is required.')
+      return
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profileForm.email)) {
+      setProfileError('Please enter a valid email address.')
+      return
+    }
+
     setProfileLoading(true)
     try {
       const res = await fetch('/api/users/me', {
@@ -74,10 +95,28 @@ export default function ProfilePage() {
     e.preventDefault()
     setPasswordError('')
     setPasswordSuccess('')
+
+    if (!passwordForm.currentPassword) {
+      setPasswordError('Current password is required.')
+      return
+    }
+    if (!passwordForm.newPassword) {
+      setPasswordError('New password is required.')
+      return
+    }
+    if (passwordForm.newPassword.length < 8) {
+      setPasswordError('Password must be at least 8 characters.')
+      return
+    }
+    if (!passwordForm.confirmPassword) {
+      setPasswordError('Please confirm your new password.')
+      return
+    }
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
       setPasswordError('New passwords do not match.')
       return
     }
+
     setPasswordLoading(true)
     try {
       const res = await fetch('/api/users/me/password', {
@@ -213,7 +252,7 @@ export default function ProfilePage() {
                     ))}
                   </div>
                 ) : (
-                  <form onSubmit={handleProfileSave} className="px-7 py-6 flex flex-col gap-4">
+                  <form onSubmit={handleProfileSave} noValidate className="px-7 py-6 flex flex-col gap-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="label">First name</label>
