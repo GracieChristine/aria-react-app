@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import Navbar from '../components/Navbar'
@@ -6,24 +6,33 @@ import Navbar from '../components/Navbar'
 export default function ProfilePage() {
   const { user, token, updateUser } = useAuth()
   const navigate = useNavigate()
+  const formInitialized = useRef(false)
 
-  if (!token) return <Navigate to="/login" replace />
-  if (!user)  return null
-
-  return <ProfileContent user={user} token={token} updateUser={updateUser} navigate={navigate} />
-}
-
-function ProfileContent({ user, token, updateUser, navigate }) {
   const [activeSection, setActiveSection] = useState('profile')
 
   // Profile form
   const [profileForm, setProfileForm] = useState({
-    firstName: user.firstName ?? '',
-    lastName:  user.lastName  ?? '',
-    email:     user.email     ?? '',
-    phone:     user.phone     ?? '',
-    bio:       user.bio       ?? '',
+    firstName: '',
+    lastName:  '',
+    email:     '',
+    phone:     '',
+    bio:       '',
   })
+
+  useEffect(() => {
+    if (user && !formInitialized.current) {
+      formInitialized.current = true
+      setProfileForm({
+        firstName: user.firstName ?? '',
+        lastName:  user.lastName  ?? '',
+        email:     user.email     ?? '',
+        phone:     user.phone     ?? '',
+        bio:       user.bio       ?? '',
+      })
+    }
+  }, [user])
+
+  if (!token) return <Navigate to="/login" replace />
   const [profileEditing, setProfileEditing] = useState(false)
   const [profileError, setProfileError]     = useState('')
   const [profileSuccess, setProfileSuccess] = useState('')
@@ -43,7 +52,7 @@ function ProfileContent({ user, token, updateUser, navigate }) {
   const [hostError, setHostError]     = useState('')
   const [hostLoading, setHostLoading] = useState(false)
 
-  const initials = `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}`.toUpperCase()
+  const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase()
 
   // ── Profile ───────────────────────────────────────────────
   async function handleProfileSave(e) {

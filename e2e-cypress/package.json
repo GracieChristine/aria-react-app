@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test": "cypress run",
-    "test:smoke": "cypress run --env grep=@smoke,grepFilterSpecs=true",
+    "test": "cypress run --browser chrome",
+    "test:smoke": "cypress run --browser chrome --env grep=@smoke,grepFilterSpecs=true",
     "open": "cypress open"
   },
   "devDependencies": {

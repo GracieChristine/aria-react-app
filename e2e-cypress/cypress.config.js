@@ -6,10 +6,10 @@ export default defineConfig({
     baseUrl: 'http://localhost:5173',
     specPattern: 'cypress/e2e/**/*.cy.js',
     supportFile: 'cypress/support/e2e.js',
-    browser: 'chrome',
     viewportWidth: 1280,
     viewportHeight: 720,
     setupNodeEvents(on, config) {
+      config.browsers = config.browsers.filter(b => b.name === 'chrome')
       return cypressGrep(config)
     },
   },
