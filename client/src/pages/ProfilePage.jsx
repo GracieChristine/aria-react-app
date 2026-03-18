@@ -32,7 +32,6 @@ export default function ProfilePage() {
     }
   }, [user])
 
-  if (!token) return <Navigate to="/login" replace />
   const [profileEditing, setProfileEditing] = useState(false)
   const [profileError, setProfileError]     = useState('')
   const [profileSuccess, setProfileSuccess] = useState('')
@@ -51,6 +50,8 @@ export default function ProfilePage() {
   // Become-a-host
   const [hostError, setHostError]     = useState('')
   const [hostLoading, setHostLoading] = useState(false)
+
+  if (!token) return <Navigate to="/login" replace />
 
   const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase()
 
