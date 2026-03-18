@@ -45,6 +45,7 @@ describe('Profile', () => {
       cy.get('input[name="email"]').type(email)
       cy.get('input[name="password"]').type(password)
       cy.get('button[type="submit"]').click()
+      cy.url().should('eq', Cypress.config('baseUrl') + '/')
       cy.visit('/profile')
     })
 
@@ -60,7 +61,7 @@ describe('Profile', () => {
 
       cy.contains('button', 'Edit').should('not.exist')
       cy.get('form').should('be.visible')
-      cy.contains('label', 'First name').parent().find('input').should('have.value', 'Test')
+      cy.contains('label', 'First name').parent().find('input').should('have.value', 'Profile')
       cy.contains('label', 'Last name').parent().find('input').should('have.value', 'User')
       cy.contains('label', 'Email address').parent().find('input').should('have.value', email)
       cy.contains('label', 'Phone').parent().find('input').should('have.value', '')
@@ -147,6 +148,7 @@ describe('Profile', () => {
       cy.get('input[name="email"]').type(newEmail)
       cy.get('input[name="password"]').type(password)
       cy.get('button[type="submit"]').click()
+      cy.url().should('eq', Cypress.config('baseUrl') + '/')
       cy.visit('/profile')
       cy.contains('button', 'Password').click()
     })
@@ -180,7 +182,7 @@ describe('Profile', () => {
 
     it('should show an error if confirm password is empty', () => {
       cy.contains('label', 'Current password').parent().find('input').clear().type(password)
-      cy.contains('label', 'New password').parent().find('input').clear().type('NewPassword123!')
+      cy.contains('label', 'New password').parent().find('input').clear().type(newPassword)
       cy.contains('button', 'Update password').click()
 
       cy.contains('Please confirm your new password.').should('be.visible')
@@ -188,7 +190,7 @@ describe('Profile', () => {
 
     it('should show an error if new passwords do not match', () => {
       cy.contains('label', 'Current password').parent().find('input').clear().type(password)
-      cy.contains('label', 'New password').parent().find('input').clear().type('NewPassword123!')
+      cy.contains('label', 'New password').parent().find('input').clear().type(newPassword)
       cy.contains('label', 'Confirm new password').parent().find('input').clear().type('123NewPassword!')
       cy.contains('button', 'Update password').click()
 
@@ -197,8 +199,8 @@ describe('Profile', () => {
 
     it('should show an error if current password is incorrect @smoke', () => {
       cy.contains('label', 'Current password').parent().find('input').clear().type('123Password!')
-      cy.contains('label', 'New password').parent().find('input').clear().type('NewPassword123!')
-      cy.contains('label', 'Confirm new password').parent().find('input').clear().type('NewPassword123!')
+      cy.contains('label', 'New password').parent().find('input').clear().type(newPassword)
+      cy.contains('label', 'Confirm new password').parent().find('input').clear().type(newPassword)
       cy.contains('button', 'Update password').click()
 
       cy.contains('Current password is incorrect.').should('be.visible')
@@ -230,7 +232,7 @@ describe('Profile', () => {
       cy.get('input[name="email"]').type(newEmail)
       cy.get('input[name="password"]').type(newPassword)
       cy.get('button[type="submit"]').click()
-
+      cy.url().should('eq', Cypress.config('baseUrl') + '/')
       cy.visit('/profile')
       cy.contains('button', 'Become a host').click()
     })
