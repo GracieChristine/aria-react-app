@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import Navbar from '../components/Navbar'
@@ -6,17 +6,32 @@ import Navbar from '../components/Navbar'
 export default function ProfilePage() {
   const { user, token, updateUser } = useAuth()
   const navigate = useNavigate()
+  const formInitialized = useRef(false)
 
   const [activeSection, setActiveSection] = useState('profile')
 
   // Profile form
   const [profileForm, setProfileForm] = useState({
-    firstName: user?.firstName ?? '',
-    lastName:  user?.lastName  ?? '',
-    email:     user?.email     ?? '',
-    phone:     user?.phone     ?? '',
-    bio:       user?.bio       ?? '',
+    firstName: '',
+    lastName:  '',
+    email:     '',
+    phone:     '',
+    bio:       '',
   })
+
+  useEffect(() => {
+    if (user && !formInitialized.current) {
+      formInitialized.current = true
+      setProfileForm({
+        firstName: user.firstName ?? '',
+        lastName:  user.lastName  ?? '',
+        email:     user.email     ?? '',
+        phone:     user.phone     ?? '',
+        bio:       user.bio       ?? '',
+      })
+    }
+  }, [user])
+
   const [profileEditing, setProfileEditing] = useState(false)
   const [profileError, setProfileError]     = useState('')
   const [profileSuccess, setProfileSuccess] = useState('')
@@ -38,15 +53,31 @@ export default function ProfilePage() {
 
   if (!token) return <Navigate to="/login" replace />
 
-  const initials = user
-    ? `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}`.toUpperCase()
-    : '?'
+  const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase()
 
   // ── Profile ───────────────────────────────────────────────
   async function handleProfileSave(e) {
     e.preventDefault()
     setProfileError('')
     setProfileSuccess('')
+
+    if (!profileForm.firstName.trim()) {
+      setProfileError('First name is required.')
+      return
+    }
+    if (!profileForm.lastName.trim()) {
+      setProfileError('Last name is required.')
+      return
+    }
+    if (!profileForm.email.trim()) {
+      setProfileError('Email is required.')
+      return
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profileForm.email)) {
+      setProfileError('Please enter a valid email address.')
+      return
+    }
+
     setProfileLoading(true)
     try {
       const res = await fetch('/api/users/me', {
@@ -74,10 +105,28 @@ export default function ProfilePage() {
     e.preventDefault()
     setPasswordError('')
     setPasswordSuccess('')
+
+    if (!passwordForm.currentPassword) {
+      setPasswordError('Current password is required.')
+      return
+    }
+    if (!passwordForm.newPassword) {
+      setPasswordError('New password is required.')
+      return
+    }
+    if (passwordForm.newPassword.length < 8) {
+      setPasswordError('Password must be at least 8 characters.')
+      return
+    }
+    if (!passwordForm.confirmPassword) {
+      setPasswordError('Please confirm your new password.')
+      return
+    }
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
       setPasswordError('New passwords do not match.')
       return
     }
+
     setPasswordLoading(true)
     try {
       const res = await fetch('/api/users/me/password', {
@@ -213,7 +262,7 @@ export default function ProfilePage() {
                     ))}
                   </div>
                 ) : (
-                  <form onSubmit={handleProfileSave} className="px-7 py-6 flex flex-col gap-4">
+                  <form onSubmit={handleProfileSave} noValidate className="px-7 py-6 flex flex-col gap-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="label">First name</label>
@@ -288,7 +337,7 @@ export default function ProfilePage() {
                 <div className="px-7 py-5 bg-aria-offwhite border-b border-aria-soft-gray">
                   <span className="font-serif italic text-aria-text-dark text-[1.1rem]">Change password</span>
                 </div>
-                <form onSubmit={handlePasswordSave} className="px-7 py-6 flex flex-col gap-4">
+                <form onSubmit={handlePasswordSave} noValidate autoComplete="off" className="px-7 py-6 flex flex-col gap-4">
                   {passwordError   && <p className="text-aria-error text-sm">{passwordError}</p>}
                   {passwordSuccess && <p className="text-aria-teal text-sm">{passwordSuccess}</p>}
 
