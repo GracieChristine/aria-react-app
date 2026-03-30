@@ -1,14 +1,14 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
 export default function FilterBar({ onSearch }) {
-  const [location, setLocation] = useState('')
-  const [checkIn, setCheckIn] = useState('')
-  const [checkOut, setCheckOut] = useState('')
-  const [guests, setGuests] = useState('')
+  const [location, setLocation] = useState('');
+  const [checkIn, setCheckIn] = useState('');
+  const [checkOut, setCheckOut] = useState('');
+  const [guests, setGuests] = useState('');
 
   function handleSubmit(e) {
-    e.preventDefault()
-    onSearch({ location, checkIn, checkOut, guests })
+    e.preventDefault();
+    onSearch({ location, checkIn, checkOut, guests });
   }
 
   return (
@@ -72,5 +72,5 @@ export default function FilterBar({ onSearch }) {
         Search
       </button>
     </form>
-  )
+  );
 }

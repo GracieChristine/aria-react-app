@@ -1,5 +1,5 @@
-import { defineConfig } from 'cypress'
-import cypressGrep from '@bahmutov/cy-grep/src/plugin.js'
+import { defineConfig } from 'cypress';
+import cypressGrep from '@bahmutov/cy-grep/src/plugin.js';
 
 export default defineConfig({
   e2e: {
@@ -9,8 +9,8 @@ export default defineConfig({
     viewportWidth: 1280,
     viewportHeight: 720,
     setupNodeEvents(on, config) {
-      config.browsers = config.browsers.filter(b => b.name === 'chrome')
-      return cypressGrep(config)
+      config.browsers = config.browsers.filter(b => b.name === 'chrome');
+      return cypressGrep(config);
     },
   },
-})
+});

@@ -1,81 +1,81 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 function validate(form) {
-  const errors = {}
+  const errors = {};
   if (!form.name) {
-    errors.name = 'Name is required.'
+    errors.name = 'Name is required.';
   }
   if (!form.email) {
-    errors.email = 'Email is required.'
+    errors.email = 'Email is required.';
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-    errors.email = 'Please enter a valid email address.'
+    errors.email = 'Please enter a valid email address.';
   }
   if (!form.password) {
-    errors.password = 'Password is required.'
+    errors.password = 'Password is required.';
   } else if (form.password.length < 8) {
-    errors.password = 'Password must be at least 8 characters.'
+    errors.password = 'Password must be at least 8 characters.';
   }
   if (!form.confirmPassword) {
-    errors.confirmPassword = 'Please confirm your password.'
+    errors.confirmPassword = 'Please confirm your password.';
   } else if (form.password !== form.confirmPassword) {
-    errors.confirmPassword = 'Passwords do not match.'
+    errors.confirmPassword = 'Passwords do not match.';
   }
-  return errors
+  return errors;
 }
 
 export default function RegisterPage() {
-  const { login } = useAuth()
-  const navigate = useNavigate()
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' })
-  const [fieldErrors, setFieldErrors] = useState({})
-  const [serverError, setServerError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [serverError, setServerError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value })
-    setFieldErrors({ ...fieldErrors, [e.target.name]: '' })
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setFieldErrors({ ...fieldErrors, [e.target.name]: '' });
   }
 
   async function handleSubmit(e) {
-    e.preventDefault()
-    setServerError('')
+    e.preventDefault();
+    setServerError('');
 
-    const errors = validate(form)
+    const errors = validate(form);
     if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors)
-      return
+      setFieldErrors(errors);
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const [firstName, ...rest] = form.name.trim().split(' ')
-      const lastName = rest.join(' ') || ''
+      const [firstName, ...rest] = form.name.trim().split(' ');
+      const lastName = rest.join(' ') || '';
 
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ firstName, lastName, email: form.email, password: form.password }),
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
 
       if (res.status === 409) {
-        setFieldErrors({ email: 'Email already registered. Try logging in.' })
-        return
+        setFieldErrors({ email: 'Email already registered. Try logging in.' });
+        return;
       }
       if (!res.ok) {
-        setServerError(data.message || 'Something went wrong. Please try again.')
-        return
+        setServerError(data.message || 'Something went wrong. Please try again.');
+        return;
       }
 
-      login(data.user, data.accessToken)
-      navigate('/')
+      login(data.user, data.accessToken);
+      navigate('/');
     } catch {
-      setServerError('Unable to connect. Please check your connection and try again.')
+      setServerError('Unable to connect. Please check your connection and try again.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -167,5 +167,5 @@ export default function RegisterPage() {
         </p>
       </div>
     </div>
-  )
+  );
 }

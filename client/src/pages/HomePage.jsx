@@ -1,8 +1,8 @@
-import { useAuth } from '../hooks/useAuth'
-import LandingPage from './LandingPage'
-import ListingsPage from './ListingsPage'
+import { useAuth } from '../hooks/useAuth';
+import LandingPage from './LandingPage';
+import ListingsPage from './ListingsPage';
 
 export default function HomePage() {
-  const { user } = useAuth()
-  return user ? <ListingsPage /> : <LandingPage />
+  const { user } = useAuth();
+  return user ? <ListingsPage /> : <LandingPage />;
 }

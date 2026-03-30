@@ -1,28 +1,28 @@
-import { useState, useEffect } from 'react'
-import Navbar from '../components/Navbar'
-import Footer from '../components/Footer'
-import FilterBar from '../components/listings/FilterBar'
-import ListingCard from '../components/listings/ListingCard'
+import { useState, useEffect } from 'react';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import FilterBar from '../components/listings/FilterBar';
+import ListingCard from '../components/listings/ListingCard';
 
 export default function ListingsPage() {
-  const [listings, setListings] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetch('/api/listings')
       .then(r => {
-        if (!r.ok) throw new Error('Failed to load listings')
-        return r.json()
+        if (!r.ok) throw new Error('Failed to load listings');
+        return r.json();
       })
       .then(data => setListings(data))
       .catch(err => setError(err.message))
-      .finally(() => setLoading(false))
-  }, [])
+      .finally(() => setLoading(false));
+  }, []);
 
   function handleSearch(filters) {
     // TODO: pass filters to API
-    console.log('Search:', filters)
+    console.log('Search:', filters);
   }
 
   return (
@@ -62,5 +62,5 @@ export default function ListingsPage() {
       </main>
       <Footer />
     </div>
-  )
+  );
 }

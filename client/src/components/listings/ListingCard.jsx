@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 
 export default function ListingCard({ listing }) {
-  const image = listing.images?.[0]
-  const rating = listing.average_rating ? Number(listing.average_rating).toFixed(1) : null
+  const image = listing.images?.[0];
+  const rating = listing.average_rating ? Number(listing.average_rating).toFixed(1) : null;
 
   return (
     <Link to={`/listings/${listing.id}`} className="card-hover block">
@@ -38,5 +38,5 @@ export default function ListingCard({ listing }) {
         </div>
       </div>
     </Link>
-  )
+  );
 }

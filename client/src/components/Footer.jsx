@@ -5,5 +5,5 @@ export default function Footer() {
         © 2026 Aria. All rights reserved.
       </p>
     </footer>
-  )
+  );
 }
