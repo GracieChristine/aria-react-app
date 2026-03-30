@@ -42,3 +42,6 @@ cypress/videos/
 # Misc
 *.pem
 .cache/
+
+# Local dev notes
+CLAUDE.md
