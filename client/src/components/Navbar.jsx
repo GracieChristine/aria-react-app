@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Navbar() {
-  const { user, logout } = useAuth()
+  const { user, logout } = useAuth();
   return (
     <nav className="w-full bg-white border-b border-aria-soft-gray px-6 py-4 flex items-center justify-between">
       <Link to="/" className="text-2xl font-bold font-serif italic text-aria-teal tracking-tight">
@@ -22,5 +22,5 @@ export default function Navbar() {
         </div>
       )}
     </nav>
-  )
+  );
 }

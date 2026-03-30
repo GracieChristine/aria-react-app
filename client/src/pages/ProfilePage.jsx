@@ -1,14 +1,14 @@
-import { useState, useEffect, useRef } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
-import Navbar from '../components/Navbar'
+import { useState, useEffect, useRef } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import Navbar from '../components/Navbar';
 
 export default function ProfilePage() {
-  const { user, token, updateUser } = useAuth()
-  const navigate = useNavigate()
-  const formInitialized = useRef(false)
+  const { user, token, updateUser } = useAuth();
+  const navigate = useNavigate();
+  const formInitialized = useRef(false);
 
-  const [activeSection, setActiveSection] = useState('profile')
+  const [activeSection, setActiveSection] = useState('profile');
 
   // Profile form
   const [profileForm, setProfileForm] = useState({
@@ -17,117 +17,117 @@ export default function ProfilePage() {
     email:     '',
     phone:     '',
     bio:       '',
-  })
+  });
 
   useEffect(() => {
     if (user && !formInitialized.current) {
-      formInitialized.current = true
+      formInitialized.current = true;
       setProfileForm({
         firstName: user.firstName ?? '',
         lastName:  user.lastName  ?? '',
         email:     user.email     ?? '',
         phone:     user.phone     ?? '',
         bio:       user.bio       ?? '',
-      })
+      });
     }
-  }, [user])
+  }, [user]);
 
-  const [profileEditing, setProfileEditing] = useState(false)
-  const [profileError, setProfileError]     = useState('')
-  const [profileSuccess, setProfileSuccess] = useState('')
-  const [profileLoading, setProfileLoading] = useState(false)
+  const [profileEditing, setProfileEditing] = useState(false);
+  const [profileError, setProfileError]     = useState('');
+  const [profileSuccess, setProfileSuccess] = useState('');
+  const [profileLoading, setProfileLoading] = useState(false);
 
   // Password form
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
     newPassword:     '',
     confirmPassword: '',
-  })
-  const [passwordError, setPasswordError]     = useState('')
-  const [passwordSuccess, setPasswordSuccess] = useState('')
-  const [passwordLoading, setPasswordLoading] = useState(false)
+  });
+  const [passwordError, setPasswordError]     = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [passwordLoading, setPasswordLoading] = useState(false);
 
   // Become-a-host
-  const [hostError, setHostError]     = useState('')
-  const [hostLoading, setHostLoading] = useState(false)
+  const [hostError, setHostError]     = useState('');
+  const [hostLoading, setHostLoading] = useState(false);
 
-  if (!token) return <Navigate to="/login" replace />
+  if (!token) return <Navigate to="/login" replace />;
 
-  const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase()
+  const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase();
 
   // ── Profile ───────────────────────────────────────────────
   async function handleProfileSave(e) {
-    e.preventDefault()
-    setProfileError('')
-    setProfileSuccess('')
+    e.preventDefault();
+    setProfileError('');
+    setProfileSuccess('');
 
     if (!profileForm.firstName.trim()) {
-      setProfileError('First name is required.')
-      return
+      setProfileError('First name is required.');
+      return;
     }
     if (!profileForm.lastName.trim()) {
-      setProfileError('Last name is required.')
-      return
+      setProfileError('Last name is required.');
+      return;
     }
     if (!profileForm.email.trim()) {
-      setProfileError('Email is required.')
-      return
+      setProfileError('Email is required.');
+      return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profileForm.email)) {
-      setProfileError('Please enter a valid email address.')
-      return
+      setProfileError('Please enter a valid email address.');
+      return;
     }
 
-    setProfileLoading(true)
+    setProfileLoading(true);
     try {
       const res = await fetch('/api/users/me', {
         method:  'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body:    JSON.stringify(profileForm),
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
       if (!res.ok) {
-        setProfileError(data.message || 'Failed to update profile.')
-        return
+        setProfileError(data.message || 'Failed to update profile.');
+        return;
       }
-      updateUser(data.user)
-      setProfileSuccess('Profile updated.')
-      setProfileEditing(false)
+      updateUser(data.user);
+      setProfileSuccess('Profile updated.');
+      setProfileEditing(false);
     } catch {
-      setProfileError('Unable to connect. Please try again.')
+      setProfileError('Unable to connect. Please try again.');
     } finally {
-      setProfileLoading(false)
+      setProfileLoading(false);
     }
   }
 
   // ── Password ──────────────────────────────────────────────
   async function handlePasswordSave(e) {
-    e.preventDefault()
-    setPasswordError('')
-    setPasswordSuccess('')
+    e.preventDefault();
+    setPasswordError('');
+    setPasswordSuccess('');
 
     if (!passwordForm.currentPassword) {
-      setPasswordError('Current password is required.')
-      return
+      setPasswordError('Current password is required.');
+      return;
     }
     if (!passwordForm.newPassword) {
-      setPasswordError('New password is required.')
-      return
+      setPasswordError('New password is required.');
+      return;
     }
     if (passwordForm.newPassword.length < 8) {
-      setPasswordError('Password must be at least 8 characters.')
-      return
+      setPasswordError('Password must be at least 8 characters.');
+      return;
     }
     if (!passwordForm.confirmPassword) {
-      setPasswordError('Please confirm your new password.')
-      return
+      setPasswordError('Please confirm your new password.');
+      return;
     }
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setPasswordError('New passwords do not match.')
-      return
+      setPasswordError('New passwords do not match.');
+      return;
     }
 
-    setPasswordLoading(true)
+    setPasswordLoading(true);
     try {
       const res = await fetch('/api/users/me/password', {
         method:  'PATCH',
@@ -136,45 +136,45 @@ export default function ProfilePage() {
           currentPassword: passwordForm.currentPassword,
           newPassword:     passwordForm.newPassword,
         }),
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
       if (res.status === 401) {
-        setPasswordError('Current password is incorrect.')
-        return
+        setPasswordError('Current password is incorrect.');
+        return;
       }
       if (!res.ok) {
-        setPasswordError(data.message || 'Failed to update password.')
-        return
+        setPasswordError(data.message || 'Failed to update password.');
+        return;
       }
-      setPasswordSuccess('Password updated successfully.')
-      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
+      setPasswordSuccess('Password updated successfully.');
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch {
-      setPasswordError('Unable to connect. Please try again.')
+      setPasswordError('Unable to connect. Please try again.');
     } finally {
-      setPasswordLoading(false)
+      setPasswordLoading(false);
     }
   }
 
   // ── Become a host ─────────────────────────────────────────
   async function handleBecomeHost() {
-    setHostError('')
-    setHostLoading(true)
+    setHostError('');
+    setHostLoading(true);
     try {
       const res = await fetch('/api/users/me/become-host', {
         method:  'PATCH',
         headers: { Authorization: `Bearer ${token}` },
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
       if (!res.ok) {
-        setHostError(data.message || 'Failed to update role.')
-        return
+        setHostError(data.message || 'Failed to update role.');
+        return;
       }
-      updateUser(data.user)
-      navigate('/host/listings/new')
+      updateUser(data.user);
+      navigate('/host/listings/new');
     } catch {
-      setHostError('Unable to connect. Please try again.')
+      setHostError('Unable to connect. Please try again.');
     } finally {
-      setHostLoading(false)
+      setHostLoading(false);
     }
   }
 
@@ -182,7 +182,7 @@ export default function ProfilePage() {
     { key: 'profile',  label: 'Profile' },
     { key: 'password', label: 'Password' },
     ...(user?.role === 'guest' ? [{ key: 'host', label: 'Become a host' }] : []),
-  ]
+  ];
 
   return (
     <div className="min-h-screen bg-aria-offwhite">
@@ -238,7 +238,7 @@ export default function ProfilePage() {
                 <div className="flex items-center justify-between px-7 py-5 bg-aria-offwhite border-b border-aria-soft-gray">
                   <span className="font-serif italic text-aria-text-dark text-[1.1rem]">Profile</span>
                   {!profileEditing && (
-                    <button className="btn-ghost text-sm" onClick={() => { setProfileError(''); setProfileSuccess(''); setProfileEditing(true) }}>
+                    <button className="btn-ghost text-sm" onClick={() => { setProfileError(''); setProfileSuccess(''); setProfileEditing(true); }}>
                       Edit
                     </button>
                   )}
@@ -412,5 +412,5 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

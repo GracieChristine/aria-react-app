@@ -1,72 +1,72 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 function validate(form) {
-  const errors = {}
+  const errors = {};
   if (!form.email) {
-    errors.email = 'Email is required.'
+    errors.email = 'Email is required.';
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-    errors.email = 'Please enter a valid email address.'
+    errors.email = 'Please enter a valid email address.';
   }
   if (!form.password) {
-    errors.password = 'Password is required.'
+    errors.password = 'Password is required.';
   }
-  return errors
+  return errors;
 }
 
 export default function LoginPage() {
-  const { login } = useAuth()
-  const navigate = useNavigate()
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-  const [form, setForm] = useState({ email: '', password: '' })
-  const [fieldErrors, setFieldErrors] = useState({})
-  const [serverError, setServerError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [serverError, setServerError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value })
-    setFieldErrors({ ...fieldErrors, [e.target.name]: '' })
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setFieldErrors({ ...fieldErrors, [e.target.name]: '' });
   }
 
   async function handleSubmit(e) {
-    e.preventDefault()
-    setServerError('')
+    e.preventDefault();
+    setServerError('');
 
-    const errors = validate(form)
+    const errors = validate(form);
     if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors)
-      return
+      setFieldErrors(errors);
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
-      })
-      const data = await res.json()
+      });
+      const data = await res.json();
 
       if (res.status === 404) {
-        setFieldErrors({ email: 'No account found with this email. Try registering.' })
-        return
+        setFieldErrors({ email: 'No account found with this email. Try registering.' });
+        return;
       }
       if (res.status === 401) {
-        setFieldErrors({ password: 'Incorrect password. Please try again.' })
-        return
+        setFieldErrors({ password: 'Incorrect password. Please try again.' });
+        return;
       }
       if (!res.ok) {
-        setServerError(data.message || 'Something went wrong. Please try again.')
-        return
+        setServerError(data.message || 'Something went wrong. Please try again.');
+        return;
       }
 
-      login(data.user, data.accessToken)
-      navigate('/')
+      login(data.user, data.accessToken);
+      navigate('/');
     } catch {
-      setServerError('Unable to connect. Please check your connection and try again.')
+      setServerError('Unable to connect. Please check your connection and try again.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -128,5 +128,5 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
-  )
+  );
 }
