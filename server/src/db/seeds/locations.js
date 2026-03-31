@@ -348,278 +348,150 @@ const data = [
     ],
   },
 
-  // ── REGALIA ────────────────────────────────────────────────────────────────
+  // ── SOVERIE ────────────────────────────────────────────────────────────────
   {
-    name: 'Regalia',
-    slug: 'regalia',
+    name: 'Soverie',
+    slug: 'soverie',
     worlds: [
       {
-        name: 'Victorian England',
-        description: 'The reign of Queen Victoria (1837–1901) — an age of industry, empire, and grand estates.',
+        name: 'The Baker Street Quarters',
+        description: "The fog-drenched London of Sherlock Holmes — a city of gas lamps, mysteries, and the world's greatest detective.",
         regions: [
           {
-            name: 'London',
-            description: 'The vast, fog-laden capital at the height of the British Empire.',
+            name: 'Baker Street & London',
+            description: "The grimy, brilliant heart of Holmes's London — from his legendary lodgings to the halls of Scotland Yard.",
             cities: [
-              { name: 'Buckingham Palace',     description: "The Queen's official London residence and the seat of the monarchy." },
-              { name: 'Kensington Palace',     description: "A royal palace within Kensington Gardens, favoured by Queen Victoria." },
-              { name: 'Westminster',           description: 'The political and ceremonial heart of the empire.' },
-              { name: 'Crystal Palace',        description: "The revolutionary glass and iron exhibition hall built for the Great Exhibition of 1851." },
-              { name: 'Brighton Pavilion',     description: "The Prince Regent's extravagant seaside palace on the Sussex coast." },
-            ],
-          },
-          {
-            name: 'The Scottish Highlands',
-            description: "The rugged, romantic landscape where Victoria retreated from court life.",
-            cities: [
-              { name: 'Balmoral Castle',       description: "The royal family's Scottish Highland retreat, purchased by Victoria in 1852." },
-              { name: 'Holyrood Palace',        description: "The official Scottish residence of the British monarch in Edinburgh." },
+              { name: '221B Baker Street',     description: "The famous first-floor flat where Sherlock Holmes and Dr Watson solved the world's greatest mysteries." },
+              { name: 'Scotland Yard',         description: "The headquarters of the Metropolitan Police, frequently consulted — and occasionally bested — by Holmes." },
+              { name: 'The Diogenes Club',     description: "Mycroft Holmes's eccentric gentlemen's club where conversation is strictly forbidden." },
+              { name: 'Whitechapel',           description: "The shadowy East End district, a labyrinth of alleys and dangerous cases." },
+              { name: 'The Criterion Bar',     description: "The Strand bar where Watson first heard Holmes's name mentioned — the starting point of it all." },
             ],
           },
           {
             name: 'The English Countryside',
-            description: "The rolling estates and manor houses of rural Victorian England.",
+            description: "The rolling moors and grand estates beyond London, where some of Holmes's darkest cases unfolded.",
             cities: [
-              { name: 'Windsor Castle',        description: "The oldest and largest occupied castle in the world, a royal residence since the 11th century." },
-              { name: 'Chatsworth House',      description: "One of England's grandest country houses, seat of the Duke of Devonshire." },
-              { name: 'Longleat',              description: "A magnificent Elizabethan house set within a vast landscaped park in Wiltshire." },
+              { name: 'Baskerville Hall',      description: "The ancient Devonshire manor at the centre of the legend of the hound." },
+              { name: 'Dartmoor',              description: "The bleak, fog-shrouded moor where the Baskerville curse seemed most alive." },
+              { name: 'Briony Lodge',          description: "The St John's Wood villa of Irene Adler — the woman who outwitted Holmes." },
+            ],
+          },
+          {
+            name: 'Beyond England',
+            description: "The international reaches of Holmes's adventures — from Swiss waterfalls to European capitals.",
+            cities: [
+              { name: 'Reichenbach Falls',     description: "The thundering Swiss waterfall where Holmes and Moriarty fought their final battle." },
+              { name: 'Montague Street',       description: "The quiet London street where Holmes lodged before Baker Street, in his early years." },
+              { name: 'The Reichenbach Hotel', description: "The Swiss inn near the falls, from which Holmes vanished for three years." },
             ],
           },
         ],
       },
       {
-        name: 'Elizabethan England',
-        description: "The reign of Elizabeth I (1558–1603) — the Golden Age of exploration, theatre, and courtly intrigue.",
+        name: "The Lupin's Gambit",
+        description: "The glittering and shadowy France of Arsène Lupin — gentleman burglar, master of disguise, and thorn in the side of every gendarme in Europe.",
         regions: [
           {
-            name: 'The Royal Court',
-            description: "The itinerant court of Elizabeth I, moving between her great palaces.",
+            name: 'Paris',
+            description: "The city of lights and secrets — Lupin's home turf, from the Louvre to the Parisian underworld.",
             cities: [
-              { name: 'Hampton Court Palace',  description: "A magnificent red-brick palace on the Thames, shared with Henry VIII and later Elizabeth." },
-              { name: 'Whitehall Palace',      description: "The principal royal residence in London throughout the Tudor period." },
-              { name: 'Greenwich Palace',      description: "Elizabeth I's birthplace, a grand riverside palace east of London." },
-              { name: 'Richmond Palace',       description: "A favourite Thames-side retreat where Elizabeth I spent her final years." },
-              { name: 'Nonsuch Palace',        description: "Henry VIII's fantastical pleasure palace, considered the most ornate in England." },
+              { name: 'The Louvre',            description: "The great museum from which Lupin famously stole — and sometimes returned — priceless works." },
+              { name: 'Château de Thibermesnil', description: "A medieval Norman château where Lupin hid his most treasured secrets behind a hidden passage." },
+              { name: 'The Préfecture de Police', description: "The Paris police headquarters whose detectives eternally chased Lupin without success." },
+              { name: 'Montmartre',            description: "The bohemian hilltop district of artists and cabarets where Lupin kept anonymous lodgings." },
             ],
           },
           {
-            name: 'The City',
-            description: "London beyond the palace walls — theatres, merchants, and the Tower.",
+            name: 'The French Countryside',
+            description: "The châteaux, cliffs, and coastal hideaways of provincial France — Lupin's favourite hunting grounds.",
             cities: [
-              { name: 'The Tower of London',   description: "The ancient fortress serving as royal palace, prison, and treasury." },
-              { name: 'Kenilworth Castle',     description: "A grand Warwickshire castle where Robert Dudley hosted Elizabeth for nineteen lavish days." },
-              { name: 'The Globe Theatre',     description: "Shakespeare's iconic open-air playhouse on the south bank of the Thames." },
+              { name: "Château de l'Aiguille", description: "A remote château tangled up in the legend of the Hollow Needle — one of Lupin's greatest mysteries." },
+              { name: 'Étretat Cliffs',        description: "The dramatic white chalk cliffs of Normandy concealing the Hollow Needle, Lupin's ultimate secret lair." },
+              { name: 'The Norman Coast',      description: "The rugged coastline of Normandy, scattered with hidden coves and smugglers' paths." },
+            ],
+          },
+          {
+            name: 'Beyond France',
+            description: "The international stage where Lupin's reputation preceded him across borders.",
+            cities: [
+              { name: 'Monte Carlo',           description: "The glittering principality where Lupin operated among the wealthy at the casino tables." },
+              { name: "Lupin's London Hideout", description: "A discreet Mayfair address where Lupin operated under one of his many English aliases." },
             ],
           },
         ],
       },
       {
-        name: 'Versailles, France',
-        description: "The court of the Sun King, Louis XIV (1643–1715) — the pinnacle of French royal grandeur.",
+        name: 'The Ton',
+        description: "The dazzling, gossip-laden world of Regency London high society — where every ball, betrothal, and scandal is observed and reported.",
         regions: [
           {
-            name: 'The Palace Grounds',
-            description: "The breathtaking palace and its immediate royal apartments.",
+            name: 'London Season',
+            description: "The social whirlwind of Regency London, where reputations are made and destroyed in a single evening.",
             cities: [
-              { name: 'Hall of Mirrors',       description: "The dazzling gallery of 357 mirrors reflecting the gardens of Versailles." },
-              { name: "The King's Apartments", description: "The formal state rooms at the heart of Louis XIV's palace." },
-              { name: 'The Chapel Royal',      description: "The exquisite gilded royal chapel where the court attended daily Mass." },
-              { name: 'Grand Trianon',          description: "A smaller marble palace built as a private retreat for the King." },
-              { name: 'Petit Trianon',          description: "An intimate neoclassical château within the grounds, later favoured by Marie Antoinette." },
+              { name: 'Bridgerton House',      description: "The elegant Mayfair townhouse of the Bridgerton family, the heart of the social season." },
+              { name: 'Danbury House',         description: "The formidable Lady Danbury's London residence — the place to be seen and heard." },
+              { name: 'The Modiste',           description: "Madame Delacroix's exclusive dressmaker's shop, where the season's fashions are created and gossip exchanged." },
+              { name: 'Hyde Park',             description: "The fashionable promenade ground where the ton takes its morning rides and afternoon strolls." },
+              { name: "Almack's Assembly Rooms", description: "The most exclusive ballroom in London — a voucher to enter is the most coveted prize of the season." },
             ],
           },
           {
-            name: 'The Gardens',
-            description: "André Le Nôtre's perfectly geometric formal gardens stretching to the horizon.",
+            name: 'The Country Estates',
+            description: "The grand houses and parklands outside London where the ton retreats between seasons.",
             cities: [
-              { name: 'The Grand Canal',       description: "A vast cruciform waterway at the centre of the Versailles gardens." },
-              { name: 'The Orangerie',          description: "A grand greenhouse sheltering thousands of orange trees through the French winters." },
-              { name: 'The Fountain Grove',    description: "Hidden groves of sculpted fountains and mythological statuary." },
+              { name: 'Aubrey Hall',           description: "The sprawling Bridgerton country estate in Kent, scene of house parties and quiet revelations." },
+              { name: 'Clyvedon Castle',       description: "The Duke of Hastings's magnificent ancestral castle — grand, remote, and full of history." },
             ],
           },
         ],
       },
       {
-        name: 'Imperial Japan',
-        description: "The feudal and Edo-period Japan of shoguns, samurai, and sacred shrines.",
+        name: 'The Austen Circle',
+        description: "The drawing rooms, country estates, and seaside lodgings of Jane Austen's England — where wit, manners, and matters of the heart reign supreme.",
         regions: [
           {
-            name: 'The Imperial Court',
-            description: "Kyoto — the ancient imperial capital of Japan.",
+            name: 'Pride & Prejudice',
+            description: "The Hertfordshire countryside and Derbyshire estates of the Bennet family and Mr Darcy.",
             cities: [
-              { name: 'Kyoto Imperial Palace', description: "The traditional residence of the Japanese Emperor in the heart of Kyoto." },
-              { name: 'Nijo Castle',           description: "A flat-land castle built by Tokugawa Ieyasu, famous for its nightingale floors." },
-              { name: 'Fushimi Inari Shrine',  description: "The iconic shrine of ten thousand vermilion torii gates winding up Mount Inari." },
+              { name: 'Pemberley',             description: "Mr Darcy's magnificent Derbyshire estate — the house that changed Elizabeth Bennet's opinion entirely." },
+              { name: 'Longbourn',             description: "The modest Bennet family home in Hertfordshire, full of noise, nerves, and five unmarried daughters." },
+              { name: 'Netherfield Park',      description: "The grand neighbouring estate leased by Mr Bingley, setting of the first fateful ball." },
+              { name: 'Rosings Park',          description: "Lady Catherine de Bourgh's imposing estate in Kent, where condescension is served with every meal." },
+              { name: 'Meryton',              description: "The nearby market town where the Bennet sisters shopped, gossiped, and encountered the militia." },
             ],
           },
           {
-            name: 'The Shogunate',
-            description: "Edo (modern Tokyo) — the seat of the Tokugawa shogunate.",
+            name: 'Emma',
+            description: "The village of Highbury in Surrey — a small world of neighbours, matchmaking, and misunderstandings.",
             cities: [
-              { name: 'Edo Castle',            description: "The largest castle complex in the world, seat of the Tokugawa shogunate." },
-              { name: 'Osaka Castle',          description: "A magnificent five-storey castle towering over the city of Osaka." },
-              { name: 'Hiroshima Castle',      description: "A graceful feudal castle on the delta of the Ōta River, known as the Carp Castle." },
+              { name: 'Hartfield',             description: "The comfortable Woodhouse family home at the edge of Highbury village." },
+              { name: 'Donwell Abbey',         description: "Mr Knightley's ancient and handsome estate — everything that is English and good." },
+              { name: 'Randalls',              description: "The modest but cheerful home of the newly married Westons, always welcoming company." },
+              { name: 'The Crown Inn',         description: "Highbury's inn and ballroom, venue for the village's most anticipated social gatherings." },
+              { name: 'Highbury Village',      description: "The small, self-contained Surrey village that forms the entire world of Emma's social life." },
             ],
           },
           {
-            name: 'The Sacred Lands',
-            description: "Japan's most revered spiritual and natural landmarks.",
+            name: 'Sense & Sensibility',
+            description: "The Sussex and Devonshire homes of the Dashwood sisters — a story of heart versus head.",
             cities: [
-              { name: 'Mount Fuji',            description: "Japan's iconic snow-capped volcano and most sacred site." },
-              { name: 'Nikko Toshogu',          description: "An ornate mausoleum shrine complex in the mountains of Nikko." },
-              { name: 'Ise Grand Shrine',      description: "The holiest Shinto shrine in Japan, dedicated to the goddess Amaterasu." },
-            ],
-          },
-        ],
-      },
-      {
-        name: 'Ancient Egypt',
-        description: "The age of the Pharaohs — a civilisation of gods, pyramids, and the eternal Nile.",
-        regions: [
-          {
-            name: 'Upper Egypt',
-            description: "The southern Nile Valley, home to the greatest temples and royal tombs.",
-            cities: [
-              { name: 'Valley of the Kings',   description: "The royal necropolis cut into the limestone cliffs of Luxor." },
-              { name: 'Karnak Temple',          description: "The vast temple complex dedicated to Amun, the largest religious site in the ancient world." },
-              { name: 'Luxor Temple',           description: "A grand temple on the east bank of the Nile, connected to Karnak by an avenue of sphinxes." },
-              { name: 'Abu Simbel',             description: "Two massive rock temples carved by Ramesses II in the mountainside of Nubia." },
+              { name: 'Norland Park',          description: "The ancestral Sussex estate the Dashwood women must leave after Mr Dashwood's death." },
+              { name: 'Barton Cottage',        description: "The small but comfortable Devonshire cottage the Dashwoods retire to — their new beginning." },
+              { name: 'Barton Park',           description: "The nearby estate of Sir John Middleton, whose hospitality anchors the Dashwoods in Devon." },
+              { name: 'Cleveland',             description: "The Palmer family's Somerset estate where Marianne's illness reaches its crisis." },
+              { name: 'Delaford Manor',        description: "Colonel Brandon's quiet and comfortable Dorset estate — a home that eventually offers shelter and love." },
             ],
           },
           {
-            name: 'Lower Egypt',
-            description: "The northern Nile Valley and the great monuments of the Giza plateau.",
+            name: 'Bath & Beyond',
+            description: "The spa city of Bath and the coastal estates of Austen's other novels — Persuasion, Northanger Abbey.",
             cities: [
-              { name: 'Memphis',               description: "The ancient capital of Egypt, once the largest city in the world." },
-              { name: 'Giza Plateau',           description: "Home to the Great Pyramid, the Pyramid of Khafre, and the Great Sphinx." },
-              { name: 'The Great Sphinx',       description: "The colossal limestone guardian of the Giza necropolis." },
-            ],
-          },
-          {
-            name: 'The Nile Delta',
-            description: "The fertile fan of the Nile where it meets the Mediterranean.",
-            cities: [
-              { name: 'Alexandria',             description: "The great Hellenistic port city founded by Alexander, home to the famous Library." },
-              { name: 'Rosetta',               description: "The delta town where the Rosetta Stone was discovered, key to deciphering hieroglyphs." },
-              { name: 'Tanis',                 description: "An ancient city in the eastern delta, a royal capital of the late New Kingdom." },
-            ],
-          },
-        ],
-      },
-      {
-        name: 'Ancient Rome',
-        description: "The Roman Empire at its height — a world of senators, gladiators, and marble temples.",
-        regions: [
-          {
-            name: 'The Imperial City',
-            description: "Rome itself — the eternal city at the centre of the known world.",
-            cities: [
-              { name: 'The Roman Forum',       description: "The ancient heart of Roman civic life, surrounded by temples and basilicas." },
-              { name: 'The Colosseum',          description: "The iconic amphitheatre where 50,000 Romans watched gladiatorial combat." },
-              { name: 'The Palatine Hill',      description: "The most central of Rome's seven hills, home to the imperial palaces." },
-              { name: 'The Pantheon',           description: "A perfectly preserved temple to all the gods, with its remarkable domed roof." },
-            ],
-          },
-          {
-            name: 'The Provinces',
-            description: "The far-flung territories of the Roman Empire.",
-            cities: [
-              { name: 'Pompeii',               description: "A prosperous Roman city frozen in time by the eruption of Vesuvius in 79 AD." },
-              { name: 'Carthage',              description: "The great North African city, once Rome's greatest rival." },
-              { name: 'Alexandria',             description: "Rome's most important eastern city, seat of learning and commerce on the Nile." },
-            ],
-          },
-        ],
-      },
-      {
-        name: 'Romanov Russia',
-        description: "Imperial Russia under the Romanov dynasty (1613–1917) — a world of opulent palaces and vast frozen estates.",
-        regions: [
-          {
-            name: 'St. Petersburg',
-            description: "Peter the Great's magnificent capital built on the Neva delta.",
-            cities: [
-              { name: 'Winter Palace',          description: "The breathtaking baroque palace on the Neva, official residence of the Russian Emperors." },
-              { name: 'Catherine Palace',       description: "The dazzling blue-and-gold palace in Tsarskoye Selo, containing the legendary Amber Room." },
-              { name: 'Peterhof',               description: "The 'Russian Versailles' — a palace complex famous for its cascading fountains." },
-              { name: 'Tsarskoye Selo',         description: "The imperial residence and park complex south of St. Petersburg." },
-            ],
-          },
-          {
-            name: 'Moscow',
-            description: "The ancient capital and spiritual heart of Russia.",
-            cities: [
-              { name: 'The Kremlin',            description: "The fortified complex at the centre of Moscow, seat of tsarist power." },
-              { name: 'Red Square',             description: "The iconic cobblestone square adjoining the Kremlin, lined with colourful domed cathedrals." },
-              { name: 'Novodevichy Convent',    description: "A stunning 16th-century walled convent where noblewomen were exiled and tsars were buried." },
-            ],
-          },
-          {
-            name: 'The Imperial Estates',
-            description: "The grand country palaces scattered across the Russian countryside.",
-            cities: [
-              { name: 'Pavlovsk Palace',        description: "A neoclassical palace set within a vast English-style landscape park south of St. Petersburg." },
-              { name: 'Gatchina Palace',        description: "A severe yet grand palace surrounded by lakes, favoured by Paul I." },
-              { name: 'Oranienbaum',            description: "The most intact of the imperial palace ensembles, never occupied by German forces." },
-            ],
-          },
-        ],
-      },
-      {
-        name: 'Imperial China',
-        description: "The dynasties of imperial China — a civilisation of emperors, scholars, and sacred rites.",
-        regions: [
-          {
-            name: 'The Forbidden City',
-            description: "The walled imperial palace complex in Beijing, forbidden to common people for five centuries.",
-            cities: [
-              { name: 'The Outer Court',        description: "The ceremonial southern half of the Forbidden City, site of great state occasions." },
-              { name: 'The Inner Court',        description: "The northern residential half where the Emperor and his family lived." },
-              { name: 'The Imperial Garden',    description: "A serene garden of rockeries, ancient cypresses, and pavilions at the northern end of the palace." },
-            ],
-          },
-          {
-            name: 'Beyond the Walls',
-            description: "The great imperial sites of Beijing and beyond.",
-            cities: [
-              { name: 'The Summer Palace',      description: "A vast ensemble of lakes, gardens, and palaces used as an imperial retreat." },
-              { name: 'The Temple of Heaven',   description: "The sacred complex where emperors performed rites to Heaven for good harvests." },
-              { name: 'The Old Town',           description: "The ancient hutong neighbourhoods of narrow alleys and courtyard residences." },
-            ],
-          },
-        ],
-      },
-      {
-        name: 'Ancient Greece',
-        description: "The Classical era of city-states, philosophers, and the gods of Olympus.",
-        regions: [
-          {
-            name: 'Athens',
-            description: "The birthplace of democracy, philosophy, and the arts.",
-            cities: [
-              { name: 'The Acropolis',          description: "The sacred rock of Athens, crowned by the Parthenon and visible across the city." },
-              { name: 'The Parthenon',          description: "The magnificent temple to Athena Parthenos, the defining monument of ancient Greece." },
-              { name: 'The Agora',              description: "The bustling heart of Athenian civic life — marketplace, law courts, and philosophical debate." },
-              { name: 'Theatre of Dionysus',    description: "The world's first theatre, carved into the slopes of the Acropolis." },
-            ],
-          },
-          {
-            name: 'Sparta',
-            description: "The formidable city-state of warriors, discipline, and martial glory.",
-            cities: [
-              { name: 'The Spartan Agoge',      description: "The legendary training ground where Spartan boys were forged into soldiers." },
-              { name: 'The Temple of Athena',   description: "The bronze-clad temple to Athena of the Brazen House, the city's sacred centre." },
-              { name: 'Laconia Plains',         description: "The fertile valley of the Eurotas river that fed and defined the Spartan state." },
-            ],
-          },
-          {
-            name: 'The Sacred Sites',
-            description: "The pan-Hellenic sanctuaries that united all the Greek city-states.",
-            cities: [
-              { name: 'Delphi',                description: "The sanctuary of Apollo and seat of the Oracle, considered the navel of the world." },
-              { name: 'Olympia',               description: "The sacred precinct where the Olympic Games were held every four years." },
-              { name: "The Oracle's Temple",   description: "The inner sanctuary at Delphi where the Pythia delivered her cryptic prophecies." },
-              { name: 'Mount Olympus',          description: "The highest mountain in Greece and mythological home of the twelve Olympian gods." },
+              { name: 'Royal Crescent',        description: "Bath's most prestigious address — the sweeping Georgian terrace where the fashionable world paraded." },
+              { name: 'The Pump Room',         description: "Bath's social hub where visitors took the waters, exchanged gossip, and made connections." },
+              { name: 'Camden Place',          description: "Sir Walter Elliot's rented Bath townhouse — chosen for its fashionable address over all else." },
+              { name: 'Kellynch Hall',         description: "The Elliot family seat in Somerset, which Sir Walter is forced to let in Persuasion." },
+              { name: 'Northanger Abbey',      description: "The ancient Gothic abbey of the Tilney family — thrillingly sinister in Catherine Morland's imagination." },
             ],
           },
         ],
