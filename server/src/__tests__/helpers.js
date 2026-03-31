@@ -70,13 +70,19 @@ export const loginUser = async (email = 'test@aria.com', password = 'password123
   return res.body;
 };
 
+// Fixed UUIDs matching the test location hierarchy seeded in setup.js
+export const testWorldId  = '00000000-0000-4000-8000-000000000002';
+export const testRegionId = '00000000-0000-4000-8000-000000000003';
+export const testCityId   = '00000000-0000-4000-8000-000000000004';
+
 export const createTestListing = async (token, overrides = {}) => {
   const defaults = {
     title:         'Test Listing',
     description:   'A lovely test listing',
-    address:       '123 Test St',
-    city:          'Denver',
-    country:       'USA',
+    address:       '1 Test St',
+    worldId:       testWorldId,
+    regionId:      testRegionId,
+    cityId:        testCityId,
     pricePerNight: 100,
     maxGuests:     2,
     bedrooms:      1,

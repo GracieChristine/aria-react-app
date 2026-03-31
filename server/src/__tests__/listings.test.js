@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, beforeEach, afterEach, afterAll } from '@jest/globals';
-import { api, registerUser, createTestListing }                             from './helpers.js';
+import { api, registerUser, createTestListing, testWorldId, testRegionId, testCityId } from './helpers.js';
 import { setupTestDB, clearTestDB, closeTestDB }                            from './setup.js';
 
 beforeAll(async () => await setupTestDB());
@@ -11,8 +11,9 @@ const basePayload = {
   title:         'Beautiful Apartment',
   description:   'Lovely place',
   address:       '123 Main St',
-  city:          'Denver',
-  country:       'USA',
+  worldId:       testWorldId,
+  regionId:      testRegionId,
+  cityId:        testCityId,
   pricePerNight: 120,
   maxGuests:     3,
   bedrooms:      2,
@@ -133,20 +134,68 @@ describe(`POST /api/listings`, () => {
     expect(response.status).toBe(422);
   });
 
-  it(`should reject if create with no city`, async () => {
+  it(`should reject if create with address that does not start with a number`, async () => {
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ ...basePayload, city: '' });
+      .send({ ...basePayload, address: 'Main St' });
 
     expect(response.status).toBe(422);
   });
 
-  it(`should reject if create with no country`, async () => {
+  it(`should reject if create with address that does not end with a street suffix`, async () => {
     const response = await api
       .post('/api/listings')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ ...basePayload, country: '' });
+      .send({ ...basePayload, address: '123 Main' });
+
+    expect(response.status).toBe(422);
+  });
+
+  it(`should reject if create with no cityId`, async () => {
+    const payload = omit(basePayload, 'cityId');
+    const response = await api
+      .post('/api/listings')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send(payload);
+
+    expect(response.status).toBe(422);
+  });
+
+  it(`should reject if create with invalid cityId`, async () => {
+    const response = await api
+      .post('/api/listings')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ ...basePayload, cityId: 'not-a-uuid' });
+
+    expect(response.status).toBe(422);
+  });
+
+  it(`should reject if create with nonexistent cityId`, async () => {
+    const response = await api
+      .post('/api/listings')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ ...basePayload, cityId: '00000000-0000-4000-8000-000000000099' });
+
+    expect(response.status).toBe(422);
+  });
+
+  it(`should reject if create with no regionId`, async () => {
+    const payload = omit(basePayload, 'regionId');
+    const response = await api
+      .post('/api/listings')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send(payload);
+
+    expect(response.status).toBe(422);
+  });
+
+  it(`should reject if create with no worldId`, async () => {
+    const payload = omit(basePayload, 'worldId');
+    const response = await api
+      .post('/api/listings')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send(payload);
 
     expect(response.status).toBe(422);
   });
@@ -333,16 +382,16 @@ describe(`GET /api/listings`, () => {
       role:  'host'
     });
 
-    const { listing } = await createTestListing(accessToken, { city: 'Denver' });
+    const { listing } = await createTestListing(accessToken);
     await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({ status: 'active' });
 
-    const response = await api.get('/api/listings?city=Denver');
+    const response = await api.get('/api/listings?city=Test City');
 
     expect(response.status).toBe(200);
-    expect(response.body.listings.every((l) => l.city === 'Denver')).toBe(true);
+    expect(response.body.listings.every((l) => l.city === 'Test City')).toBe(true);
   });
 
   it(`should return empty array if city not found`, async () => {
@@ -351,13 +400,13 @@ describe(`GET /api/listings`, () => {
       role:  'host'
     });
 
-    const { listing } = await createTestListing(accessToken, { city: 'isNotValid' });
+    const { listing } = await createTestListing(accessToken);
     await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({ status: 'active' });
 
-    const response = await api.get('/api/listings?city=Denver');
+    const response = await api.get('/api/listings?city=NonExistentCity');
 
     expect(response.status).toBe(200);
     expect(response.body.listings.length).toBe(0);
@@ -495,8 +544,9 @@ describe(`PUT /api/listings/:id`, () => {
         title:         'Update Title',
         description:   'Update Description',
         address:       '321 Main St',
-        city:          'Boulder',
-        country:       'America',
+        worldId:       testWorldId,
+        regionId:      testRegionId,
+        cityId:        testCityId,
         pricePerNight: 250,
         maxGuests:     5,
         bedrooms:      3,
@@ -508,8 +558,8 @@ describe(`PUT /api/listings/:id`, () => {
     expect(response.body.listing.title).toBe('Update Title');
     expect(response.body.listing.description).toBe('Update Description');
     expect(response.body.listing.address).toBe('321 Main St');
-    expect(response.body.listing.city).toBe('Boulder');
-    expect(response.body.listing.country).toBe('America');
+    expect(response.body.listing.city).toBe('Test City');
+    expect(response.body.listing.world).toBe('Test World');
     expect(response.body.listing.pricePerNight).toBe(250);
     expect(response.body.listing.maxGuests).toBe(5);
     expect(response.body.listing.bedrooms).toBe(3);
@@ -618,20 +668,20 @@ describe(`PUT /api/listings/:id`, () => {
     expect(response.status).toBe(422);
   });
 
-  it(`should reject if update with empty city`, async () => {
+  it(`should reject if update with invalid cityId`, async () => {
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ city: '' });
+      .send({ cityId: 'not-a-uuid' });
 
     expect(response.status).toBe(422);
   });
 
-  it(`should reject if update with empty country`, async () => {
+  it(`should reject if update with address that does not start with a number`, async () => {
     const response = await api
       .put(`/api/listings/${listing.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ country: '' });
+      .send({ address: 'Main St' });
 
     expect(response.status).toBe(422);
   });
