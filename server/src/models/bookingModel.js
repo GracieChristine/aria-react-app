@@ -18,7 +18,7 @@ export const bookingModel = {
         l.title         AS listing_title,
         l.address       AS listing_address,
         l.city          AS listing_city,
-        l.country       AS listing_country,
+        l.world         AS listing_world,
         l.price_per_night,
         u.first_name    AS guest_first_name,
         u.last_name     AS guest_last_name,
@@ -40,7 +40,7 @@ export const bookingModel = {
       `SELECT b.*,
         l.title      AS listing_title,
         l.city       AS listing_city,
-        l.country    AS listing_country,
+        l.world      AS listing_world,
         (SELECT url FROM listing_images
          WHERE listing_id = l.id
          ORDER BY display_order LIMIT 1) AS listing_image

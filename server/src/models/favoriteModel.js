@@ -24,7 +24,7 @@ export const favoriteModel = {
 
   async findByUser(userId) {
     const { rows } = await pool.query(
-      `SELECT f.*, l.title, l.city, l.country,
+      `SELECT f.*, l.title, l.city, l.world,
         l.price_per_night,
         (SELECT url FROM listing_images
          WHERE listing_id = l.id
@@ -34,7 +34,7 @@ export const favoriteModel = {
        JOIN listings l ON l.id = f.listing_id
        LEFT JOIN reviews r ON r.listing_id = l.id
        WHERE f.user_id = $1
-       GROUP BY f.id, l.id, l.title, l.city, l.country, l.price_per_night
+       GROUP BY f.id, l.id, l.title, l.city, l.world, l.price_per_night
        ORDER BY f.created_at DESC`,
       [userId]
     );
