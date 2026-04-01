@@ -16,7 +16,7 @@ const formatBooking = (b) => ({
   listing: b.listing_title ? {
     title:   b.listing_title,
     city:    b.listing_city,
-    country: b.listing_country,
+    world:   b.listing_world,
     image:   b.listing_image,
   } : undefined,
   guest: b.guest_first_name ? {

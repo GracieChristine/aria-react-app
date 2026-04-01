@@ -1,7 +1,7 @@
 import pool from '../db/pool.js';
 
 export const listingModel = {
-  async findAll({ city, country, minPrice, maxPrice, guests, propertyType, status = 'active', limit = 20, offset = 0 }) {
+  async findAll({ city, world, minPrice, maxPrice, guests, propertyType, status = 'active', limit = 20, offset = 0 }) {
     const conditions = ['l.status = $1'];
     const values     = [status];
     let   paramCount = 2;
@@ -10,9 +10,9 @@ export const listingModel = {
       conditions.push(`l.city ILIKE $${paramCount++}`);
       values.push(`%${city}%`);
     }
-    if (country) {
-      conditions.push(`l.country ILIKE $${paramCount++}`);
-      values.push(`%${country}%`);
+    if (world) {
+      conditions.push(`l.world ILIKE $${paramCount++}`);
+      values.push(`%${world}%`);
     }
     if (minPrice) {
       conditions.push(`l.price_per_night >= $${paramCount++}`);
@@ -34,7 +34,7 @@ export const listingModel = {
     const where = conditions.join(' AND ');
 
     const { rows } = await pool.query(
-      `SELECT 
+      `SELECT
         l.*,
         u.first_name AS host_first_name,
         u.last_name  AS host_last_name,
@@ -109,14 +109,14 @@ export const listingModel = {
     return rows;
   },
 
-  async create({ hostId, title, description, address, city, country, lat, lng, pricePerNight, maxGuests, bedrooms, bathrooms, propertyType }) {
+  async create({ hostId, title, description, address, city, region, world, cityId, regionId, worldId, pricePerNight, maxGuests, bedrooms, bathrooms, propertyType }) {
     const { rows } = await pool.query(
       `INSERT INTO listings
-        (host_id, title, description, address, city, country, lat, lng,
+        (host_id, title, description, address, city, region, world, city_id, region_id, world_id,
          price_per_night, max_guests, bedrooms, bathrooms, property_type)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
        RETURNING *`,
-      [hostId, title, description, address, city, country, lat, lng,
+      [hostId, title, description, address, city, region, world, cityId, regionId, worldId,
        pricePerNight, maxGuests, bedrooms, bathrooms, propertyType]
     );
     return rows[0];
@@ -128,9 +128,11 @@ export const listingModel = {
       description:   'description',
       address:       'address',
       city:          'city',
-      country:       'country',
-      lat:           'lat',
-      lng:           'lng',
+      region:        'region',
+      world:         'world',
+      cityId:        'city_id',
+      regionId:      'region_id',
+      worldId:       'world_id',
       pricePerNight: 'price_per_night',
       maxGuests:     'max_guests',
       bedrooms:      'bedrooms',
@@ -191,17 +193,17 @@ export const listingModel = {
   },
 
   async countAll(filters) {
-    const { city, country, minPrice, maxPrice, guests, propertyType, status = 'active' } = filters;
+    const { city, world, minPrice, maxPrice, guests, propertyType, status = 'active' } = filters;
     const conditions = ['status = $1'];
     const values     = [status];
     let   paramCount = 2;
 
-    if (city)         { conditions.push(`city ILIKE $${paramCount++}`);           values.push(`%${city}%`); }
-    if (country)      { conditions.push(`country ILIKE $${paramCount++}`);        values.push(`%${country}%`); }
-    if (minPrice)     { conditions.push(`price_per_night >= $${paramCount++}`);   values.push(minPrice); }
-    if (maxPrice)     { conditions.push(`price_per_night <= $${paramCount++}`);   values.push(maxPrice); }
-    if (guests)       { conditions.push(`max_guests >= $${paramCount++}`);        values.push(guests); }
-    if (propertyType) { conditions.push(`property_type = $${paramCount++}`);      values.push(propertyType); }
+    if (city)         { conditions.push(`city ILIKE $${paramCount++}`);          values.push(`%${city}%`); }
+    if (world)        { conditions.push(`world ILIKE $${paramCount++}`);          values.push(`%${world}%`); }
+    if (minPrice)     { conditions.push(`price_per_night >= $${paramCount++}`);  values.push(minPrice); }
+    if (maxPrice)     { conditions.push(`price_per_night <= $${paramCount++}`);  values.push(maxPrice); }
+    if (guests)       { conditions.push(`max_guests >= $${paramCount++}`);       values.push(guests); }
+    if (propertyType) { conditions.push(`property_type = $${paramCount++}`);     values.push(propertyType); }
 
     const { rows } = await pool.query(
       `SELECT COUNT(*) FROM listings WHERE ${conditions.join(' AND ')}`,

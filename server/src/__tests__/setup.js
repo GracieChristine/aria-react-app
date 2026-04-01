@@ -47,6 +47,28 @@ export const setupTestDB = async () => {
       ON CONFLICT (email) DO NOTHING
     `, [adminHash, superAdminHash]);
 
+    // Seed a test location hierarchy (universe → world → region → city)
+    await client.query(`
+      INSERT INTO universes (id, name, slug)
+      VALUES ('00000000-0000-4000-8000-000000000001', 'Test Universe', 'test-universe')
+      ON CONFLICT (slug) DO NOTHING
+    `);
+    await client.query(`
+      INSERT INTO worlds (id, universe_id, name)
+      VALUES ('00000000-0000-4000-8000-000000000002', '00000000-0000-4000-8000-000000000001', 'Test World')
+      ON CONFLICT (universe_id, name) DO NOTHING
+    `);
+    await client.query(`
+      INSERT INTO regions (id, world_id, name)
+      VALUES ('00000000-0000-4000-8000-000000000003', '00000000-0000-4000-8000-000000000002', 'Test Region')
+      ON CONFLICT (world_id, name) DO NOTHING
+    `);
+    await client.query(`
+      INSERT INTO cities (id, region_id, name)
+      VALUES ('00000000-0000-4000-8000-000000000004', '00000000-0000-4000-8000-000000000003', 'Test City')
+      ON CONFLICT (region_id, name) DO NOTHING
+    `);
+
   } finally {
     client.release();
   }
@@ -58,6 +80,8 @@ export const clearTestDB = async () => {
              bookings, listing_amenities, listing_images,
              listings, users RESTART IDENTITY CASCADE
   `);
+  // Note: universes/worlds/regions/cities are NOT truncated —
+  // the test location hierarchy seeded in setupTestDB persists across tests.
 
   const adminHash      = await bcrypt.hash('admin123', 10);
   const superAdminHash = await bcrypt.hash('admin123', 10);

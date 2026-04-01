@@ -1,5 +1,6 @@
-import { listingModel }               from '../models/listingModel.js';
-import { successResponse, errorResponse } from '../utils/response.js';
+import { listingModel }                    from '../models/listingModel.js';
+import { locationModel }                   from '../models/locationModel.js';
+import { successResponse, errorResponse }  from '../utils/response.js';
 
 const formatListing = (l) => ({
   id:            l.id,
@@ -8,9 +9,11 @@ const formatListing = (l) => ({
   description:   l.description,
   address:       l.address,
   city:          l.city,
-  country:       l.country,
-  lat:           l.lat,
-  lng:           l.lng,
+  cityId:        l.city_id,
+  region:        l.region,
+  regionId:      l.region_id,
+  world:         l.world,
+  worldId:       l.world_id,
   pricePerNight: parseFloat(l.price_per_night),
   maxGuests:     l.max_guests,
   bedrooms:      l.bedrooms,
@@ -37,13 +40,13 @@ export const listingController = {
   async getAll(req, res) {
     try {
       const {
-        city, country, minPrice, maxPrice,
+        city, world, minPrice, maxPrice,
         guests, propertyType,
         page = 1, limit = 20,
       } = req.query;
 
       const offset   = (page - 1) * limit;
-      const filters  = { city, country, minPrice, maxPrice, guests, propertyType };
+      const filters  = { city, world, minPrice, maxPrice, guests, propertyType };
       const listings = await listingModel.findAll({ ...filters, limit, offset });
       const total    = await listingModel.countAll(filters);
 
@@ -89,15 +92,26 @@ export const listingController = {
   async create(req, res) {
     try {
       const {
-        title, description, address, city, country,
-        lat, lng, pricePerNight, maxGuests,
+        title, description, address,
+        cityId, regionId, worldId,
+        pricePerNight, maxGuests,
         bedrooms, bathrooms, propertyType,
       } = req.body;
 
+      // Verify city exists and belongs to the given region and world
+      const location = await locationModel.findCityById(cityId);
+      if (!location)                        return errorResponse(res, 'City not found', 422);
+      if (location.region_id !== regionId)  return errorResponse(res, 'City does not belong to the selected region', 422);
+      if (location.world_id !== worldId)    return errorResponse(res, 'Region does not belong to the selected world', 422);
+
       const listing = await listingModel.create({
         hostId: req.user.id,
-        title, description, address, city, country,
-        lat, lng, pricePerNight, maxGuests,
+        title, description, address,
+        city:   location.city,
+        region: location.region,
+        world:  location.world,
+        cityId, regionId, worldId,
+        pricePerNight, maxGuests,
         bedrooms, bathrooms, propertyType,
       });
 
@@ -110,69 +124,81 @@ export const listingController = {
 
   // ── PUT /api/listings/:id ──
   async update(req, res) {
-  try {
-    const allowed = [
-      'title', 'description', 'address', 'city', 'country',
-      'lat', 'lng', 'pricePerNight', 'maxGuests',
-      'bedrooms', 'bathrooms', 'propertyType', 'status',
-    ];
+    try {
+      const allowed = [
+        'title', 'description', 'address',
+        'cityId', 'regionId', 'worldId',
+        'pricePerNight', 'maxGuests',
+        'bedrooms', 'bathrooms', 'propertyType', 'status',
+      ];
 
-    const fields = {};
-    for (const key of allowed) {
-      if (req.body[key] !== undefined) fields[key] = req.body[key];
+      const fields = {};
+      for (const key of allowed) {
+        if (req.body[key] !== undefined) fields[key] = req.body[key];
+      }
+
+      if (Object.keys(fields).length === 0) {
+        return errorResponse(res, 'No valid fields to update', 400);
+      }
+
+      // If any location field is being updated, verify the combination is valid
+      if (fields.cityId) {
+        const location = await locationModel.findCityById(fields.cityId);
+        if (!location) return errorResponse(res, 'City not found', 422);
+        if (fields.regionId && location.region_id !== fields.regionId) return errorResponse(res, 'City does not belong to the selected region', 422);
+        if (fields.worldId  && location.world_id  !== fields.worldId)  return errorResponse(res, 'Region does not belong to the selected world', 422);
+        // Sync display names
+        fields.city   = location.city;
+        fields.region = location.region;
+        fields.world  = location.world;
+      }
+
+      const listing = await listingModel.findById(req.params.id);
+      if (!listing) return errorResponse(res, 'Listing not found', 404);
+      if (listing.host_id !== req.user.id) return errorResponse(res, 'Not authorized', 403);
+
+      const updated = await listingModel.update(req.params.id, req.user.id, fields);
+      return successResponse(res, { listing: formatListing(updated) });
+    } catch (err) {
+      console.error('Update listing error:', err);
+      return errorResponse(res, 'Failed to update listing', 500);
     }
-
-    if (Object.keys(fields).length === 0) {
-      return errorResponse(res, 'No valid fields to update', 400);
-    }
-
-    const listing = await listingModel.findById(req.params.id);
-    if (!listing) return errorResponse(res, 'Listing not found', 404);
-    if (listing.host_id !== req.user.id) return errorResponse(res, 'Not authorized', 403);
-
-    const updated = await listingModel.update(req.params.id, req.user.id, fields);
-    
-    return successResponse(res, { listing: formatListing(updated) });
-  } catch (err) {
-    console.error('Update listing error:', err);
-    return errorResponse(res, 'Failed to update listing', 500);
-  }
-},
+  },
 
   // ── PATCH /api/listings/:id/status ──
   async updateStatus(req, res) {
-  try {
-    const { status } = req.body;
-    const { id }     = req.params;
-    const user       = req.user;
+    try {
+      const { status } = req.body;
+      const { id }     = req.params;
+      const user       = req.user;
 
-    const listing = await listingModel.findById(id);
-    if (!listing) return errorResponse(res, 'Listing not found', 404);
+      const listing = await listingModel.findById(id);
+      if (!listing) return errorResponse(res, 'Listing not found', 404);
 
-    if (user.role === 'host' && listing.host_id !== user.id) {
-      return errorResponse(res, 'Not authorized', 403);
+      if (user.role === 'host' && listing.host_id !== user.id) {
+        return errorResponse(res, 'Not authorized', 403);
+      }
+
+      const allowedStatuses = {
+        host:        ['active', 'inactive'],
+        admin:       ['inactive'],
+        super_admin: ['inactive'],
+      };
+
+      const allowed = allowedStatuses[user.role] || [];
+      if (!allowed.includes(status)) {
+        return errorResponse(res, `Not allowed to set status to ${status}`, 400);
+      }
+
+      const updated = await listingModel.update(id, listing.host_id, { status });
+      if (!updated) return errorResponse(res, 'Failed to update status', 500);
+
+      return successResponse(res, { listing: formatListing(updated) });
+    } catch (err) {
+      console.error('Update status error:', err);
+      return errorResponse(res, 'Failed to update status', 500);
     }
-
-    const allowedStatuses = {
-      host:        ['active', 'inactive'],
-      admin:       ['inactive'],
-      super_admin: ['inactive'],
-    };
-
-    const allowed = allowedStatuses[user.role] || [];
-    if (!allowed.includes(status)) {
-      return errorResponse(res, `Not allowed to set status to ${status}`, 400); // ✅
-    }
-
-    const updated = await listingModel.update(id, listing.host_id, { status });
-    if (!updated) return errorResponse(res, 'Failed to update status', 500);
-
-    return successResponse(res, { listing: formatListing(updated) });
-  } catch (err) {
-    console.error('Update status error:', err);
-    return errorResponse(res, 'Failed to update status', 500);
-  }
-},
+  },
 
   // ── DELETE /api/listings/:id ──
   async remove(req, res) {
@@ -226,11 +252,7 @@ export const listingController = {
       if (!listing) return errorResponse(res, 'Listing not found', 404);
       if (listing.host_id !== req.user.id) return errorResponse(res, 'Not authorized', 403);
 
-      const deleted = await listingModel.deleteImage(
-        req.params.imageId,
-        req.params.id
-      );
-      
+      const deleted = await listingModel.deleteImage(req.params.imageId, req.params.id);
       if (!deleted) return errorResponse(res, 'Image not found', 404);
       return successResponse(res, { message: 'Image deleted successfully' });
     } catch (err) {
