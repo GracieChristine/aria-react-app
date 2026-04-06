@@ -87,7 +87,7 @@ export const createTestListing = async (token, overrides = {}) => {
     maxGuests:     2,
     bedrooms:      1,
     bathrooms:     1,
-    propertyType:  'apartment',
+    propertyType:  'cottage',
   };
   const res = await api
     .post('/api/listings')

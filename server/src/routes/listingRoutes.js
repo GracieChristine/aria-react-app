@@ -39,7 +39,7 @@ const listingRules = [
   body('bathrooms')
     .isInt({ min: 1, max: 20 }).withMessage('Bathrooms must be between 1 and 20'),
   body('propertyType')
-    .isIn(['apartment','house','villa','cabin','condo','townhouse','studio','other'])
+    .isIn(['cottage','manor','castle','tower','treehouse','cavern','academy_suite','seaside_cove','floating_isle','hidden_burrow'])
     .withMessage('Invalid property type'),
 ];
 
@@ -73,7 +73,7 @@ const updateListingRules = [
     .optional().isInt({ min: 1, max: 20 }).withMessage('Bathrooms must be between 1 and 20'),
   body('propertyType')
     .optional()
-    .isIn(['apartment','house','villa','cabin','condo','townhouse','studio','other'])
+    .isIn(['cottage','manor','castle','tower','treehouse','cavern','academy_suite','seaside_cove','floating_isle','hidden_burrow'])
     .withMessage('Invalid property type'),
 ];
 

@@ -45,3 +45,6 @@ cypress/videos/
 
 # Local dev notes
 CLAUDE.md
+
+# Design mockups / temp UI files
+client/temp/
