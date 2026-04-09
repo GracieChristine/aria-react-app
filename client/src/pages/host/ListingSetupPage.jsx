@@ -347,7 +347,7 @@ function StepLocation({ form, onChange }) {
   }, []);
 
   useEffect(() => {
-    if (!form.universeId) { setWorlds([]); return; }
+    if (!form.universeId) return;
     fetch(`/api/locations/universes/${form.universeId}/worlds`)
       .then(r => r.json())
       .then(d => setWorlds(d.worlds ?? []))
@@ -355,7 +355,7 @@ function StepLocation({ form, onChange }) {
   }, [form.universeId]);
 
   useEffect(() => {
-    if (!form.worldId) { setRegions([]); return; }
+    if (!form.worldId) return;
     fetch(`/api/locations/worlds/${form.worldId}/regions`)
       .then(r => r.json())
       .then(d => setRegions(d.regions ?? []))
@@ -363,7 +363,7 @@ function StepLocation({ form, onChange }) {
   }, [form.worldId]);
 
   useEffect(() => {
-    if (!form.regionId) { setCities([]); return; }
+    if (!form.regionId) return;
     fetch(`/api/locations/regions/${form.regionId}/cities`)
       .then(r => r.json())
       .then(d => setCities(d.cities ?? []))
