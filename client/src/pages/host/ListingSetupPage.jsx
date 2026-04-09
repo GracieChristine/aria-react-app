@@ -534,7 +534,7 @@ const INITIAL_FORM = {
 };
 
 export default function ListingSetupPage() {
-  const { user, token, updateUser } = useAuth();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
 
   const [step,    setStep]    = useState(1);
@@ -543,6 +543,9 @@ export default function ListingSetupPage() {
   const [loading, setLoading] = useState(false);
 
   if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== 'host' && user.role !== 'admin' && user.role !== 'super_admin') {
+    return <Navigate to="/" replace />;
+  }
 
   function handleChange(field, value) {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -560,19 +563,6 @@ export default function ListingSetupPage() {
     setError(null);
     setLoading(true);
     try {
-      if (user.role === 'guest') {
-        const hostRes = await fetch('/api/users/me/become-host', {
-          method:  'PATCH',
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const hostData = await hostRes.json();
-        if (!hostRes.ok) {
-          setError(hostData.message || 'Failed to update role.');
-          return;
-        }
-        updateUser(hostData.user);
-      }
-
       const res = await fetch('/api/listings', {
         method: 'POST',
         headers: {
