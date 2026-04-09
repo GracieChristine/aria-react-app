@@ -18,7 +18,7 @@ const basePayload = {
   maxGuests:     3,
   bedrooms:      2,
   bathrooms:     1,
-  propertyType:  'apartment'
+  propertyType:  'cottage'
 };
 
 const omit = (obj, key) => {
@@ -551,7 +551,7 @@ describe(`PUT /api/listings/:id`, () => {
         maxGuests:     5,
         bedrooms:      3,
         bathrooms:     2,
-        propertyType:  'house'
+        propertyType:  'manor'
       });
 
     expect(response.status).toBe(200);
@@ -564,7 +564,7 @@ describe(`PUT /api/listings/:id`, () => {
     expect(response.body.listing.maxGuests).toBe(5);
     expect(response.body.listing.bedrooms).toBe(3);
     expect(response.body.listing.bathrooms).toBe(2);
-    expect(response.body.listing.propertyType).toBe('house');
+    expect(response.body.listing.propertyType).toBe('manor');
   });
 
   it(`should not update a listing from another host`, async () => {

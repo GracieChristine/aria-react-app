@@ -48,8 +48,6 @@ export default function ProfilePage() {
   const [passwordLoading, setPasswordLoading] = useState(false);
 
   // Become-a-host
-  const [hostError, setHostError]     = useState('');
-  const [hostLoading, setHostLoading] = useState(false);
 
   if (!token) return <Navigate to="/login" replace />;
 
@@ -156,26 +154,8 @@ export default function ProfilePage() {
   }
 
   // ── Become a host ─────────────────────────────────────────
-  async function handleBecomeHost() {
-    setHostError('');
-    setHostLoading(true);
-    try {
-      const res = await fetch('/api/users/me/become-host', {
-        method:  'PATCH',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setHostError(data.message || 'Failed to update role.');
-        return;
-      }
-      updateUser(data.user);
-      navigate('/host/listings/new');
-    } catch {
-      setHostError('Unable to connect. Please try again.');
-    } finally {
-      setHostLoading(false);
-    }
+  function handleBecomeHost() {
+    navigate('/host/listings/new');
   }
 
   const navItems = [
@@ -393,16 +373,14 @@ export default function ProfilePage() {
                   <span className="font-serif italic text-aria-text-dark text-[1.1rem]">Become a host</span>
                 </div>
                 <div className="px-7 py-6">
-                  {hostError && <p className="text-aria-error text-sm mb-4">{hostError}</p>}
                   <p className="text-sm text-aria-text-mid leading-relaxed mb-6">
                     Share your space and start earning. Create your first listing to get started.
                   </p>
                   <button
                     className="btn-primary text-sm"
                     onClick={handleBecomeHost}
-                    disabled={hostLoading}
                   >
-                    {hostLoading ? 'Updating…' : 'Get started as a host'}
+                    Get started as a host
                   </button>
                 </div>
               </>
