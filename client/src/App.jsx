@@ -5,7 +5,7 @@ import { AuthProvider } from './context/AuthProvider';
 import HomePage from './pages/HomePage';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
-import ProfilePage from './pages/ProfilePage';
+import ProfilePage from './pages/user/ProfilePage';
 import ListingSetupPage from './pages/host/ListingSetupPage';
 import HostDashboardPage from './pages/host/HostDashboardPage';
 

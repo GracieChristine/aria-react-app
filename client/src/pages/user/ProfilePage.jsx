@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import Navbar from '../components/Navbar';
+import { useAuth } from '../../hooks/useAuth';
+import Navbar from '../../components/Navbar';
 
 export default function ProfilePage() {
   const { user, token, updateUser } = useAuth();
