@@ -581,6 +581,7 @@ export default function ListingSetupPage() {
           bedrooms:      Number(form.bedrooms),
           bathrooms:     Number(form.bathrooms),
           propertyType:  form.propertyType,
+          status:        'inactive',
         }),
       });
       const data = await res.json();
