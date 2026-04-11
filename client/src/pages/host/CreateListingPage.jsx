@@ -533,8 +533,8 @@ const INITIAL_FORM = {
   address:       '',
 };
 
-export default function ListingSetupPage() {
-  const { user, token } = useAuth();
+export default function CreateListingPage() {
+  const { user, token, authReady } = useAuth();
   const navigate = useNavigate();
 
   const [step,    setStep]    = useState(1);
@@ -542,6 +542,7 @@ export default function ListingSetupPage() {
   const [error,   setError]   = useState(null);
   const [loading, setLoading] = useState(false);
 
+  if (!authReady) return null;
   if (!user) return <Navigate to="/login" replace />;
   if (user.role !== 'host' && user.role !== 'admin' && user.role !== 'super_admin') {
     return <Navigate to="/" replace />;
