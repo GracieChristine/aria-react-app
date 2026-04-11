@@ -142,7 +142,7 @@ export default function HostDashboardPage() {
     setError(null);
     try {
       const res = await fetch('/api/listings/host/me', {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`, 'Cache-Control': 'no-cache' },
       });
       const data = await res.json();
       if (!res.ok) { setError(data.message ?? 'Failed to load listings.'); return; }
