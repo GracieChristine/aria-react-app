@@ -4,9 +4,10 @@ import { AuthContext } from './AuthContext';
 export function AuthProvider({ children }) {
 	const [user, setUser] = useState(null);
 	const [token, setToken] = useState(() => localStorage.getItem('aria_token'));
+	const [authReady, setAuthReady] = useState(false);
 
 	useEffect(() => {
-		if (!token) return;
+		if (!token) { setAuthReady(true); return; }
 		fetch('/api/users/me', {
 			headers: { Authorization: `Bearer ${token}` },
 		})
@@ -15,7 +16,8 @@ export function AuthProvider({ children }) {
 			.catch(() => {
 				localStorage.removeItem('aria_token');
 				setToken(null);
-			});
+			})
+			.finally(() => setAuthReady(true));
 	}, [token]);
 
 	function login(userData, jwt) {
@@ -35,7 +37,7 @@ export function AuthProvider({ children }) {
 	}
 
 	return (
-		<AuthContext.Provider value={{ user, token, login, logout, updateUser }}>
+		<AuthContext.Provider value={{ user, token, authReady, login, logout, updateUser }}>
 			{children}
 		</AuthContext.Provider>
 	);

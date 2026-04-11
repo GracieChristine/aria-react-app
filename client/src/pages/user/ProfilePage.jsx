@@ -4,7 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import Navbar from '../../components/Navbar';
 
 export default function ProfilePage() {
-  const { user, token, updateUser } = useAuth();
+  const { user, token, authReady, updateUser } = useAuth();
   const navigate = useNavigate();
   const formInitialized = useRef(false);
 
@@ -51,6 +51,7 @@ export default function ProfilePage() {
   const [hostError, setHostError]     = useState('');
   const [hostLoading, setHostLoading] = useState(false);
 
+  if (!authReady) return null;
   if (!token) return <Navigate to="/login" replace />;
 
   const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase();
