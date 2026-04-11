@@ -7,17 +7,30 @@ export function AuthProvider({ children }) {
 	const [authReady, setAuthReady] = useState(false);
 
 	useEffect(() => {
-		if (!token) { setAuthReady(true); return; }
-		fetch('/api/users/me', {
-			headers: { Authorization: `Bearer ${token}` },
-		})
-			.then(res => res.ok ? res.json() : Promise.reject())
-			.then(data => setUser(data.user))
-			.catch(() => {
+		async function init() {
+			if (!token) {
+				setAuthReady(true);
+				return;
+			}
+			try {
+				const res = await fetch('/api/users/me', {
+					headers: { Authorization: `Bearer ${token}` },
+				});
+				if (res.ok) {
+					const data = await res.json();
+					setUser(data.user);
+				} else {
+					localStorage.removeItem('aria_token');
+					setToken(null);
+				}
+			} catch {
 				localStorage.removeItem('aria_token');
 				setToken(null);
-			})
-			.finally(() => setAuthReady(true));
+			} finally {
+				setAuthReady(true);
+			}
+		}
+		init();
 	}, [token]);
 
 	function login(userData, jwt) {
