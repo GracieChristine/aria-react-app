@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 const ts = Date.now();
-const email       = `profile-user-${ts}@aria.com`;
-const newEmail    = `updated-profile-user-${ts}@aria.com`;
-const password    = 'Password123!';
+const email = `profile-user-${ts}@aria.com`;
+const newEmail = `updated-profile-user-${ts}@aria.com`;
+const password = 'Password123!';
 const newPassword = 'NewPassword123!';
 
 test.describe('Profile', () => {
@@ -36,7 +36,8 @@ test.describe('Profile', () => {
     });
 
     test('should navigate to /profile when clicking the navbar name link @smoke', async ({ page }) => {
-      await page.locator('nav a', { hasText: 'Profile User' }).click();
+      await page.locator('nav button', { hasText: 'Profile User' }).click();
+      await page.locator('nav a', { hasText: 'Profile' }).click();
       await expect(page).toHaveURL('/profile');
     });
   });
@@ -121,7 +122,7 @@ test.describe('Profile', () => {
       await expect(page.locator('span:has-text("Updated User")')).toBeVisible();
       await expect(page.locator(`span:has-text("${newEmail}")`)).toBeVisible();
       await expect(page.locator('span:has-text("555-555-5555")')).toBeVisible();
-      await expect(page.locator('nav a:has-text("Hi, Updated User")')).toBeVisible();
+      await expect(page.locator('nav button:has-text("Updated User")')).toBeVisible();
 
       await page.getByRole('button', { name: 'Logout' }).click();
       await page.goto('/login');
@@ -129,7 +130,7 @@ test.describe('Profile', () => {
       await page.locator('input[name="password"]').fill(password);
       await page.locator('button[type="submit"]').click();
       await expect(page).toHaveURL('/');
-      await expect(page.locator('nav a:has-text("Hi, Updated User")')).toBeVisible();
+      await expect(page.locator('nav button:has-text("Updated User")')).toBeVisible();
     });
   });
 
@@ -206,7 +207,7 @@ test.describe('Profile', () => {
       await page.locator('input[name="password"]').fill(newPassword);
       await page.locator('button[type="submit"]').click();
       await expect(page).toHaveURL('/');
-      await expect(page.locator('nav a:has-text("Hi, Updated User")')).toBeVisible();
+      await expect(page.locator('nav button:has-text("Updated User")')).toBeVisible();
     });
   });
 
@@ -224,6 +225,6 @@ test.describe('Profile', () => {
       await page.getByRole('button', { name: 'Become a host' }).click();
     });
 
-    test('', async () => {});
+    test('', async () => { });
   });
 });

@@ -22,7 +22,7 @@ describe('Auth', () => {
       cy.get('button[type="submit"]').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/register');
-      cy.contains('Hi, New User').should('not.exist');
+      cy.contains('New User').should('not.exist');
       cy.contains('Name is required.');
     });
 
@@ -34,7 +34,7 @@ describe('Auth', () => {
       cy.get('button[type="submit"]').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/register');
-      cy.contains('Hi, New User').should('not.exist');
+      cy.contains('New User').should('not.exist');
       cy.contains('Email is required.');
     });
 
@@ -46,7 +46,7 @@ describe('Auth', () => {
       cy.get('button[type="submit"]').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/register');
-      cy.contains('Hi, New User').should('not.exist');
+      cy.contains('New User').should('not.exist');
       cy.contains('Password is required.');
     });
 
@@ -58,7 +58,7 @@ describe('Auth', () => {
       cy.get('button[type="submit"]').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/register');
-      cy.contains('Hi, New User').should('not.exist');
+      cy.contains('New User').should('not.exist');
       cy.contains('Please confirm your password.');
     });
 
@@ -71,7 +71,7 @@ describe('Auth', () => {
       cy.get('button[type="submit"]').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/register');
-      cy.contains('Hi, New User').should('not.exist');
+      cy.contains('New User').should('not.exist');
       cy.contains('Please enter a valid email address.');
     });
 
@@ -83,7 +83,7 @@ describe('Auth', () => {
       cy.get('button[type="submit"]').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/register');
-      cy.contains('Hi, New User').should('not.exist');
+      cy.contains('New User').should('not.exist');
       cy.contains('Password must be at least 8 characters.');
     });
 
@@ -95,7 +95,7 @@ describe('Auth', () => {
       cy.get('button[type="submit"]').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/register');
-      cy.contains('Hi, New User').should('not.exist');
+      cy.contains('New User').should('not.exist');
       cy.contains('Passwords do not match.');
     });
 
@@ -108,7 +108,7 @@ describe('Auth', () => {
       cy.get('button[type="submit"]').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/');
-      cy.contains('Hi, New User').should('be.visible');
+      cy.get('nav button').should('contains','New User').and('be.visible');
     });
 
     // User exist already
@@ -120,7 +120,7 @@ describe('Auth', () => {
       cy.get('button[type="submit"]').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/register');
-      cy.contains('Hi, New User').should('not.exist');
+      cy.contains('New User').should('not.exist');
       cy.contains('Email already registered. Try logging in.');
     });
   });
@@ -146,7 +146,7 @@ describe('Auth', () => {
       cy.get('button[type="submit"]').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/login');
-      cy.contains('Hi, Register User').should('not.exist');
+      cy.contains('Register User').should('not.exist');
       cy.contains('Email is required.');
     });
 
@@ -156,7 +156,7 @@ describe('Auth', () => {
       cy.get('button[type="submit"]').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/login');
-      cy.contains('Hi, Register User').should('not.exist');
+      cy.contains('Register User').should('not.exist');
       cy.contains('Password is required.');
     });
 
@@ -167,7 +167,7 @@ describe('Auth', () => {
       cy.get('button[type="submit"]').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/login');
-      cy.contains('Hi, Register User').should('not.exist');
+      cy.contains('Register User').should('not.exist');
       cy.contains('Please enter a valid email address.');
     });
 
@@ -177,7 +177,7 @@ describe('Auth', () => {
       cy.get('button[type="submit"]').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/login');
-      cy.contains('Hi, Register User').should('not.exist');
+      cy.contains('Register User').should('not.exist');
       cy.contains('Incorrect password. Please try again.');
     });
 
@@ -190,7 +190,7 @@ describe('Auth', () => {
       cy.get('button[type="submit"]').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/login');
-      cy.contains('Hi, Unregister User').should('not.exist');
+      cy.contains('Unregister User').should('not.exist');
       cy.contains('No account found with this email. Try registering.');
     });
 
@@ -201,7 +201,7 @@ describe('Auth', () => {
       cy.get('button[type="submit"]').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/');
-      cy.contains('Hi, Register User').should('be.visible');
+      cy.contains('Register User').should('be.visible');
     });
   });
 
