@@ -109,15 +109,15 @@ export const listingModel = {
     return rows;
   },
 
-  async create({ hostId, title, description, address, city, region, world, cityId, regionId, worldId, pricePerNight, maxGuests, bedrooms, bathrooms, propertyType }) {
+  async create({ hostId, title, description, address, city, region, world, cityId, regionId, worldId, pricePerNight, maxGuests, bedrooms, bathrooms, propertyType, status }) {
     const { rows } = await pool.query(
       `INSERT INTO listings
         (host_id, title, description, address, city, region, world, city_id, region_id, world_id,
-         price_per_night, max_guests, bedrooms, bathrooms, property_type)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+         price_per_night, max_guests, bedrooms, bathrooms, property_type, status)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
        RETURNING *`,
       [hostId, title, description, address, city, region, world, cityId, regionId, worldId,
-       pricePerNight, maxGuests, bedrooms, bathrooms, propertyType]
+       pricePerNight, maxGuests, bedrooms, bathrooms, propertyType, status]
     );
     return rows[0];
   },

@@ -533,8 +533,8 @@ const INITIAL_FORM = {
   address:       '',
 };
 
-export default function ListingSetupPage() {
-  const { user, token, updateUser } = useAuth();
+export default function CreateListingPage() {
+  const { user, token, authReady } = useAuth();
   const navigate = useNavigate();
 
   const [step,    setStep]    = useState(1);
@@ -542,7 +542,11 @@ export default function ListingSetupPage() {
   const [error,   setError]   = useState(null);
   const [loading, setLoading] = useState(false);
 
+  if (!authReady) return null;
   if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== 'host' && user.role !== 'admin' && user.role !== 'super_admin') {
+    return <Navigate to="/" replace />;
+  }
 
   function handleChange(field, value) {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -560,19 +564,6 @@ export default function ListingSetupPage() {
     setError(null);
     setLoading(true);
     try {
-      if (user.role === 'guest') {
-        const hostRes = await fetch('/api/users/me/become-host', {
-          method:  'PATCH',
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const hostData = await hostRes.json();
-        if (!hostRes.ok) {
-          setError(hostData.message || 'Failed to update role.');
-          return;
-        }
-        updateUser(hostData.user);
-      }
-
       const res = await fetch('/api/listings', {
         method: 'POST',
         headers: {
@@ -591,6 +582,7 @@ export default function ListingSetupPage() {
           bedrooms:      Number(form.bedrooms),
           bathrooms:     Number(form.bathrooms),
           propertyType:  form.propertyType,
+          status:        'inactive',
         }),
       });
       const data = await res.json();

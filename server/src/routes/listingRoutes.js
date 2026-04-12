@@ -41,6 +41,10 @@ const listingRules = [
   body('propertyType')
     .isIn(['cottage','manor','castle','tower','treehouse','cavern','academy_suite','seaside_cove','floating_isle','hidden_burrow'])
     .withMessage('Invalid property type'),
+  body('status')
+    .optional()
+    .isIn(['draft', 'inactive'])
+    .withMessage('Status must be draft or inactive'),
 ];
 
 const updateListingRules = [

@@ -4,18 +4,33 @@ import { AuthContext } from './AuthContext';
 export function AuthProvider({ children }) {
 	const [user, setUser] = useState(null);
 	const [token, setToken] = useState(() => localStorage.getItem('aria_token'));
+	const [authReady, setAuthReady] = useState(false);
 
 	useEffect(() => {
-		if (!token) return;
-		fetch('/api/users/me', {
-			headers: { Authorization: `Bearer ${token}` },
-		})
-			.then(res => res.ok ? res.json() : Promise.reject())
-			.then(data => setUser(data.user))
-			.catch(() => {
+		async function init() {
+			if (!token) {
+				setAuthReady(true);
+				return;
+			}
+			try {
+				const res = await fetch('/api/users/me', {
+					headers: { Authorization: `Bearer ${token}` },
+				});
+				if (res.ok) {
+					const data = await res.json();
+					setUser(data.user);
+				} else {
+					localStorage.removeItem('aria_token');
+					setToken(null);
+				}
+			} catch {
 				localStorage.removeItem('aria_token');
 				setToken(null);
-			});
+			} finally {
+				setAuthReady(true);
+			}
+		}
+		init();
 	}, [token]);
 
 	function login(userData, jwt) {
@@ -35,7 +50,7 @@ export function AuthProvider({ children }) {
 	}
 
 	return (
-		<AuthContext.Provider value={{ user, token, login, logout, updateUser }}>
+		<AuthContext.Provider value={{ user, token, authReady, login, logout, updateUser }}>
 			{children}
 		</AuthContext.Provider>
 	);

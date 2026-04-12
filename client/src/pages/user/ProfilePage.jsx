@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import Navbar from '../components/Navbar';
+import { useAuth } from '../../hooks/useAuth';
+import Navbar from '../../components/Navbar';
 
 export default function ProfilePage() {
-  const { user, token, updateUser } = useAuth();
+  const { user, token, authReady, updateUser } = useAuth();
   const navigate = useNavigate();
   const formInitialized = useRef(false);
 
@@ -48,7 +48,10 @@ export default function ProfilePage() {
   const [passwordLoading, setPasswordLoading] = useState(false);
 
   // Become-a-host
+  const [hostError, setHostError]     = useState('');
+  const [hostLoading, setHostLoading] = useState(false);
 
+  if (!authReady) return null;
   if (!token) return <Navigate to="/login" replace />;
 
   const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase();
@@ -154,8 +157,26 @@ export default function ProfilePage() {
   }
 
   // ── Become a host ─────────────────────────────────────────
-  function handleBecomeHost() {
-    navigate('/host/listings/new');
+  async function handleBecomeHost() {
+    setHostError('');
+    setHostLoading(true);
+    try {
+      const res = await fetch('/api/users/me/become-host', {
+        method:  'PATCH',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setHostError(data.message || 'Failed to update role.');
+        return;
+      }
+      updateUser(data.user);
+      navigate('/host/listings/new');
+    } catch {
+      setHostError('Unable to connect. Please try again.');
+    } finally {
+      setHostLoading(false);
+    }
   }
 
   const navItems = [
@@ -373,14 +394,16 @@ export default function ProfilePage() {
                   <span className="font-serif italic text-aria-text-dark text-[1.1rem]">Become a host</span>
                 </div>
                 <div className="px-7 py-6">
+                  {hostError && <p className="text-aria-error text-sm mb-4">{hostError}</p>}
                   <p className="text-sm text-aria-text-mid leading-relaxed mb-6">
                     Share your space and start earning. Create your first listing to get started.
                   </p>
                   <button
                     className="btn-primary text-sm"
                     onClick={handleBecomeHost}
+                    disabled={hostLoading}
                   >
-                    Get started as a host
+                    {hostLoading ? 'Updating…' : 'Get started as a host'}
                   </button>
                 </div>
               </>

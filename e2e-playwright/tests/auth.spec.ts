@@ -24,7 +24,7 @@ test.describe('Auth', () => {
       await page.locator('button[type="submit"]').click();
 
       await expect(page).toHaveURL('/register');
-      await expect(page.getByText('Hi, New User')).not.toBeVisible();
+      await expect(page.getByText('New User')).not.toBeVisible();
       await expect(page.getByText('Name is required.')).toBeVisible();
     });
 
@@ -36,7 +36,7 @@ test.describe('Auth', () => {
       await page.locator('button[type="submit"]').click();
 
       await expect(page).toHaveURL('/register');
-      await expect(page.getByText('Hi, New User')).not.toBeVisible();
+      await expect(page.getByText('New User')).not.toBeVisible();
       await expect(page.getByText('Email is required.')).toBeVisible();
     });
 
@@ -48,7 +48,7 @@ test.describe('Auth', () => {
       await page.locator('button[type="submit"]').click();
 
       await expect(page).toHaveURL('/register');
-      await expect(page.getByText('Hi, New User')).not.toBeVisible();
+      await expect(page.getByText('New User')).not.toBeVisible();
       await expect(page.getByText('Password is required.')).toBeVisible();
     });
 
@@ -60,7 +60,7 @@ test.describe('Auth', () => {
       await page.locator('button[type="submit"]').click();
 
       await expect(page).toHaveURL('/register');
-      await expect(page.getByText('Hi, New User')).not.toBeVisible();
+      await expect(page.getByText('New User')).not.toBeVisible();
       await expect(page.getByText('Please confirm your password.')).toBeVisible();
     });
 
@@ -73,7 +73,7 @@ test.describe('Auth', () => {
       await page.locator('button[type="submit"]').click();
 
       await expect(page).toHaveURL('/register');
-      await expect(page.getByText('Hi, New User')).not.toBeVisible();
+      await expect(page.getByText('New User')).not.toBeVisible();
       await expect(page.getByText('Please enter a valid email address.')).toBeVisible();
     });
 
@@ -85,7 +85,7 @@ test.describe('Auth', () => {
       await page.locator('button[type="submit"]').click();
 
       await expect(page).toHaveURL('/register');
-      await expect(page.getByText('Hi, New User')).not.toBeVisible();
+      await expect(page.getByText('New User')).not.toBeVisible();
       await expect(page.getByText('Password must be at least 8 characters.')).toBeVisible();
     });
 
@@ -97,7 +97,7 @@ test.describe('Auth', () => {
       await page.locator('button[type="submit"]').click();
 
       await expect(page).toHaveURL('/register');
-      await expect(page.getByText('Hi, New User')).not.toBeVisible();
+      await expect(page.getByText('New User')).not.toBeVisible();
       await expect(page.getByText('Passwords do not match.')).toBeVisible();
     });
 
@@ -110,7 +110,7 @@ test.describe('Auth', () => {
       await page.locator('button[type="submit"]').click();
 
       await expect(page).toHaveURL('/');
-      await expect(page.getByText('Hi, New User')).toBeVisible();
+      await expect(page.locator('nav button', { hasText: 'New User' })).toBeVisible();
     });
 
     // User already exists
@@ -122,7 +122,7 @@ test.describe('Auth', () => {
       await page.locator('button[type="submit"]').click();
 
       await expect(page).toHaveURL('/register');
-      await expect(page.getByText('Hi, New User')).not.toBeVisible();
+      await expect(page.getByText('New User')).not.toBeVisible();
       await expect(page.getByText('Email already registered. Try logging in.')).toBeVisible();
     });
   });
@@ -151,7 +151,7 @@ test.describe('Auth', () => {
       await page.locator('button[type="submit"]').click();
 
       await expect(page).toHaveURL('/login');
-      await expect(page.getByText('Hi, Register User')).not.toBeVisible();
+      await expect(page.getByText('Register User')).not.toBeVisible();
       await expect(page.getByText('Email is required.')).toBeVisible();
     });
 
@@ -161,7 +161,7 @@ test.describe('Auth', () => {
       await page.locator('button[type="submit"]').click();
 
       await expect(page).toHaveURL('/login');
-      await expect(page.getByText('Hi, Register User')).not.toBeVisible();
+      await expect(page.getByText('Register User')).not.toBeVisible();
       await expect(page.getByText('Password is required.')).toBeVisible();
     });
 
@@ -172,7 +172,7 @@ test.describe('Auth', () => {
       await page.locator('button[type="submit"]').click();
 
       await expect(page).toHaveURL('/login');
-      await expect(page.getByText('Hi, Register User')).not.toBeVisible();
+      await expect(page.getByText('Register User')).not.toBeVisible();
       await expect(page.getByText('Please enter a valid email address.')).toBeVisible();
     });
 
@@ -182,7 +182,7 @@ test.describe('Auth', () => {
       await page.locator('button[type="submit"]').click();
 
       await expect(page).toHaveURL('/login');
-      await expect(page.getByText('Hi, Register User')).not.toBeVisible();
+      await expect(page.getByText('Register User')).not.toBeVisible();
       await expect(page.getByText('Incorrect password. Please try again.')).toBeVisible();
     });
 
@@ -193,7 +193,7 @@ test.describe('Auth', () => {
       await page.locator('button[type="submit"]').click();
 
       await expect(page).toHaveURL('/login');
-      await expect(page.getByText('Hi, Unregister User')).not.toBeVisible();
+      await expect(page.getByText('Unregister User')).not.toBeVisible();
       await expect(page.getByText('No account found with this email. Try registering.')).toBeVisible();
     });
 
@@ -204,7 +204,7 @@ test.describe('Auth', () => {
       await page.locator('button[type="submit"]').click();
 
       await expect(page).toHaveURL('/');
-      await expect(page.getByText('Hi, Register User')).toBeVisible();
+      await expect(page.getByText('Register User')).toBeVisible();
     });
   });
 
@@ -221,7 +221,9 @@ test.describe('Auth', () => {
       await expect(page).toHaveURL('/');
       await expect(page.getByText('Test User 1')).toBeVisible();
 
-      await page.getByRole('button', { name: 'Logout' }).click();
+      await page.locator('nav button', { hasText: 'Test User 1' }).click();
+      await page.locator('button', { hasText: 'Log out' }).click();
+
 
       await expect(page).toHaveURL('/');
       await expect(page.getByRole('navigation').getByText('Log in')).toBeVisible();
@@ -240,7 +242,8 @@ test.describe('Auth', () => {
       await expect(page).toHaveURL('/');
       await expect(page.getByText('Test User 2')).toBeVisible();
 
-      await page.getByRole('button', { name: 'Logout' }).click();
+      await page.locator('nav button', { hasText: 'Test User 2' }).click();
+      await page.locator('button', { hasText: 'Log out' }).click();
 
       await expect(page).toHaveURL('/');
       await expect(page.getByRole('navigation').getByText('Log in')).toBeVisible();
@@ -255,7 +258,8 @@ test.describe('Auth', () => {
       await expect(page).toHaveURL('/');
       await expect(page.getByText('Test User 2')).toBeVisible();
 
-      await page.getByRole('button', { name: 'Logout' }).click();
+      await page.locator('nav button', { hasText: 'Test User 2' }).click();
+      await page.locator('button', { hasText: 'Log out' }).click();
 
       await expect(page).toHaveURL('/');
       await expect(page.getByRole('navigation').getByText('Log in')).toBeVisible();

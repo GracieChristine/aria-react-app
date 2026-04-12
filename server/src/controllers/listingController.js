@@ -96,6 +96,7 @@ export const listingController = {
         cityId, regionId, worldId,
         pricePerNight, maxGuests,
         bedrooms, bathrooms, propertyType,
+        status,
       } = req.body;
 
       // Verify city exists and belongs to the given region and world
@@ -112,7 +113,7 @@ export const listingController = {
         world:  location.world,
         cityId, regionId, worldId,
         pricePerNight, maxGuests,
-        bedrooms, bathrooms, propertyType,
+        bedrooms, bathrooms, propertyType, status,
       });
 
       return successResponse(res, { listing: formatListing(listing) }, 201);
@@ -180,7 +181,7 @@ export const listingController = {
       }
 
       const allowedStatuses = {
-        host:        ['active', 'inactive'],
+        host:        ['draft', 'active', 'inactive'],
         admin:       ['inactive'],
         super_admin: ['inactive'],
       };

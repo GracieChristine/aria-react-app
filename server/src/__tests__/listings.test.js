@@ -18,7 +18,8 @@ const basePayload = {
   maxGuests:     3,
   bedrooms:      2,
   bathrooms:     1,
-  propertyType:  'cottage'
+  propertyType:  'cottage',
+  status:        'inactive'
 };
 
 const omit = (obj, key) => {
@@ -44,7 +45,7 @@ describe(`POST /api/listings`, () => {
 
     expect(response.status).toBe(201);
     expect(response.body.listing.title).toBe('Beautiful Apartment');
-    expect(response.body.listing.status).toBe('pending');
+    expect(response.body.listing.status).toBe('inactive');
   });
 
   it(`should not create a listing as guest`, async () => {
