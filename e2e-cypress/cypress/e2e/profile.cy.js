@@ -1,14 +1,14 @@
 describe('Profile', () => {
   const ts = Date.now();
-  const email       = `profile-user-${ts}@aria.com`;
-  const newEmail    = `updated-profile-user-${ts}@aria.com`;
-  const password    = 'Password123!';
+  const email = `profile-user-${ts}@aria.com`;
+  const newEmail = `updated-profile-user-${ts}@aria.com`;
+  const password = 'Password123!';
   const newPassword = 'NewPassword123!';
 
   before(() => {
     cy.request('POST', '/api/auth/register', {
       firstName: 'Profile',
-      lastName:  'User',
+      lastName: 'User',
       email,
       password,
     });
@@ -119,7 +119,7 @@ describe('Profile', () => {
 
     it('should save profile changes and update the navbar name @smoke', () => {
       cy.contains('button', 'Edit').click();
-      
+
       cy.contains('label', 'First name').parent().find('input').clear().type('Updated');
       cy.contains('label', 'Email address').parent().find('input').clear().type(newEmail);
       cy.contains('label', 'Phone').parent().find('input').clear().type('555-555-5555');
@@ -132,7 +132,9 @@ describe('Profile', () => {
       cy.contains('span', '555-555-5555').should('be.visible');
       cy.contains('nav button', 'Updated User').should('be.visible');
 
-      cy.contains('button', 'Logout').click();
+      cy.contains('nav button', 'New User').click();
+      cy.contains('button', 'Log out').click();
+
       cy.visit('/login');
       cy.get('input[name="email"]').type(newEmail);
       cy.get('input[name="password"]').type(password);
@@ -215,7 +217,9 @@ describe('Profile', () => {
 
       cy.contains('Password updated successfully.').should('be.visible');
 
-      cy.contains('button', 'Logout').click();
+      cy.contains('nav button', 'New User').click();
+      cy.contains('button', 'Log out').click();
+
       cy.visit('/login');
       cy.get('input[name="email"]').type(newEmail);
       cy.get('input[name="password"]').type(newPassword);
@@ -237,6 +241,6 @@ describe('Profile', () => {
       cy.visit('/profile');
       cy.contains('button', 'Become a host').click();
     });
-    it('', () => {});
+    it('', () => { });
   });
 });

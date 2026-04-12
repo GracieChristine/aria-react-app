@@ -108,7 +108,7 @@ describe('Auth', () => {
       cy.get('button[type="submit"]').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/');
-      cy.get('nav button').should('contains','New User').and('be.visible');
+      cy.contains('nav button', 'New User').should('be.visible');
     });
 
     // User exist already
@@ -218,7 +218,8 @@ describe('Auth', () => {
       cy.url().should('eq', Cypress.config('baseUrl') + '/');
       cy.contains('Test User 1').should('be.visible');
 
-      cy.contains('button', 'Logout').click();
+      cy.contains('nav button', 'New User').click();
+      cy.contains('button', 'Log out').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/');
       cy.contains('Log in').should('be.visible');
@@ -237,7 +238,8 @@ describe('Auth', () => {
       cy.url().should('eq', Cypress.config('baseUrl') + '/');
       cy.contains('Test User 2').should('be.visible');
 
-      cy.contains('button', 'Logout').click();
+      cy.contains('nav button', 'New User').click();
+      cy.contains('button', 'Log out').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/');
       cy.contains('Log in').should('be.visible');
@@ -252,7 +254,8 @@ describe('Auth', () => {
       cy.url().should('eq', Cypress.config('baseUrl') + '/');
       cy.contains('Test User 2').should('be.visible');
 
-      cy.contains('button', 'Logout').click();
+      cy.contains('nav button', 'Test User 2').click();
+      cy.contains('button', 'Log out').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/');
       cy.contains('Log in').should('be.visible');

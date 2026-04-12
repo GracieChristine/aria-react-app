@@ -221,7 +221,9 @@ test.describe('Auth', () => {
       await expect(page).toHaveURL('/');
       await expect(page.getByText('Test User 1')).toBeVisible();
 
-      await page.getByRole('button', { name: 'Logout' }).click();
+      await page.locator('nav button', { hasText: 'Test User 1' }).click();
+      await page.locator('button', { hasText: 'Log out' }).click();
+
 
       await expect(page).toHaveURL('/');
       await expect(page.getByRole('navigation').getByText('Log in')).toBeVisible();
@@ -240,7 +242,8 @@ test.describe('Auth', () => {
       await expect(page).toHaveURL('/');
       await expect(page.getByText('Test User 2')).toBeVisible();
 
-      await page.getByRole('button', { name: 'Logout' }).click();
+      await page.locator('nav button', { hasText: 'Test User 2' }).click();
+      await page.locator('button', { hasText: 'Log out' }).click();
 
       await expect(page).toHaveURL('/');
       await expect(page.getByRole('navigation').getByText('Log in')).toBeVisible();
@@ -255,7 +258,8 @@ test.describe('Auth', () => {
       await expect(page).toHaveURL('/');
       await expect(page.getByText('Test User 2')).toBeVisible();
 
-      await page.getByRole('button', { name: 'Logout' }).click();
+      await page.locator('nav button', { hasText: 'Test User 2' }).click();
+      await page.locator('button', { hasText: 'Log out' }).click();
 
       await expect(page).toHaveURL('/');
       await expect(page.getByRole('navigation').getByText('Log in')).toBeVisible();

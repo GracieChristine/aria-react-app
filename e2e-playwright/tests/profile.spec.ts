@@ -124,7 +124,10 @@ test.describe('Profile', () => {
       await expect(page.locator('span:has-text("555-555-5555")')).toBeVisible();
       await expect(page.locator('nav button:has-text("Updated User")')).toBeVisible();
 
-      await page.getByRole('button', { name: 'Logout' }).click();
+      await page.locator('nav button', { hasText: 'Updated User' }).click();
+      await page.locator('button', { hasText: 'Log out' }).click();
+
+
       await page.goto('/login');
       await page.locator('input[name="email"]').fill(newEmail);
       await page.locator('input[name="password"]').fill(password);
@@ -201,7 +204,9 @@ test.describe('Profile', () => {
       await page.getByRole('button', { name: 'Update password' }).click();
       await expect(page.getByText('Password updated successfully.')).toBeVisible();
 
-      await page.getByRole('button', { name: 'Logout' }).click();
+      await page.locator('nav button', { hasText: 'Test User 1' }).click();
+      await page.locator('button', { hasText: 'Log out' }).click();
+
       await page.goto('/login');
       await page.locator('input[name="email"]').fill(newEmail);
       await page.locator('input[name="password"]').fill(newPassword);
