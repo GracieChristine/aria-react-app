@@ -7,7 +7,7 @@ beforeAll(async () => await setupTestDB());
 afterEach(async () => await clearTestDB());
 afterAll(async ()  => await closeTestDB());
 
-describe(`Bookings Payment Expiry Job`, () => {
+describe('Bookings Payment Expiry Job', () => {
   let guestToken;
   let booking;
 
@@ -31,7 +31,7 @@ describe(`Bookings Payment Expiry Job`, () => {
     ({ booking } = await createTestBooking(guestToken, listing.id));
   });
 
-  it(`should not cancel confirmed bookings`, async () => {
+  it('should not cancel confirmed bookings', async () => {
     await api
       .post(`/api/bookings/${booking.id}/pay`)
       .set('Authorization', `Bearer ${guestToken}`)
@@ -44,7 +44,7 @@ describe(`Bookings Payment Expiry Job`, () => {
     expect(expired.length).toBe(0);
   });
 
-  it(`should cancel if failed payment is older than 2 days`, async () => {
+  it('should cancel if failed payment is older than 2 days', async () => {
     await api
       .post(`/api/bookings/${booking.id}/pay`)
       .set('Authorization', `Bearer ${guestToken}`)
@@ -58,7 +58,7 @@ describe(`Bookings Payment Expiry Job`, () => {
     expect(expired[0].id).toBe(booking.id);
   });
 
-  it(`should not cancel if failed payment is within 2 days`, async () => {
+  it('should not cancel if failed payment is within 2 days', async () => {
     await api
       .post(`/api/bookings/${booking.id}/pay`)
       .set('Authorization', `Bearer ${guestToken}`)
@@ -71,7 +71,7 @@ describe(`Bookings Payment Expiry Job`, () => {
     expect(expired.length).toBe(0);
   });
 
-  it(`should not cancel already cancelled bookings`, async () => {
+  it('should not cancel already cancelled bookings', async () => {
     await api
       .post(`/api/bookings/${booking.id}/pay`)
       .set('Authorization', `Bearer ${guestToken}`)
@@ -88,7 +88,7 @@ describe(`Bookings Payment Expiry Job`, () => {
     expect(expired.length).toBe(0);
   });
 
-  it(`should return empty array if no bookings to expire`, async () => {
+  it('should return empty array if no bookings to expire', async () => {
     const expired = await bookingsPaymentExpiry();
 
     expect(expired.length).toBe(0);

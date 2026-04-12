@@ -110,8 +110,8 @@ const data = [
             name: 'The Village',
             description: 'A quaint provincial town nestled at the edge of the dark forest.',
             cities: [
-              { name: "Belle's Village",       description: "A charming little town where Belle dreams of adventure." },
-              { name: "Gaston's Tavern",       description: "The rowdy tavern where Gaston holds court every evening." },
+              { name: "Belle's Village",       description: 'A charming little town where Belle dreams of adventure.' },
+              { name: "Gaston's Tavern",       description: 'The rowdy tavern where Gaston holds court every evening.' },
               { name: "Maurice's Workshop",    description: "The eccentric inventor's cottage on the edge of town." },
             ],
           },
@@ -146,7 +146,7 @@ const data = [
         regions: [
           {
             name: 'Far Far Away',
-            description: "The gleaming, Hollywood-esque royal capital of the fairy-tale world.",
+            description: 'The gleaming, Hollywood-esque royal capital of the fairy-tale world.',
             cities: [
               { name: 'Far Far Away Palace',   description: "The ostentatious royal palace of Princess Fiona's family." },
               { name: 'Far Far Away Boulevard', description: 'The glitzy main street lined with fairy-tale celebrity boutiques.' },
@@ -154,9 +154,9 @@ const data = [
           },
           {
             name: "Shrek's Swamp",
-            description: "A peaceful, muddy bog that Shrek calls home — trespassers not welcome.",
+            description: 'A peaceful, muddy bog that Shrek calls home — trespassers not welcome.',
             cities: [
-              { name: "Shrek's Cottage",       description: "A cosy mud-brick cottage in the heart of the swamp." },
+              { name: "Shrek's Cottage",       description: 'A cosy mud-brick cottage in the heart of the swamp.' },
               { name: 'Duloc',                 description: "Lord Farquaad's obsessively perfect miniature kingdom." },
             ],
           },
@@ -168,18 +168,18 @@ const data = [
         regions: [
           {
             name: "The Queen's Domain",
-            description: "The dark, imposing kingdom ruled by the Evil Queen.",
+            description: 'The dark, imposing kingdom ruled by the Evil Queen.',
             cities: [
-              { name: "The Evil Queen's Castle", description: "A forbidding castle where the Queen consults her magic mirror." },
+              { name: "The Evil Queen's Castle", description: 'A forbidding castle where the Queen consults her magic mirror.' },
               { name: 'The Dungeon',            description: "The Queen's gloomy underground prison beneath the castle." },
             ],
           },
           {
             name: 'The Woodland',
-            description: "The enchanted forest and hills where Snow White found refuge.",
+            description: 'The enchanted forest and hills where Snow White found refuge.',
             cities: [
-              { name: "The Dwarfs' Cottage",   description: "A cheerful little cottage in the woods, home to the seven dwarfs." },
-              { name: 'The Wishing Well',      description: "A stone well in the woodland clearing where Snow White sang." },
+              { name: "The Dwarfs' Cottage",   description: 'A cheerful little cottage in the woods, home to the seven dwarfs.' },
+              { name: 'The Wishing Well',      description: 'A stone well in the woodland clearing where Snow White sang.' },
             ],
           },
         ],
@@ -192,16 +192,16 @@ const data = [
             name: 'The Royal Court',
             description: "The grand kingdom that fell under Maleficent's spell.",
             cities: [
-              { name: "King Stefan's Castle",  description: "The royal castle where Aurora was cursed at her christening." },
-              { name: 'The Great Hall',        description: "The magnificent hall where the fateful royal celebration was held." },
+              { name: "King Stefan's Castle",  description: 'The royal castle where Aurora was cursed at her christening.' },
+              { name: 'The Great Hall',        description: 'The magnificent hall where the fateful royal celebration was held.' },
             ],
           },
           {
             name: 'The Moors',
-            description: "The wild, magical borderlands between the human kingdom and the fairy realm.",
+            description: 'The wild, magical borderlands between the human kingdom and the fairy realm.',
             cities: [
-              { name: "Maleficent's Moors",    description: "The enchanted moorland domain ruled by the dark fairy." },
-              { name: 'The Cottage in the Woods', description: "The hidden woodland cottage where Aurora was raised by the three good fairies." },
+              { name: "Maleficent's Moors",    description: 'The enchanted moorland domain ruled by the dark fairy.' },
+              { name: 'The Cottage in the Woods', description: 'The hidden woodland cottage where Aurora was raised by the three good fairies.' },
             ],
           },
         ],
@@ -212,26 +212,26 @@ const data = [
         regions: [
           {
             name: 'The Imperial Capital',
-            description: "The seat of the Emperor, the heart of the dynasty.",
+            description: 'The seat of the Emperor, the heart of the dynasty.',
             cities: [
               { name: 'The Imperial Palace',   description: "The Emperor's vast palace complex at the centre of the capital." },
-              { name: 'The Imperial Garden',   description: "Serene gardens of lotus ponds and cherry blossoms within the palace walls." },
+              { name: 'The Imperial Garden',   description: 'Serene gardens of lotus ponds and cherry blossoms within the palace walls.' },
             ],
           },
           {
             name: "Mulan's Village",
-            description: "A humble village in the countryside, home to the Fa family.",
+            description: 'A humble village in the countryside, home to the Fa family.',
             cities: [
-              { name: 'Fa Family Village',     description: "A quiet farming village where the Fa family tends their ancestral home." },
-              { name: 'The Ancestral Temple',  description: "A sacred temple where the Fa family honours their ancestors." },
+              { name: 'Fa Family Village',     description: 'A quiet farming village where the Fa family tends their ancestral home.' },
+              { name: 'The Ancestral Temple',  description: 'A sacred temple where the Fa family honours their ancestors.' },
             ],
           },
           {
             name: 'The Northern Front',
-            description: "The treacherous mountains and passes where the Hun army invaded.",
+            description: 'The treacherous mountains and passes where the Hun army invaded.',
             cities: [
-              { name: 'Tung Shao Pass',        description: "A snow-covered mountain pass where the fate of China was decided." },
-              { name: 'The Great Wall',        description: "The ancient fortified wall marking the edge of the empire." },
+              { name: 'Tung Shao Pass',        description: 'A snow-covered mountain pass where the fate of China was decided.' },
+              { name: 'The Great Wall',        description: 'The ancient fortified wall marking the edge of the empire.' },
             ],
           },
         ],
@@ -312,10 +312,10 @@ const data = [
           },
           {
             name: 'The Wizarding Suburbs',
-            description: "Ordinary-looking streets hiding extraordinary wizarding households.",
+            description: 'Ordinary-looking streets hiding extraordinary wizarding households.',
             cities: [
-              { name: 'Grimmauld Place',        description: "The ancient Black family townhouse, headquarters of the Order of the Phoenix." },
-              { name: 'Spinner\'s End',          description: "A gloomy terraced street where Severus Snape grew up." },
+              { name: 'Grimmauld Place',        description: 'The ancient Black family townhouse, headquarters of the Order of the Phoenix.' },
+              { name: 'Spinner\'s End',          description: 'A gloomy terraced street where Severus Snape grew up.' },
               { name: 'Ottery St Catchpole',    description: "The Devon village where the Weasley family's Burrow stands." },
             ],
           },
@@ -362,9 +362,9 @@ const data = [
             description: "The grimy, brilliant heart of Holmes's London — from his legendary lodgings to the halls of Scotland Yard.",
             cities: [
               { name: '221B Baker Street',     description: "The famous first-floor flat where Sherlock Holmes and Dr Watson solved the world's greatest mysteries." },
-              { name: 'Scotland Yard',         description: "The headquarters of the Metropolitan Police, frequently consulted — and occasionally bested — by Holmes." },
+              { name: 'Scotland Yard',         description: 'The headquarters of the Metropolitan Police, frequently consulted — and occasionally bested — by Holmes.' },
               { name: 'The Diogenes Club',     description: "Mycroft Holmes's eccentric gentlemen's club where conversation is strictly forbidden." },
-              { name: 'Whitechapel',           description: "The shadowy East End district, a labyrinth of alleys and dangerous cases." },
+              { name: 'Whitechapel',           description: 'The shadowy East End district, a labyrinth of alleys and dangerous cases.' },
               { name: 'The Criterion Bar',     description: "The Strand bar where Watson first heard Holmes's name mentioned — the starting point of it all." },
             ],
           },
@@ -372,8 +372,8 @@ const data = [
             name: 'The English Countryside',
             description: "The rolling moors and grand estates beyond London, where some of Holmes's darkest cases unfolded.",
             cities: [
-              { name: 'Baskerville Hall',      description: "The ancient Devonshire manor at the centre of the legend of the hound." },
-              { name: 'Dartmoor',              description: "The bleak, fog-shrouded moor where the Baskerville curse seemed most alive." },
+              { name: 'Baskerville Hall',      description: 'The ancient Devonshire manor at the centre of the legend of the hound.' },
+              { name: 'Dartmoor',              description: 'The bleak, fog-shrouded moor where the Baskerville curse seemed most alive.' },
               { name: 'Briony Lodge',          description: "The St John's Wood villa of Irene Adler — the woman who outwitted Holmes." },
             ],
           },
@@ -381,25 +381,25 @@ const data = [
             name: 'Beyond England',
             description: "The international reaches of Holmes's adventures — from Swiss waterfalls to European capitals.",
             cities: [
-              { name: 'Reichenbach Falls',     description: "The thundering Swiss waterfall where Holmes and Moriarty fought their final battle." },
-              { name: 'Montague Street',       description: "The quiet London street where Holmes lodged before Baker Street, in his early years." },
-              { name: 'The Reichenbach Hotel', description: "The Swiss inn near the falls, from which Holmes vanished for three years." },
+              { name: 'Reichenbach Falls',     description: 'The thundering Swiss waterfall where Holmes and Moriarty fought their final battle.' },
+              { name: 'Montague Street',       description: 'The quiet London street where Holmes lodged before Baker Street, in his early years.' },
+              { name: 'The Reichenbach Hotel', description: 'The Swiss inn near the falls, from which Holmes vanished for three years.' },
             ],
           },
         ],
       },
       {
         name: "The Lupin's Gambit",
-        description: "The glittering and shadowy France of Arsène Lupin — gentleman burglar, master of disguise, and thorn in the side of every gendarme in Europe.",
+        description: 'The glittering and shadowy France of Arsène Lupin — gentleman burglar, master of disguise, and thorn in the side of every gendarme in Europe.',
         regions: [
           {
             name: 'Paris',
             description: "The city of lights and secrets — Lupin's home turf, from the Louvre to the Parisian underworld.",
             cities: [
-              { name: 'The Louvre',            description: "The great museum from which Lupin famously stole — and sometimes returned — priceless works." },
-              { name: 'Château de Thibermesnil', description: "A medieval Norman château where Lupin hid his most treasured secrets behind a hidden passage." },
-              { name: 'The Préfecture de Police', description: "The Paris police headquarters whose detectives eternally chased Lupin without success." },
-              { name: 'Montmartre',            description: "The bohemian hilltop district of artists and cabarets where Lupin kept anonymous lodgings." },
+              { name: 'The Louvre',            description: 'The great museum from which Lupin famously stole — and sometimes returned — priceless works.' },
+              { name: 'Château de Thibermesnil', description: 'A medieval Norman château where Lupin hid his most treasured secrets behind a hidden passage.' },
+              { name: 'The Préfecture de Police', description: 'The Paris police headquarters whose detectives eternally chased Lupin without success.' },
+              { name: 'Montmartre',            description: 'The bohemian hilltop district of artists and cabarets where Lupin kept anonymous lodgings.' },
             ],
           },
           {
@@ -415,32 +415,32 @@ const data = [
             name: 'Beyond France',
             description: "The international stage where Lupin's reputation preceded him across borders.",
             cities: [
-              { name: 'Monte Carlo',           description: "The glittering principality where Lupin operated among the wealthy at the casino tables." },
-              { name: "Lupin's London Hideout", description: "A discreet Mayfair address where Lupin operated under one of his many English aliases." },
+              { name: 'Monte Carlo',           description: 'The glittering principality where Lupin operated among the wealthy at the casino tables.' },
+              { name: "Lupin's London Hideout", description: 'A discreet Mayfair address where Lupin operated under one of his many English aliases.' },
             ],
           },
         ],
       },
       {
         name: 'The Ton',
-        description: "The dazzling, gossip-laden world of Regency London high society — where every ball, betrothal, and scandal is observed and reported.",
+        description: 'The dazzling, gossip-laden world of Regency London high society — where every ball, betrothal, and scandal is observed and reported.',
         regions: [
           {
             name: 'London Season',
-            description: "The social whirlwind of Regency London, where reputations are made and destroyed in a single evening.",
+            description: 'The social whirlwind of Regency London, where reputations are made and destroyed in a single evening.',
             cities: [
-              { name: 'Bridgerton House',      description: "The elegant Mayfair townhouse of the Bridgerton family, the heart of the social season." },
+              { name: 'Bridgerton House',      description: 'The elegant Mayfair townhouse of the Bridgerton family, the heart of the social season.' },
               { name: 'Danbury House',         description: "The formidable Lady Danbury's London residence — the place to be seen and heard." },
               { name: 'The Modiste',           description: "Madame Delacroix's exclusive dressmaker's shop, where the season's fashions are created and gossip exchanged." },
-              { name: 'Hyde Park',             description: "The fashionable promenade ground where the ton takes its morning rides and afternoon strolls." },
-              { name: "Almack's Assembly Rooms", description: "The most exclusive ballroom in London — a voucher to enter is the most coveted prize of the season." },
+              { name: 'Hyde Park',             description: 'The fashionable promenade ground where the ton takes its morning rides and afternoon strolls.' },
+              { name: "Almack's Assembly Rooms", description: 'The most exclusive ballroom in London — a voucher to enter is the most coveted prize of the season.' },
             ],
           },
           {
             name: 'The Country Estates',
-            description: "The grand houses and parklands outside London where the ton retreats between seasons.",
+            description: 'The grand houses and parklands outside London where the ton retreats between seasons.',
             cities: [
-              { name: 'Aubrey Hall',           description: "The sprawling Bridgerton country estate in Kent, scene of house parties and quiet revelations." },
+              { name: 'Aubrey Hall',           description: 'The sprawling Bridgerton country estate in Kent, scene of house parties and quiet revelations.' },
               { name: 'Clyvedon Castle',       description: "The Duke of Hastings's magnificent ancestral castle — grand, remote, and full of history." },
             ],
           },
@@ -452,33 +452,33 @@ const data = [
         regions: [
           {
             name: 'Pride & Prejudice',
-            description: "The Hertfordshire countryside and Derbyshire estates of the Bennet family and Mr Darcy.",
+            description: 'The Hertfordshire countryside and Derbyshire estates of the Bennet family and Mr Darcy.',
             cities: [
               { name: 'Pemberley',             description: "Mr Darcy's magnificent Derbyshire estate — the house that changed Elizabeth Bennet's opinion entirely." },
-              { name: 'Longbourn',             description: "The modest Bennet family home in Hertfordshire, full of noise, nerves, and five unmarried daughters." },
-              { name: 'Netherfield Park',      description: "The grand neighbouring estate leased by Mr Bingley, setting of the first fateful ball." },
+              { name: 'Longbourn',             description: 'The modest Bennet family home in Hertfordshire, full of noise, nerves, and five unmarried daughters.' },
+              { name: 'Netherfield Park',      description: 'The grand neighbouring estate leased by Mr Bingley, setting of the first fateful ball.' },
               { name: 'Rosings Park',          description: "Lady Catherine de Bourgh's imposing estate in Kent, where condescension is served with every meal." },
-              { name: 'Meryton',              description: "The nearby market town where the Bennet sisters shopped, gossiped, and encountered the militia." },
+              { name: 'Meryton',              description: 'The nearby market town where the Bennet sisters shopped, gossiped, and encountered the militia.' },
             ],
           },
           {
             name: 'Emma',
-            description: "The village of Highbury in Surrey — a small world of neighbours, matchmaking, and misunderstandings.",
+            description: 'The village of Highbury in Surrey — a small world of neighbours, matchmaking, and misunderstandings.',
             cities: [
-              { name: 'Hartfield',             description: "The comfortable Woodhouse family home at the edge of Highbury village." },
+              { name: 'Hartfield',             description: 'The comfortable Woodhouse family home at the edge of Highbury village.' },
               { name: 'Donwell Abbey',         description: "Mr Knightley's ancient and handsome estate — everything that is English and good." },
-              { name: 'Randalls',              description: "The modest but cheerful home of the newly married Westons, always welcoming company." },
+              { name: 'Randalls',              description: 'The modest but cheerful home of the newly married Westons, always welcoming company.' },
               { name: 'The Crown Inn',         description: "Highbury's inn and ballroom, venue for the village's most anticipated social gatherings." },
               { name: 'Highbury Village',      description: "The small, self-contained Surrey village that forms the entire world of Emma's social life." },
             ],
           },
           {
             name: 'Sense & Sensibility',
-            description: "The Sussex and Devonshire homes of the Dashwood sisters — a story of heart versus head.",
+            description: 'The Sussex and Devonshire homes of the Dashwood sisters — a story of heart versus head.',
             cities: [
               { name: 'Norland Park',          description: "The ancestral Sussex estate the Dashwood women must leave after Mr Dashwood's death." },
-              { name: 'Barton Cottage',        description: "The small but comfortable Devonshire cottage the Dashwoods retire to — their new beginning." },
-              { name: 'Barton Park',           description: "The nearby estate of Sir John Middleton, whose hospitality anchors the Dashwoods in Devon." },
+              { name: 'Barton Cottage',        description: 'The small but comfortable Devonshire cottage the Dashwoods retire to — their new beginning.' },
+              { name: 'Barton Park',           description: 'The nearby estate of Sir John Middleton, whose hospitality anchors the Dashwoods in Devon.' },
               { name: 'Cleveland',             description: "The Palmer family's Somerset estate where Marianne's illness reaches its crisis." },
               { name: 'Delaford Manor',        description: "Colonel Brandon's quiet and comfortable Dorset estate — a home that eventually offers shelter and love." },
             ],
@@ -490,7 +490,7 @@ const data = [
               { name: 'Royal Crescent',        description: "Bath's most prestigious address — the sweeping Georgian terrace where the fashionable world paraded." },
               { name: 'The Pump Room',         description: "Bath's social hub where visitors took the waters, exchanged gossip, and made connections." },
               { name: 'Camden Place',          description: "Sir Walter Elliot's rented Bath townhouse — chosen for its fashionable address over all else." },
-              { name: 'Kellynch Hall',         description: "The Elliot family seat in Somerset, which Sir Walter is forced to let in Persuasion." },
+              { name: 'Kellynch Hall',         description: 'The Elliot family seat in Somerset, which Sir Walter is forced to let in Persuasion.' },
               { name: 'Northanger Abbey',      description: "The ancient Gothic abbey of the Tilney family — thrillingly sinister in Catherine Morland's imagination." },
             ],
           },

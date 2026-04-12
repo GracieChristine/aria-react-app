@@ -3,7 +3,7 @@ import pool from '../db/pool.js';
 export const locationModel = {
   async findAllUniverses() {
     const { rows } = await pool.query(
-      `SELECT id, name, slug FROM universes ORDER BY name ASC`
+      'SELECT id, name, slug FROM universes ORDER BY name ASC'
     );
     return rows;
   },
@@ -58,7 +58,7 @@ export const locationModel = {
 
   async findRegionById(regionId) {
     const { rows } = await pool.query(
-      `SELECT id FROM regions WHERE id = $1`,
+      'SELECT id FROM regions WHERE id = $1',
       [regionId]
     );
     return rows[0] || null;
@@ -66,7 +66,7 @@ export const locationModel = {
 
   async findWorldById(worldId) {
     const { rows } = await pool.query(
-      `SELECT id FROM worlds WHERE id = $1`,
+      'SELECT id FROM worlds WHERE id = $1',
       [worldId]
     );
     return rows[0] || null;

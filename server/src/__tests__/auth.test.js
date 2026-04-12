@@ -6,8 +6,8 @@ beforeAll(async () => await setupTestDB());
 afterEach(async () => await clearTestDB());
 afterAll(async ()  => await closeTestDB());
 
-describe(`POST /api/auth/register`, () => {
-  it(`should register a new user successfully`, async () => {
+describe('POST /api/auth/register', () => {
+  it('should register a new user successfully', async () => {
     const response = await api
       .post('/api/auth/register')
       .send(
@@ -28,7 +28,7 @@ describe(`POST /api/auth/register`, () => {
     expect(response.body.user.passwordHash).toBeUndefined();
   });
 
-  it(`should allow host role on registration`, async () => {
+  it('should allow host role on registration', async () => {
     const response = await api
       .post('/api/auth/register')
       .send(
@@ -45,7 +45,7 @@ describe(`POST /api/auth/register`, () => {
     expect(response.body.user.role).toBe('host');
   });
 
-  it(`should default role to guest even if admin role requested`, async () => {
+  it('should default role to guest even if admin role requested', async () => {
     const response = await api
       .post('/api/auth/register')
       .send(
@@ -62,7 +62,7 @@ describe(`POST /api/auth/register`, () => {
     expect(response.body.user.role).toBe('guest');
   });
 
-  it(`should default role to guest even if super_admin role requested`, async () => {
+  it('should default role to guest even if super_admin role requested', async () => {
     const response = await api
       .post('/api/auth/register')
       .send(
@@ -79,7 +79,7 @@ describe(`POST /api/auth/register`, () => {
     expect(response.body.user.role).toBe('guest');
   });
 
-  it(`should reject if no email`, async () => {
+  it('should reject if no email', async () => {
     const response = await api
       .post('/api/auth/register')
       .send(
@@ -95,7 +95,7 @@ describe(`POST /api/auth/register`, () => {
     expect(response.body.success).toBe(false);
   });
 
-  it(`should reject if invalid email`, async () => {
+  it('should reject if invalid email', async () => {
     const response = await api
       .post('/api/auth/register')
       .send(
@@ -111,7 +111,7 @@ describe(`POST /api/auth/register`, () => {
     expect(response.body.success).toBe(false);
   });
 
-  it(`should reject if no password`, async () => {
+  it('should reject if no password', async () => {
     const response = await api
       .post('/api/auth/register')
       .send(
@@ -127,7 +127,7 @@ describe(`POST /api/auth/register`, () => {
     expect(response.body.success).toBe(false);
   });
 
-  it(`should reject if password too short`, async () => {
+  it('should reject if password too short', async () => {
     const response = await api
       .post('/api/auth/register')
       .send(
@@ -143,7 +143,7 @@ describe(`POST /api/auth/register`, () => {
     expect(response.body.success).toBe(false);
   });
 
-  it(`should reject if duplicate email`, async () => {
+  it('should reject if duplicate email', async () => {
     await registerUser({ email:'JaneDoe@aria.com' });
 
     const response = await api
@@ -162,7 +162,7 @@ describe(`POST /api/auth/register`, () => {
     expect(response.body.error).toMatch(/already in use/i);
   });
 
-  it(`should reject if no first name`, async () => {
+  it('should reject if no first name', async () => {
     const response = await api
       .post('/api/auth/register')
       .send(
@@ -178,7 +178,7 @@ describe(`POST /api/auth/register`, () => {
     expect(response.body.success).toBe(false);
   });
 
-  it(`should reject if no last name`, async () => {
+  it('should reject if no last name', async () => {
     const response = await api
       .post('/api/auth/register')
       .send(
@@ -195,8 +195,8 @@ describe(`POST /api/auth/register`, () => {
   });
 });
 
-describe(`POST /api/auth/login`, () => {
-  it(`should log in with correct credentials successfully`, async() => {
+describe('POST /api/auth/login', () => {
+  it('should log in with correct credentials successfully', async() => {
     await registerUser({ email: 'JaneDoe@aria.com' });
 
     const response = await api
@@ -214,7 +214,7 @@ describe(`POST /api/auth/login`, () => {
     expect(response.body.user.email).toBe('janedoe@aria.com');
   });
 
-  it(`should reject if no email`, async () => {
+  it('should reject if no email', async () => {
     await registerUser({ email: 'JaneDoe@aria.com' });
 
     const response = await api
@@ -230,7 +230,7 @@ describe(`POST /api/auth/login`, () => {
     expect(response.body.success).toBe(false);
   });
 
-  it(`should reject if nonexistent email`, async () => {
+  it('should reject if nonexistent email', async () => {
     await registerUser({ email: 'JaneDoe@aria.com' });
 
     const response = await api
@@ -246,7 +246,7 @@ describe(`POST /api/auth/login`, () => {
     expect(response.body.success).toBe(false);
   });
 
-  it(`should reject if invalid email`, async () => {
+  it('should reject if invalid email', async () => {
     await registerUser({ email: 'JaneDoe@aria.com' });
 
     const response = await api
@@ -262,7 +262,7 @@ describe(`POST /api/auth/login`, () => {
     expect(response.body.success).toBe(false);
   });
 
-  it(`should reject if no password`, async () => {
+  it('should reject if no password', async () => {
     await registerUser({ email: 'JaneDoe@aria.com' });
 
     const response = await api
@@ -278,7 +278,7 @@ describe(`POST /api/auth/login`, () => {
     expect(response.body.success).toBe(false);
   });
 
-  it(`should reject if incorrect password`, async () => {
+  it('should reject if incorrect password', async () => {
     await registerUser({ email: 'JaneDoe@aria.com' });
 
     const response = await api
@@ -294,7 +294,7 @@ describe(`POST /api/auth/login`, () => {
     expect(response.body.success).toBe(false);
   });
   
-  it(`should reject if invalid password`, async () => {
+  it('should reject if invalid password', async () => {
     await registerUser({ email: 'JaneDoe@aria.com' });
 
     const response = await api
@@ -311,8 +311,8 @@ describe(`POST /api/auth/login`, () => {
   });
 });
 
-describe(`GET /api/auth/me`, () => {
-  it(`should return user with valid token`, async () => {
+describe('GET /api/auth/me', () => {
+  it('should return user with valid token', async () => {
     const { accessToken } = await registerUser({ email: 'JaneDoe@aria.com' });
     
     const response = await api
@@ -323,7 +323,7 @@ describe(`GET /api/auth/me`, () => {
     expect(response.body.user.email).toBe('janedoe@aria.com');
   });
 
-  it(`should reject if invalid token`, async () => {
+  it('should reject if invalid token', async () => {
     const response = await api
       .get('/api/auth/me')
       .set('Authorization', 'Bearer invalidtoken');
@@ -331,15 +331,15 @@ describe(`GET /api/auth/me`, () => {
     expect(response.status).toBe(401);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     const response = await api.get('/api/auth/me');
 
     expect(response.status).toBe(401);
   });
 });
 
-describe(`POST /api/auth/refresh`, () => {
-  it(`should return new token with valid refresh token`, async () => {
+describe('POST /api/auth/refresh', () => {
+  it('should return new token with valid refresh token', async () => {
     const data = await registerUser({ email: 'JaneDoe@aria.com' });
     
     const { refreshToken } = data;
@@ -353,7 +353,7 @@ describe(`POST /api/auth/refresh`, () => {
     expect(response.body.refreshToken).toBeDefined();
   });
 
-  it(`should reject if invalid refresh token`, async () => {
+  it('should reject if invalid refresh token', async () => {
     const response = await api
       .post('/api/auth/refresh')
       .send({ refreshToken: 'invalidToken' });
@@ -362,8 +362,8 @@ describe(`POST /api/auth/refresh`, () => {
   });
 });
 
-describe(`POST /api/auth/logout`, () => {
-  it(`should logout with valid token successfully`, async () => {
+describe('POST /api/auth/logout', () => {
+  it('should logout with valid token successfully', async () => {
     const { accessToken } = await registerUser({ email: 'JaneDoe@aria.com' });
 
     const response = await api
@@ -374,7 +374,7 @@ describe(`POST /api/auth/logout`, () => {
     expect(response.body.success).toBe(true);
   });
 
-  it(`should reject if no token`, async () => {
+  it('should reject if no token', async () => {
     const response = await api.post('/api/auth/logout');
 
     expect(response.status).toBe(401);

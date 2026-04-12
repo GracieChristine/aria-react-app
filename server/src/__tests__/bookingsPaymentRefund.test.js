@@ -51,8 +51,8 @@ const setupConfirmedBooking = async ({
   return { hostToken, guestToken, bookingId };
 };
 
-describe(`PATCH /api/bookings/:id/cancel`, () => {
-  it(`should cancel with full refund if check-in is more than 14 days away`, async () => {
+describe('PATCH /api/bookings/:id/cancel', () => {
+  it('should cancel with full refund if check-in is more than 14 days away', async () => {
     const { hostToken, bookingId } = await setupConfirmedBooking();
 
     const response = await api
@@ -66,7 +66,7 @@ describe(`PATCH /api/bookings/:id/cancel`, () => {
     expect(response.body.refund.amount).toBe(400);
   });
 
-  it(`should cancel with full refund if check-in is 7-14 days away`, async () => {
+  it('should cancel with full refund if check-in is 7-14 days away', async () => {
     const { hostToken, bookingId } = await setupConfirmedBooking({
       checkIn:  daysFromNow(10),
       checkOut: daysFromNow(14)
@@ -83,7 +83,7 @@ describe(`PATCH /api/bookings/:id/cancel`, () => {
     expect(response.body.refund.amount).toBe(400);
   });
 
-  it(`should cancel with full refund if check-in is less than 7 days away`, async () => {
+  it('should cancel with full refund if check-in is less than 7 days away', async () => {
     const { hostToken, bookingId } = await setupConfirmedBooking({
       checkIn:  daysFromNow(3),
       checkOut: daysFromNow(7)
@@ -101,7 +101,7 @@ describe(`PATCH /api/bookings/:id/cancel`, () => {
   });
 });
 
-describe(`PATCH /api/bookings/:id/cancel/approve`, () => {
+describe('PATCH /api/bookings/:id/cancel/approve', () => {
   let hostToken;
   let guestToken;
   let bookingId;
@@ -114,7 +114,7 @@ describe(`PATCH /api/bookings/:id/cancel/approve`, () => {
       .set('Authorization', `Bearer ${guestToken}`);
   });
 
-  it(`should cancel with full refund if check-in is more than 14 days away`, async () => {
+  it('should cancel with full refund if check-in is more than 14 days away', async () => {
     const response = await api
       .patch(`/api/bookings/${bookingId}/cancel/approve`)
       .set('Authorization', `Bearer ${hostToken}`);
@@ -126,7 +126,7 @@ describe(`PATCH /api/bookings/:id/cancel/approve`, () => {
     expect(response.body.refund.amount).toBe(400);
   });
 
-  it(`should cancel with partial refund if check-in is 7-14 days away`, async () => {
+  it('should cancel with partial refund if check-in is 7-14 days away', async () => {
     const { hostToken: host2Token, guestToken: guest2Token, bookingId: bookingId2 } =
       await setupConfirmedBooking({
         checkIn:    daysFromNow(10),
@@ -150,7 +150,7 @@ describe(`PATCH /api/bookings/:id/cancel/approve`, () => {
     expect(response.body.refund.amount).toBe(200);
   });
 
-  it(`should cancel with no refund if check-in is less than 7 days away`, async () => {
+  it('should cancel with no refund if check-in is less than 7 days away', async () => {
     const { hostToken: host2Token, guestToken: guest2Token, bookingId: bookingId2 } =
       await setupConfirmedBooking({
         checkIn:    daysFromNow(3),
@@ -174,7 +174,7 @@ describe(`PATCH /api/bookings/:id/cancel/approve`, () => {
     expect(response.body.refund.amount).toBe(0);
   });
 
-  it(`should not approve if not the listing's host`, async () => {
+  it('should not approve if not the listing\'s host', async () => {
     const { accessToken: host2Token } = await registerUser({
       email: 'host2@aria.com',
       role:  'host'
@@ -187,7 +187,7 @@ describe(`PATCH /api/bookings/:id/cancel/approve`, () => {
     expect(response.status).toBe(403);
   });
 
-  it(`should reject if booking is not awaiting cancellation`, async () => {
+  it('should reject if booking is not awaiting cancellation', async () => {
     const { hostToken: host2Token, bookingId: bookingId2 } =
       await setupConfirmedBooking({
         checkIn:    '2026-07-01',
@@ -203,7 +203,7 @@ describe(`PATCH /api/bookings/:id/cancel/approve`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if nonexistent booking`, async () => {
+  it('should reject if nonexistent booking', async () => {
     const response = await api
       .patch('/api/bookings/00000000-0000-0000-0000-000000000000/cancel/approve')
       .set('Authorization', `Bearer ${hostToken}`);
@@ -211,7 +211,7 @@ describe(`PATCH /api/bookings/:id/cancel/approve`, () => {
     expect(response.status).toBe(404);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     const response = await api
       .patch(`/api/bookings/${bookingId}/cancel/approve`);
 
@@ -219,7 +219,7 @@ describe(`PATCH /api/bookings/:id/cancel/approve`, () => {
   });
 });
 
-describe(`PATCH /api/bookings/:id/cancel/reject`, () => {
+describe('PATCH /api/bookings/:id/cancel/reject', () => {
   let hostToken;
   let guestToken;
   let bookingId;
@@ -232,7 +232,7 @@ describe(`PATCH /api/bookings/:id/cancel/reject`, () => {
       .set('Authorization', `Bearer ${guestToken}`);
   });
 
-  it(`should reject cancellation and restore booking to confirmed`, async () => {
+  it('should reject cancellation and restore booking to confirmed', async () => {
     const response = await api
       .patch(`/api/bookings/${bookingId}/cancel/reject`)
       .set('Authorization', `Bearer ${hostToken}`);
@@ -242,7 +242,7 @@ describe(`PATCH /api/bookings/:id/cancel/reject`, () => {
     expect(response.body.booking.paymentStatus).toBe('paid');
   });
 
-  it(`should not reject if not the listing's host`, async () => {
+  it('should not reject if not the listing\'s host', async () => {
     const { accessToken: host2Token } = await registerUser({
       email: 'host2@aria.com',
       role:  'host'
@@ -255,7 +255,7 @@ describe(`PATCH /api/bookings/:id/cancel/reject`, () => {
     expect(response.status).toBe(403);
   });
 
-  it(`should reject if booking is not awaiting cancellation`, async () => {
+  it('should reject if booking is not awaiting cancellation', async () => {
     const { hostToken: host2Token, bookingId: bookingId2 } =
       await setupConfirmedBooking({
         checkIn:    '2026-07-01',
@@ -271,7 +271,7 @@ describe(`PATCH /api/bookings/:id/cancel/reject`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if nonexistent booking`, async () => {
+  it('should reject if nonexistent booking', async () => {
     const response = await api
       .patch('/api/bookings/00000000-0000-0000-0000-000000000000/cancel/reject')
       .set('Authorization', `Bearer ${hostToken}`);
@@ -279,7 +279,7 @@ describe(`PATCH /api/bookings/:id/cancel/reject`, () => {
     expect(response.status).toBe(404);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     const response = await api
       .patch(`/api/bookings/${bookingId}/cancel/reject`);
 

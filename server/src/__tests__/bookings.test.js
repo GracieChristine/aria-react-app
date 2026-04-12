@@ -42,7 +42,7 @@ const createBooking = (guestToken, listingId, overrides = {}) =>
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe(`POST /api/bookings`, () => {
+describe('POST /api/bookings', () => {
   let hostToken;
   let guestToken;
   let listing;
@@ -51,7 +51,7 @@ describe(`POST /api/bookings`, () => {
     ({ hostToken, guestToken, listing } = await setupActiveListing());
   });
 
-  it(`should book an active listing as guest successfully`, async () => {
+  it('should book an active listing as guest successfully', async () => {
     const response = await createBooking(guestToken, listing.id);
 
     expect(response.status).toBe(201);
@@ -60,13 +60,13 @@ describe(`POST /api/bookings`, () => {
     expect(response.body.booking.paymentStatus).toBe('unpaid');
   });
 
-  it(`should not book own listing as host`, async () => {
+  it('should not book own listing as host', async () => {
     const response = await createBooking(hostToken, listing.id);
 
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if listing is pending`, async () => {
+  it('should reject if listing is pending', async () => {
     const { accessToken: hostToken2 } = await registerUser({
       email: 'host2@aria.com',
       role:  'host'
@@ -79,7 +79,7 @@ describe(`POST /api/bookings`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if listing is inactive`, async () => {
+  it('should reject if listing is inactive', async () => {
     await api
       .patch(`/api/listings/${listing.id}/status`)
       .set('Authorization', `Bearer ${hostToken}`)
@@ -90,7 +90,7 @@ describe(`POST /api/bookings`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if check-in date is in the past`, async () => {
+  it('should reject if check-in date is in the past', async () => {
     const response = await createBooking(guestToken, listing.id, {
       checkIn:  '2025-06-01',
       checkOut: '2025-06-05'
@@ -99,7 +99,7 @@ describe(`POST /api/bookings`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if dates conflict with existing booking`, async () => {
+  it('should reject if dates conflict with existing booking', async () => {
     await createBooking(guestToken, listing.id);
 
     const response = await createBooking(guestToken, listing.id, {
@@ -110,19 +110,19 @@ describe(`POST /api/bookings`, () => {
     expect(response.status).toBe(409);
   });
 
-  it(`should reject if guests exceed listing maximum`, async () => {
+  it('should reject if guests exceed listing maximum', async () => {
     const response = await createBooking(guestToken, listing.id, { numGuests: 10 });
 
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if nonexistent listing`, async () => {
+  it('should reject if nonexistent listing', async () => {
     const response = await createBooking(guestToken, '00000000-0000-0000-0000-000000000000');
 
     expect(response.status).toBe(404);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     const response = await api
       .post('/api/bookings')
       .send({
@@ -136,7 +136,7 @@ describe(`POST /api/bookings`, () => {
   });
 });
 
-describe(`GET /api/bookings/me`, () => {
+describe('GET /api/bookings/me', () => {
   let guestToken;
 
   beforeEach(async () => {
@@ -146,7 +146,7 @@ describe(`GET /api/bookings/me`, () => {
     await createBooking(guestToken, listing.id);
   });
 
-  it(`should return own bookings as guest`, async () => {
+  it('should return own bookings as guest', async () => {
     const response = await api
       .get('/api/bookings/me')
       .set('Authorization', `Bearer ${guestToken}`);
@@ -155,14 +155,14 @@ describe(`GET /api/bookings/me`, () => {
     expect(response.body.bookings.length).toBe(1);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     const response = await api.get('/api/bookings/me');
 
     expect(response.status).toBe(401);
   });
 });
 
-describe(`GET /api/bookings/listing/:id`, () => {
+describe('GET /api/bookings/listing/:id', () => {
   let hostToken;
   let listing;
 
@@ -173,7 +173,7 @@ describe(`GET /api/bookings/listing/:id`, () => {
     await createBooking(guestToken, listing.id);
   });
 
-  it(`should return bookings for own listing as host`, async () => {
+  it('should return bookings for own listing as host', async () => {
     const response = await api
       .get(`/api/bookings/listing/${listing.id}`)
       .set('Authorization', `Bearer ${hostToken}`);
@@ -182,7 +182,7 @@ describe(`GET /api/bookings/listing/:id`, () => {
     expect(response.body.bookings.length).toBe(1);
   });
 
-  it(`should reject if not the listing's host`, async () => {
+  it('should reject if not the listing\'s host', async () => {
     const { accessToken: host2Token } = await registerUser({
       email: 'JohnDoe@aria.com',
       role:  'host'
@@ -195,7 +195,7 @@ describe(`GET /api/bookings/listing/:id`, () => {
     expect(response.status).toBe(403);
   });
 
-  it(`should reject if nonexistent listing`, async () => {
+  it('should reject if nonexistent listing', async () => {
     const response = await api
       .get('/api/bookings/listing/00000000-0000-0000-0000-000000000000')
       .set('Authorization', `Bearer ${hostToken}`);
@@ -203,7 +203,7 @@ describe(`GET /api/bookings/listing/:id`, () => {
     expect(response.status).toBe(404);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     const response = await api
       .get(`/api/bookings/listing/${listing.id}`);
 
@@ -211,7 +211,7 @@ describe(`GET /api/bookings/listing/:id`, () => {
   });
 });
 
-describe(`PATCH /api/bookings/:id`, () => {
+describe('PATCH /api/bookings/:id', () => {
   let guestToken;
   let listing;
   let bookingId;
@@ -225,7 +225,7 @@ describe(`PATCH /api/bookings/:id`, () => {
     bookingId = bookingRes.body.booking.id;
   });
 
-  it(`should update dates as guest if booking is pending`, async () => {
+  it('should update dates as guest if booking is pending', async () => {
     const response = await api
       .patch(`/api/bookings/${bookingId}`)
       .set('Authorization', `Bearer ${guestToken}`)
@@ -236,7 +236,7 @@ describe(`PATCH /api/bookings/:id`, () => {
     expect(response.body.booking.status).toBe('pending');
   });
 
-  it(`should update guest count as guest if booking is pending`, async () => {
+  it('should update guest count as guest if booking is pending', async () => {
     const response = await api
       .patch(`/api/bookings/${bookingId}`)
       .set('Authorization', `Bearer ${guestToken}`)
@@ -247,7 +247,7 @@ describe(`PATCH /api/bookings/:id`, () => {
     expect(response.body.booking.status).toBe('pending');
   });
 
-  it(`should not update if booking is confirmed`, async () => {
+  it('should not update if booking is confirmed', async () => {
     await api
       .post(`/api/bookings/${bookingId}/pay`)
       .set('Authorization', `Bearer ${guestToken}`)
@@ -261,7 +261,7 @@ describe(`PATCH /api/bookings/:id`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should not update if booking is cancelled`, async () => {
+  it('should not update if booking is cancelled', async () => {
     await api
       .patch(`/api/bookings/${bookingId}/cancel`)
       .set('Authorization', `Bearer ${guestToken}`);
@@ -274,7 +274,7 @@ describe(`PATCH /api/bookings/:id`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should not update if booking has failed payment`, async () => {
+  it('should not update if booking has failed payment', async () => {
     await api
       .post(`/api/bookings/${bookingId}/pay`)
       .set('Authorization', `Bearer ${guestToken}`)
@@ -288,7 +288,7 @@ describe(`PATCH /api/bookings/:id`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if updated dates are in the past`, async () => {
+  it('should reject if updated dates are in the past', async () => {
     const response = await api
       .patch(`/api/bookings/${bookingId}`)
       .set('Authorization', `Bearer ${guestToken}`)
@@ -297,7 +297,7 @@ describe(`PATCH /api/bookings/:id`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if updated dates conflict with existing booking`, async () => {
+  it('should reject if updated dates conflict with existing booking', async () => {
     const { accessToken: guest2Token } = await registerUser({
       email: 'guest2@aria.com',
       role:  'guest'
@@ -321,7 +321,7 @@ describe(`PATCH /api/bookings/:id`, () => {
     expect(response.status).toBe(409);
   });
 
-  it(`should reject if updated guest count exceeds maximum`, async () => {
+  it('should reject if updated guest count exceeds maximum', async () => {
     const response = await api
       .patch(`/api/bookings/${bookingId}`)
       .set('Authorization', `Bearer ${guestToken}`)
@@ -330,7 +330,7 @@ describe(`PATCH /api/bookings/:id`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should not update if not the booking's guest`, async () => {
+  it('should not update if not the booking\'s guest', async () => {
     const { accessToken: guest2Token } = await registerUser({
       email: 'guest2@aria.com',
       role:  'guest'
@@ -344,7 +344,7 @@ describe(`PATCH /api/bookings/:id`, () => {
     expect(response.status).toBe(403);
   });
 
-  it(`should reject if nonexistent booking`, async () => {
+  it('should reject if nonexistent booking', async () => {
     const response = await api
       .patch('/api/bookings/00000000-0000-0000-0000-000000000000')
       .set('Authorization', `Bearer ${guestToken}`)
@@ -353,7 +353,7 @@ describe(`PATCH /api/bookings/:id`, () => {
     expect(response.status).toBe(404);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     const response = await api
       .patch(`/api/bookings/${bookingId}`)
       .send({ checkIn: '2026-07-01', checkOut: '2026-07-05' });
@@ -362,7 +362,7 @@ describe(`PATCH /api/bookings/:id`, () => {
   });
 });
 
-describe(`PATCH /api/bookings/:id/cancel`, () => {
+describe('PATCH /api/bookings/:id/cancel', () => {
   let hostToken;
   let guestToken;
   let bookingId;
@@ -375,7 +375,7 @@ describe(`PATCH /api/bookings/:id/cancel`, () => {
     bookingId = bookingRes.body.booking.id;
   });
 
-  it(`should cancel a pending booking as guest successfully`, async () => {
+  it('should cancel a pending booking as guest successfully', async () => {
     const response = await api
       .patch(`/api/bookings/${bookingId}/cancel`)
       .set('Authorization', `Bearer ${guestToken}`);
@@ -384,7 +384,7 @@ describe(`PATCH /api/bookings/:id/cancel`, () => {
     expect(response.body.booking.status).toBe('cancelled');
   });
 
-  it(`should request cancel for a confirmed booking as guest successfully`, async () => {
+  it('should request cancel for a confirmed booking as guest successfully', async () => {
     await api
       .post(`/api/bookings/${bookingId}/pay`)
       .set('Authorization', `Bearer ${guestToken}`)
@@ -398,7 +398,7 @@ describe(`PATCH /api/bookings/:id/cancel`, () => {
     expect(response.body.booking.status).toBe('cancellation_requested');
   });
 
-  it(`should cancel a pending booking as host successfully`, async () => {
+  it('should cancel a pending booking as host successfully', async () => {
     const response = await api
       .patch(`/api/bookings/${bookingId}/cancel`)
       .set('Authorization', `Bearer ${hostToken}`);
@@ -407,7 +407,7 @@ describe(`PATCH /api/bookings/:id/cancel`, () => {
     expect(response.body.booking.status).toBe('cancelled');
   });
 
-  it(`should reject if already cancelled`, async () => {
+  it('should reject if already cancelled', async () => {
     await api
       .patch(`/api/bookings/${bookingId}/cancel`)
       .set('Authorization', `Bearer ${guestToken}`);
@@ -419,7 +419,7 @@ describe(`PATCH /api/bookings/:id/cancel`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should not cancel if not guest or host of booking`, async () => {
+  it('should not cancel if not guest or host of booking', async () => {
     const { accessToken: guest2Token } = await registerUser({
       email: 'guest2@aria.com',
       role:  'guest'
@@ -432,7 +432,7 @@ describe(`PATCH /api/bookings/:id/cancel`, () => {
     expect(response.status).toBe(403);
   });
 
-  it(`should reject if nonexistent booking`, async () => {
+  it('should reject if nonexistent booking', async () => {
     const response = await api
       .patch('/api/bookings/00000000-0000-0000-0000-000000000000/cancel')
       .set('Authorization', `Bearer ${guestToken}`);
@@ -440,7 +440,7 @@ describe(`PATCH /api/bookings/:id/cancel`, () => {
     expect(response.status).toBe(404);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     await api
       .post(`/api/bookings/${bookingId}/pay`)
       .set('Authorization', `Bearer ${guestToken}`)

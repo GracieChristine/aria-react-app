@@ -20,7 +20,7 @@ export const messageModel = {
 
   async findConversationById(conversationId) {
     const { rows } = await pool.query(
-      `SELECT * FROM conversations WHERE id = $1`,
+      'SELECT * FROM conversations WHERE id = $1',
       [conversationId]
     );
     return rows[0] || null;
