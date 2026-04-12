@@ -132,7 +132,7 @@ describe('Profile', () => {
       cy.contains('span', '555-555-5555').should('be.visible');
       cy.contains('nav button', 'Updated User').should('be.visible');
 
-      cy.contains('nav button', 'New User').click();
+      cy.contains('nav button', 'Updated User').click();
       cy.contains('button', 'Log out').click();
 
       cy.visit('/login');
@@ -217,7 +217,7 @@ describe('Profile', () => {
 
       cy.contains('Password updated successfully.').should('be.visible');
 
-      cy.contains('nav button', 'New User').click();
+      cy.contains('nav button', 'Updated User').click();
       cy.contains('button', 'Log out').click();
 
       cy.visit('/login');

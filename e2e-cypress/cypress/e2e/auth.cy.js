@@ -218,7 +218,7 @@ describe('Auth', () => {
       cy.url().should('eq', Cypress.config('baseUrl') + '/');
       cy.contains('Test User 1').should('be.visible');
 
-      cy.contains('nav button', 'New User').click();
+      cy.contains('nav button', 'Test User 1').click();
       cy.contains('button', 'Log out').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/');
@@ -238,7 +238,7 @@ describe('Auth', () => {
       cy.url().should('eq', Cypress.config('baseUrl') + '/');
       cy.contains('Test User 2').should('be.visible');
 
-      cy.contains('nav button', 'New User').click();
+      cy.contains('nav button', 'Test User 2').click();
       cy.contains('button', 'Log out').click();
 
       cy.url().should('eq', Cypress.config('baseUrl') + '/');

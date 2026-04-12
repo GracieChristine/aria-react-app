@@ -57,8 +57,8 @@ test.describe('Profile', () => {
     test('should display profile in read-only view by default @smoke', async ({ page }) => {
       await expect(page.getByRole('button', { name: 'Edit' })).toBeVisible();
       await expect(page.locator('form')).toBeHidden();
-      await expect(page.locator('span:has-text("Profile User")')).toBeVisible();
-      await expect(page.locator(`span:has-text("${email}")`)).toBeVisible();
+      await expect(page.locator('main span:has-text("Profile User")')).toBeVisible();
+      await expect(page.locator(`main span:has-text("${email}")`)).toBeVisible();
     });
 
     test('should switch to edit mode when Edit is clicked', async ({ page }) => {
@@ -107,7 +107,7 @@ test.describe('Profile', () => {
 
       await expect(page.getByRole('button', { name: 'Edit' })).toBeVisible();
       await expect(page.locator('form')).toBeHidden();
-      await expect(page.locator('span:has-text("Profile User")')).toBeVisible();
+      await expect(page.locator('main span:has-text("Profile User")')).toBeVisible();
     });
 
     test('should save profile changes and update the navbar name @smoke', async ({ page }) => {
@@ -119,9 +119,9 @@ test.describe('Profile', () => {
       await page.getByRole('button', { name: 'Save changes' }).click();
 
       await expect(page.locator('form')).toBeHidden();
-      await expect(page.locator('span:has-text("Updated User")')).toBeVisible();
-      await expect(page.locator(`span:has-text("${newEmail}")`)).toBeVisible();
-      await expect(page.locator('span:has-text("555-555-5555")')).toBeVisible();
+      await expect(page.locator('main span:has-text("Updated User")')).toBeVisible();
+      await expect(page.locator(`main span:has-text("${newEmail}")`)).toBeVisible();
+      await expect(page.locator('main span:has-text("555-555-5555")')).toBeVisible();
       await expect(page.locator('nav button:has-text("Updated User")')).toBeVisible();
 
       await page.locator('nav button', { hasText: 'Updated User' }).click();
