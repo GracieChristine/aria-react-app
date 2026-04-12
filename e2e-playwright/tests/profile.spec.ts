@@ -204,7 +204,7 @@ test.describe('Profile', () => {
       await page.getByRole('button', { name: 'Update password' }).click();
       await expect(page.getByText('Password updated successfully.')).toBeVisible();
 
-      await page.locator('nav button', { hasText: 'Test User 1' }).click();
+      await page.locator('nav button', { hasText: 'Updated User' }).click();
       await page.locator('button', { hasText: 'Log out' }).click();
 
       await page.goto('/login');
