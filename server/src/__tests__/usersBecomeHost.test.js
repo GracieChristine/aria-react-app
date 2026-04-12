@@ -6,7 +6,7 @@ beforeAll(async () => await setupTestDB());
 afterEach(async () => await clearTestDB());
 afterAll(async ()  => await closeTestDB());
 
-describe(`PATCH /api/users/me/become-host`, () => {
+describe('PATCH /api/users/me/become-host', () => {
   let accessToken;
 
   beforeEach(async () => {
@@ -16,7 +16,7 @@ describe(`PATCH /api/users/me/become-host`, () => {
     }));
   });
 
-  it(`should upgrade guest to host successfully`, async () => {
+  it('should upgrade guest to host successfully', async () => {
     const response = await api
       .patch('/api/users/me/become-host')
       .set('Authorization', `Bearer ${accessToken}`);
@@ -25,7 +25,7 @@ describe(`PATCH /api/users/me/become-host`, () => {
     expect(response.body.user.role).toBe('host');
   });
 
-  it(`should not upgrade if already host`, async () => {
+  it('should not upgrade if already host', async () => {
     ({ accessToken } = await registerUser({
       email: 'host@aria.com',
       role:  'host'
@@ -38,7 +38,7 @@ describe(`PATCH /api/users/me/become-host`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should not upgrade if admin`, async () => {
+  it('should not upgrade if admin', async () => {
     ({ accessToken } = await registerUser({
       email: 'admin@aria.com',
       role:  'admin'
@@ -51,7 +51,7 @@ describe(`PATCH /api/users/me/become-host`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should not upgrade if super_admin`, async () => {
+  it('should not upgrade if super_admin', async () => {
     ({ accessToken } = await registerUser({
       email: 'superadmin@aria.com',
       role:  'super_admin'
@@ -64,15 +64,15 @@ describe(`PATCH /api/users/me/become-host`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if invalid auth`, async () => {
+  it('should reject if invalid auth', async () => {
     const response = await api
       .patch('/api/users/me/become-host')
-      .set('Authorization', `Bearer invalidtoken`);
+      .set('Authorization', 'Bearer invalidtoken');
 
     expect(response.status).toBe(401);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     const response = await api
       .patch('/api/users/me/become-host');
 

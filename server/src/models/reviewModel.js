@@ -96,7 +96,7 @@ export const reviewModel = {
 
   async remove(id) {
     const { rows } = await pool.query(
-      `UPDATE reviews SET status = 'removed' WHERE id = $1 RETURNING *`,
+      'UPDATE reviews SET status = \'removed\' WHERE id = $1 RETURNING *',
       [id]
     );
     return rows[0] || null;

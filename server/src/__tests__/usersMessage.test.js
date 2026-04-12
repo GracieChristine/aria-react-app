@@ -8,8 +8,8 @@ beforeAll(async () => await setupTestDB());
 afterEach(async () => await clearTestDB());
 afterAll(async ()  => await closeTestDB());
 
-describe(`POST /api/messages`, () => {
-  it(`should start a conversation with initial message as guest successfully`, async () => {
+describe('POST /api/messages', () => {
+  it('should start a conversation with initial message as guest successfully', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -44,7 +44,7 @@ describe(`POST /api/messages`, () => {
     expect(response2.body.messages[0].body).toBe('Hi, is this listing available?');
   });
 
-  it(`should return existing conversation if already started`, async () => {
+  it('should return existing conversation if already started', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -78,7 +78,7 @@ describe(`POST /api/messages`, () => {
     expect(response.status).toBe(201);
   });
 
-  it(`should reject if empty message`, async () => {
+  it('should reject if empty message', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -103,7 +103,7 @@ describe(`POST /api/messages`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if host does not belong to listing`, async () => {
+  it('should reject if host does not belong to listing', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -128,7 +128,7 @@ describe(`POST /api/messages`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if nonexistent listing`, async () => {
+  it('should reject if nonexistent listing', async () => {
     const { accessToken: guestToken } = await registerUser({
       email: 'guest@aria.com',
       role:  'guest'
@@ -146,7 +146,7 @@ describe(`POST /api/messages`, () => {
     expect(response.status).toBe(404);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -171,8 +171,8 @@ describe(`POST /api/messages`, () => {
   });
 });
 
-describe(`GET /api/messages`, () => {
-  it(`should return own conversations as guest`, async () => {
+describe('GET /api/messages', () => {
+  it('should return own conversations as guest', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -202,7 +202,7 @@ describe(`GET /api/messages`, () => {
     expect(response.body.conversations.length).toBe(1);
   });
 
-  it(`should return own conversations as host`, async () => {
+  it('should return own conversations as host', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -232,7 +232,7 @@ describe(`GET /api/messages`, () => {
     expect(response.body.conversations.length).toBe(1);
   });
 
-  it(`should return empty array if no conversations`, async () => {
+  it('should return empty array if no conversations', async () => {
     const { accessToken: guestToken } = await registerUser({
       email: 'guest@aria.com',
       role:  'guest'
@@ -246,7 +246,7 @@ describe(`GET /api/messages`, () => {
     expect(response.body.conversations.length).toBe(0);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -275,8 +275,8 @@ describe(`GET /api/messages`, () => {
   });
 });
 
-describe(`POST /api/messages/:conversationId`, () => {
-  it(`should send a message as guest successfully`, async () => {
+describe('POST /api/messages/:conversationId', () => {
+  it('should send a message as guest successfully', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -309,7 +309,7 @@ describe(`POST /api/messages/:conversationId`, () => {
     expect(response2.body.message.body).toBe('Also, do you allow pets?');
   });
 
-  it(`should send a message as host successfully`, async () => {
+  it('should send a message as host successfully', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -342,7 +342,7 @@ describe(`POST /api/messages/:conversationId`, () => {
     expect(response2.body.message.body).toBe('Hello, yes, it is still available.');
   });
 
-  it(`should reject if empty message`, async () => {
+  it('should reject if empty message', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -373,7 +373,7 @@ describe(`POST /api/messages/:conversationId`, () => {
     expect(response2.status).toBe(400);
   });
 
-  it(`should reject if not a participant`, async () => {
+  it('should reject if not a participant', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -409,7 +409,7 @@ describe(`POST /api/messages/:conversationId`, () => {
     expect(response2.status).toBe(403);
   });
 
-  it(`should reject if nonexistent conversation`, async () => {
+  it('should reject if nonexistent conversation', async () => {
     const { accessToken: guestToken } = await registerUser({
       email: 'guest@aria.com',
       role:  'guest'
@@ -423,7 +423,7 @@ describe(`POST /api/messages/:conversationId`, () => {
     expect(response.status).toBe(404);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -455,8 +455,8 @@ describe(`POST /api/messages/:conversationId`, () => {
   });
 });
 
-describe(`GET /api/messages/:conversationId`, () => {
-  it(`should return messages in a conversation as guest`, async () => {
+describe('GET /api/messages/:conversationId', () => {
+  it('should return messages in a conversation as guest', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -501,7 +501,7 @@ describe(`GET /api/messages/:conversationId`, () => {
     expect(response2.body.messages[2].body).toBe('Hello, yes, it is!');
   });
 
-  it(`should return messages in a conversation as host`, async () => {
+  it('should return messages in a conversation as host', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -546,7 +546,7 @@ describe(`GET /api/messages/:conversationId`, () => {
     expect(response2.body.messages[2].body).toBe('Hello, yes, it is!');
   });
 
-  it(`should mark messages as read when fetched`, async () => {
+  it('should mark messages as read when fetched', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -588,14 +588,14 @@ describe(`GET /api/messages/:conversationId`, () => {
 
     // check DB directly that all messages are read
     const { rows } = await pool.query(
-      `SELECT * FROM messages WHERE conversation_id = $1 AND is_read = false`,
+      'SELECT * FROM messages WHERE conversation_id = $1 AND is_read = false',
       [conversationId]
     );
 
     expect(rows.length).toBe(0);
   });
 
-  it(`should reject if not a participant`, async () => {
+  it('should reject if not a participant', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'
@@ -631,7 +631,7 @@ describe(`GET /api/messages/:conversationId`, () => {
     expect(response2.status).toBe(403);
   });
 
-  it(`should reject if nonexistent conversation`, async () => {
+  it('should reject if nonexistent conversation', async () => {
     const { accessToken: guestToken } = await registerUser({
       email: 'guest@aria.com',
       role:  'guest'
@@ -644,7 +644,7 @@ describe(`GET /api/messages/:conversationId`, () => {
     expect(response.status).toBe(404);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     const { accessToken: hostToken } = await registerUser({
       email: 'JaneDoe@aria.com',
       role:  'host'

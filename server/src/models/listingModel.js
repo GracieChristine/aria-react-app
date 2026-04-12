@@ -161,7 +161,7 @@ export const listingModel = {
 
   async delete(id, hostId) {
     const { rows } = await pool.query(
-      `DELETE FROM listings WHERE id = $1 AND host_id = $2 RETURNING id`,
+      'DELETE FROM listings WHERE id = $1 AND host_id = $2 RETURNING id',
       [id, hostId]
     );
     return rows[0] || null;
@@ -169,7 +169,7 @@ export const listingModel = {
 
   async getImages(listingId) {
     const { rows } = await pool.query(
-      `SELECT * FROM listing_images WHERE listing_id = $1 ORDER BY display_order ASC`,
+      'SELECT * FROM listing_images WHERE listing_id = $1 ORDER BY display_order ASC',
       [listingId]
     );
     return rows;
@@ -186,7 +186,7 @@ export const listingModel = {
 
   async deleteImage(imageId, listingId) {
     const { rows } = await pool.query(
-      `DELETE FROM listing_images WHERE id = $1 AND listing_id = $2 RETURNING id`,
+      'DELETE FROM listing_images WHERE id = $1 AND listing_id = $2 RETURNING id',
       [imageId, listingId]
     );
     return rows[0] || null;

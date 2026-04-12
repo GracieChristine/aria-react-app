@@ -49,8 +49,8 @@ const postReview = (guestToken, bookingId) =>
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe(`POST /api/reviews`, () => {
-  it(`should create a review as guest after completed booking successfully`, async () => {
+describe('POST /api/reviews', () => {
+  it('should create a review as guest after completed booking successfully', async () => {
     const { guestToken, booking } = await setupCompletedBooking();
 
     const response = await postReview(guestToken, booking.id);
@@ -60,7 +60,7 @@ describe(`POST /api/reviews`, () => {
     expect(response.body.review.comment).toBe('This is just a test review message.');
   });
 
-  it(`should reject if booking is not completed`, async () => {
+  it('should reject if booking is not completed', async () => {
     const { guestToken, listing } = await setupActiveListing();
     const { booking } = await createTestBooking(guestToken, listing.id);
 
@@ -69,7 +69,7 @@ describe(`POST /api/reviews`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if review window has expired (14 days)`, async () => {
+  it('should reject if review window has expired (14 days)', async () => {
     const { guestToken, listing } = await setupActiveListing();
     const { booking } = await createTestBooking(guestToken, listing.id);
     await expireBooking(booking.id);
@@ -79,7 +79,7 @@ describe(`POST /api/reviews`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if already reviewed this booking`, async () => {
+  it('should reject if already reviewed this booking', async () => {
     const { guestToken, booking } = await setupCompletedBooking();
 
     await postReview(guestToken, booking.id);
@@ -88,7 +88,7 @@ describe(`POST /api/reviews`, () => {
     expect(response.status).toBe(409);
   });
 
-  it(`should reject if not the booking's guest`, async () => {
+  it('should reject if not the booking\'s guest', async () => {
     const { booking } = await setupCompletedBooking();
 
     const { accessToken: guest2Token } = await registerUser({
@@ -101,7 +101,7 @@ describe(`POST /api/reviews`, () => {
     expect(response.status).toBe(403);
   });
 
-  it(`should reject if nonexistent booking`, async () => {
+  it('should reject if nonexistent booking', async () => {
     const { accessToken: guestToken } = await registerUser({
       email: 'guest@aria.com',
       role:  'guest'
@@ -112,7 +112,7 @@ describe(`POST /api/reviews`, () => {
     expect(response.status).toBe(404);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     const { booking } = await setupCompletedBooking();
 
     const response = await api
@@ -127,8 +127,8 @@ describe(`POST /api/reviews`, () => {
   });
 });
 
-describe(`GET /api/reviews/listing/:id`, () => {
-  it(`should return active reviews for a listing`, async () => {
+describe('GET /api/reviews/listing/:id', () => {
+  it('should return active reviews for a listing', async () => {
     const { guestToken, listing, booking } = await setupCompletedBooking();
     await postReview(guestToken, booking.id);
 
@@ -138,12 +138,12 @@ describe(`GET /api/reviews/listing/:id`, () => {
     expect(response.body.reviews.length).toBe(1);
   });
 
-  it(`should not return flagged or removed reviews`, async () => {
+  it('should not return flagged or removed reviews', async () => {
     const { guestToken, listing, booking } = await setupCompletedBooking();
     const reviewRes = await postReview(guestToken, booking.id);
 
     await pool.query(
-      `UPDATE reviews SET status = 'flagged' WHERE id = $1`,
+      'UPDATE reviews SET status = \'flagged\' WHERE id = $1',
       [reviewRes.body.review.id]
     );
 
@@ -153,7 +153,7 @@ describe(`GET /api/reviews/listing/:id`, () => {
     expect(response.body.reviews.length).toBe(0);
   });
 
-  it(`should return empty array if no reviews`, async () => {
+  it('should return empty array if no reviews', async () => {
     const { listing } = await setupActiveListing();
 
     const response = await api.get(`/api/reviews/listing/${listing.id}`);
@@ -162,7 +162,7 @@ describe(`GET /api/reviews/listing/:id`, () => {
     expect(response.body.reviews.length).toBe(0);
   });
 
-  it(`should reject if nonexistent listing`, async () => {
+  it('should reject if nonexistent listing', async () => {
     const response = await api
       .get('/api/reviews/listing/00000000-0000-0000-0000-000000000000');
 
@@ -170,8 +170,8 @@ describe(`GET /api/reviews/listing/:id`, () => {
   });
 });
 
-describe(`GET /api/reviews/me`, () => {
-  it(`should return own reviews as guest`, async () => {
+describe('GET /api/reviews/me', () => {
+  it('should return own reviews as guest', async () => {
     const { guestToken, booking } = await setupCompletedBooking();
     await postReview(guestToken, booking.id);
 
@@ -183,14 +183,14 @@ describe(`GET /api/reviews/me`, () => {
     expect(response.body.reviews.length).toBe(1);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     const response = await api.get('/api/reviews/me');
 
     expect(response.status).toBe(401);
   });
 });
 
-describe(`PATCH /api/reviews/:id/flag`, () => {
+describe('PATCH /api/reviews/:id/flag', () => {
   let hostToken;
   let guestToken;
   let reviewId;
@@ -203,7 +203,7 @@ describe(`PATCH /api/reviews/:id/flag`, () => {
     reviewId = reviewRes.body.review.id;
   });
 
-  it(`should flag a review as the listing's host successfully`, async () => {
+  it('should flag a review as the listing\'s host successfully', async () => {
     const response = await api
       .patch(`/api/reviews/${reviewId}/flag`)
       .set('Authorization', `Bearer ${hostToken}`)
@@ -213,7 +213,7 @@ describe(`PATCH /api/reviews/:id/flag`, () => {
     expect(response.body.review.status).toBe('flagged');
   });
 
-  it(`should reject if not the listing's host`, async () => {
+  it('should reject if not the listing\'s host', async () => {
     const { accessToken: host2Token } = await registerUser({
       email: 'host2@aria.com',
       role:  'host'
@@ -227,7 +227,7 @@ describe(`PATCH /api/reviews/:id/flag`, () => {
     expect(response.status).toBe(403);
   });
 
-  it(`should reject if review is already flagged`, async () => {
+  it('should reject if review is already flagged', async () => {
     await api
       .patch(`/api/reviews/${reviewId}/flag`)
       .set('Authorization', `Bearer ${hostToken}`)
@@ -241,7 +241,7 @@ describe(`PATCH /api/reviews/:id/flag`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if nonexistent review`, async () => {
+  it('should reject if nonexistent review', async () => {
     const response = await api
       .patch('/api/reviews/00000000-0000-0000-0000-000000000000/flag')
       .set('Authorization', `Bearer ${hostToken}`)
@@ -250,7 +250,7 @@ describe(`PATCH /api/reviews/:id/flag`, () => {
     expect(response.status).toBe(404);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     const response = await api
       .patch(`/api/reviews/${reviewId}/flag`)
       .send({ reason: 'This review is inappropriate.' });
@@ -259,7 +259,7 @@ describe(`PATCH /api/reviews/:id/flag`, () => {
   });
 });
 
-describe(`GET /api/reviews/flagged`, () => {
+describe('GET /api/reviews/flagged', () => {
   let flaggedReviewId;
 
   beforeEach(async () => {
@@ -268,12 +268,12 @@ describe(`GET /api/reviews/flagged`, () => {
     flaggedReviewId = reviewRes.body.review.id;
 
     await pool.query(
-      `UPDATE reviews SET status = 'flagged' WHERE id = $1`,
+      'UPDATE reviews SET status = \'flagged\' WHERE id = $1',
       [flaggedReviewId]
     );
   });
 
-  it(`should return all flagged reviews as admin`, async () => {
+  it('should return all flagged reviews as admin', async () => {
     const { accessToken: adminToken } = await registerUser({
       email: 'admin@aria.com',
       role:  'admin'
@@ -287,7 +287,7 @@ describe(`GET /api/reviews/flagged`, () => {
     expect(response.body.reviews.length).toBe(1);
   });
 
-  it(`should return all flagged reviews as super_admin`, async () => {
+  it('should return all flagged reviews as super_admin', async () => {
     const { accessToken: superAdminToken } = await registerUser({
       email: 'superadmin@aria.com',
       role:  'super_admin'
@@ -301,7 +301,7 @@ describe(`GET /api/reviews/flagged`, () => {
     expect(response.body.reviews.length).toBe(1);
   });
 
-  it(`should reject if not admin or super_admin`, async () => {
+  it('should reject if not admin or super_admin', async () => {
     const { accessToken: guestToken } = await registerUser({
       email: 'guest2@aria.com',
       role:  'guest'
@@ -314,14 +314,14 @@ describe(`GET /api/reviews/flagged`, () => {
     expect(response.status).toBe(403);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     const response = await api.get('/api/reviews/flagged');
 
     expect(response.status).toBe(401);
   });
 });
 
-describe(`DELETE /api/reviews/:id`, () => {
+describe('DELETE /api/reviews/:id', () => {
   let flaggedReviewId;
   let hostToken;
 
@@ -333,12 +333,12 @@ describe(`DELETE /api/reviews/:id`, () => {
     flaggedReviewId = reviewRes.body.review.id;
 
     await pool.query(
-      `UPDATE reviews SET status = 'flagged' WHERE id = $1`,
+      'UPDATE reviews SET status = \'flagged\' WHERE id = $1',
       [flaggedReviewId]
     );
   });
 
-  it(`should remove a flagged review as admin successfully`, async () => {
+  it('should remove a flagged review as admin successfully', async () => {
     const { accessToken: adminToken } = await registerUser({
       email: 'admin@aria.com',
       role:  'admin'
@@ -351,7 +351,7 @@ describe(`DELETE /api/reviews/:id`, () => {
     expect(response.status).toBe(200);
   });
 
-  it(`should remove a flagged review as super_admin successfully`, async () => {
+  it('should remove a flagged review as super_admin successfully', async () => {
     const { accessToken: superAdminToken } = await registerUser({
       email: 'superadmin@aria.com',
       role:  'super_admin'
@@ -364,7 +364,7 @@ describe(`DELETE /api/reviews/:id`, () => {
     expect(response.status).toBe(200);
   });
 
-  it(`should reject if review is not flagged`, async () => {
+  it('should reject if review is not flagged', async () => {
     const { accessToken: adminToken } = await registerUser({
       email: 'admin@aria.com',
       role:  'admin'
@@ -395,7 +395,7 @@ describe(`DELETE /api/reviews/:id`, () => {
     expect(response.status).toBe(400);
   });
 
-  it(`should reject if not admin or super_admin`, async () => {
+  it('should reject if not admin or super_admin', async () => {
     const response = await api
       .delete(`/api/reviews/${flaggedReviewId}`)
       .set('Authorization', `Bearer ${hostToken}`);
@@ -403,7 +403,7 @@ describe(`DELETE /api/reviews/:id`, () => {
     expect(response.status).toBe(403);
   });
 
-  it(`should reject if nonexistent review`, async () => {
+  it('should reject if nonexistent review', async () => {
     const { accessToken: adminToken } = await registerUser({
       email: 'admin@aria.com',
       role:  'admin'
@@ -416,7 +416,7 @@ describe(`DELETE /api/reviews/:id`, () => {
     expect(response.status).toBe(404);
   });
 
-  it(`should reject if no auth`, async () => {
+  it('should reject if no auth', async () => {
     const response = await api
       .delete(`/api/reviews/${flaggedReviewId}`);
 
