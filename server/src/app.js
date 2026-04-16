@@ -15,6 +15,7 @@ import reviewRoutes   from './routes/reviewRoutes.js';
 import favoriteRoutes from './routes/favoriteRoutes.js';
 import messageRoutes  from './routes/messageRoutes.js';
 import locationRoutes from './routes/locationRoutes.js';
+import devRoutes      from './dev/devRoutes.js';
 
 const app = express();
 
@@ -65,6 +66,7 @@ app.use('/api/reviews',   reviewRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/messages',  messageRoutes);
 app.use('/api/locations', locationRoutes);
+app.use('/api/dev',       devRoutes);
 
 // ── 404 ──
 app.use((req, res) => {
