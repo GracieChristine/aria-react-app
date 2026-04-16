@@ -9,20 +9,23 @@ export default function ListingsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchListings = useCallback(() => {
+  const fetchListings = useCallback(async () => {
     setLoading(true);
-    fetch('/api/listings')
-      .then(r => {
-        if (!r.ok) throw new Error('Failed to load listings');
-        return r.json();
-      })
-      .then(data => setListings(data))
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
+    try {
+      const r = await fetch('/api/listings');
+      if (!r.ok) throw new Error('Failed to load listings');
+      const data = await r.json();
+      setListings(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
-    fetchListings();
+    async function load() { await fetchListings(); }
+    load();
   }, [fetchListings]);
 
   useEffect(() => {
