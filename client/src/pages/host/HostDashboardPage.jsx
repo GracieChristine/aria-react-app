@@ -133,9 +133,11 @@ export default function HostDashboardPage() {
   const { user, token, authReady } = useAuth();
   const navigate = useNavigate();
 
-  const [listings, setListings] = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(null);
+  const [listings, setListings]     = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [error, setError]           = useState(null);
+  const [filterStatus, setFilter]   = useState('all');
+  const [sort, setSort]             = useState({ field: 'title', dir: 'asc' });
 
   const fetchListings = useCallback(async () => {
     setLoading(true);
@@ -158,6 +160,11 @@ export default function HostDashboardPage() {
     if (authReady && user) fetchListings();
   }, [fetchListings, authReady, user]);
 
+  useEffect(() => {
+    window.addEventListener('aria:listings-updated', fetchListings);
+    return () => window.removeEventListener('aria:listings-updated', fetchListings);
+  }, [fetchListings]);
+
   if (!authReady) return null;
   if (!user) return <Navigate to="/login" replace />;
   if (user.role !== 'host' && user.role !== 'admin' && user.role !== 'super_admin') {
@@ -165,15 +172,16 @@ export default function HostDashboardPage() {
   }
 
   async function handleToggleStatus(id, newStatus) {
+    setListings(prev => prev.map(l => l.id === id ? { ...l, status: newStatus } : l));
     try {
       const res = await fetch(`/api/listings/${id}/status`, {
         method:  'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body:    JSON.stringify({ status: newStatus }),
       });
-      if (res.ok) await fetchListings();
+      if (!res.ok) await fetchListings();
     } catch {
-      // silently ignore — UI stays unchanged
+      await fetchListings();
     }
   }
 
@@ -189,9 +197,41 @@ export default function HostDashboardPage() {
     }
   }
 
-  const active   = listings.filter(l => l.status === 'active');
-  const inactive = listings.filter(l => l.status === 'inactive');
-  const ordered  = [...active, ...inactive];
+  function toggleSort(field) {
+    setSort(prev => ({
+      field,
+      dir: prev.field === field && prev.dir === 'asc' ? 'desc' : 'asc',
+    }));
+  }
+
+  function SortBtn({ field, label }) {
+    const active = sort.field === field;
+    return (
+      <button
+        onClick={() => toggleSort(field)}
+        className={`flex items-center gap-1 text-xs font-medium transition-colors ${active ? 'text-aria-teal' : 'text-aria-text-mid hover:text-aria-text-dark'}`}
+      >
+        {label}
+        <span className="text-[0.6rem]">
+          {active ? (sort.dir === 'asc' ? '▲' : '▼') : '⬍'}
+        </span>
+      </button>
+    );
+  }
+
+  const filtered = filterStatus === 'all'
+    ? listings
+    : listings.filter(l => l.status === filterStatus);
+
+  const ordered = [...filtered].sort((a, b) => {
+    let va, vb;
+    if (sort.field === 'title')  { va = a.title.toLowerCase(); vb = b.title.toLowerCase(); }
+    if (sort.field === 'status') { va = a.status; vb = b.status; }
+    if (sort.field === 'price')  { va = parseFloat(a.pricePerNight); vb = parseFloat(b.pricePerNight); }
+    if (va < vb) return sort.dir === 'asc' ? -1 : 1;
+    if (va > vb) return sort.dir === 'asc' ? 1 : -1;
+    return 0;
+  });
 
   return (
     <div className="min-h-screen bg-aria-offwhite">
@@ -208,6 +248,30 @@ export default function HostDashboardPage() {
           >
             + Add listing
           </button>
+        </div>
+
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex gap-1">
+            {['all', 'active', 'inactive'].map(s => (
+              <button
+                key={s}
+                onClick={() => setFilter(s)}
+                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                  filterStatus === s
+                    ? 'bg-aria-teal text-white'
+                    : 'bg-white border border-aria-border text-aria-text-mid hover:text-aria-text-dark'
+                }`}
+              >
+                {s === 'all' ? 'All' : s === 'active' ? 'Online' : 'Offline'}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-aria-text-light">Sort:</span>
+            <SortBtn field="title" label="Name" />
+            <SortBtn field="status" label="Status" />
+            <SortBtn field="price" label="Price" />
+          </div>
         </div>
 
         {loading && (

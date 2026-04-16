@@ -11,7 +11,9 @@
     "test": "node --experimental-vm-modules node_modules/.bin/jest --runInBand --forceExit",
     "migrate": "node src/db/migrate.js",
     "seed": "node src/db/seeds/seed.js",
-    "seed:locations": "node src/db/seeds/locations.js"
+    "seed:locations": "node src/db/seeds/locations.js",
+    "seed:listings": "node src/db/seeds/listings.js",
+    "unseed:listings": "node src/db/seeds/unlistings.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
