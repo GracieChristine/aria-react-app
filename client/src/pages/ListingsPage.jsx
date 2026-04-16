@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FilterBar from '../components/listings/FilterBar';
@@ -9,7 +9,8 @@ export default function ListingsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const fetchListings = useCallback(() => {
+    setLoading(true);
     fetch('/api/listings')
       .then(r => {
         if (!r.ok) throw new Error('Failed to load listings');
@@ -19,6 +20,15 @@ export default function ListingsPage() {
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    fetchListings();
+  }, [fetchListings]);
+
+  useEffect(() => {
+    window.addEventListener('aria:listings-updated', fetchListings);
+    return () => window.removeEventListener('aria:listings-updated', fetchListings);
+  }, [fetchListings]);
 
   function handleSearch(filters) {
     // TODO: pass filters to API
